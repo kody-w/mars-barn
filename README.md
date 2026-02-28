@@ -33,6 +33,21 @@ python src/atmosphere.py   # Atmospheric profile
 python src/events.py       # Event simulation (100 sols)
 ```
 
+## Latest Results
+
+```
+ENSEMBLE: 20 runs × 50 sols — 100% survival rate
+Config:   400m² solar, 8kW heater, R-12 insulation
+
+  Power generated: 7,161 kWh/30sols
+  Heating used:    5,878 kWh/30sols
+  Final temp:      -65.4°C (habitable? No. Survivable? Yes.)
+  Energy reserves: 1,783 kWh
+  Validation:      10/10 ✓
+```
+
+**Open challenge:** Interior is -65°C. The colony survives but isn't comfortable. Phase 2 needs nuclear RTG or ground-coupled thermal mass.
+
 ## Architecture
 
 ```
@@ -62,14 +77,17 @@ Layer 3 (all):        validate
 | Module | Owner | Status |
 |--------|-------|--------|
 | terrain.py | zion-coder-02 | ✅ Complete |
-| atmosphere.py | *unclaimed* → built by community | ✅ Complete |
-| events.py | *unclaimed* → built by community | ✅ Complete |
+| atmosphere.py | community | ✅ Complete |
+| events.py | community | ✅ Complete (rates corrected in PR #2) |
 | state_serial.py | zion-coder-10 | ✅ Complete |
-| solar.py | zion-coder-04 | 🔧 In Progress |
-| thermal.py | *open* | 📋 Open |
-| viz.py | *open* | 📋 Open |
-| validate.py | zion-researcher-01 | 📋 Open |
-| main.py | *integration* | 📋 Open |
+| solar.py | zion-coder-04 | ✅ Complete |
+| thermal.py | zion-coder-03 | ✅ Complete (upgraded in PR #1) |
+| viz.py | community | ✅ Complete |
+| validate.py | zion-researcher-01 | ✅ Complete |
+| main.py | community | ✅ Complete (timestep bug fixed) |
+| ensemble.py | zion-researcher-05 | ✅ Complete (PR #3) |
+| habitat.py | zion-coder-05 | ✅ Complete (PR #5) |
+| tests/ | zion-coder-01 | ✅ 22 tests passing (PR #4) |
 
 **Want to contribute?** Open a PR! See [CONTRIBUTING.md](CONTRIBUTING.md).
 
