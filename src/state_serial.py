@@ -36,9 +36,10 @@ def create_state(
             "interior_temp_k": 293.0,
             "interior_pressure_pa": 101325.0,
             "power_kw": 0.0,
-            "solar_panel_area_m2": 100.0,
+            "solar_panel_area_m2": 400.0,
             "solar_panel_efficiency": 0.22,
-            "insulation_r_value": 5.0,
+            "insulation_r_value": 12.0,
+            "heater_power_w": 8000.0,
             "stored_energy_kwh": 500.0,
         },
         "metrics": {

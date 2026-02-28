@@ -76,12 +76,13 @@ def run_simulation(
 
         # Simulate 24.6 hours in 1-hour steps
         hours_per_sol = 24.616
-        step_hours = 1.0
+        step_hours = 0.25  # 15-min steps for thermal accuracy
         sol_heating_kwh = 0.0
         sol_power_kwh = 0.0
 
-        for hour_step in range(int(hours_per_sol)):
-            hour = float(hour_step)
+        num_steps = int(hours_per_sol / step_hours)
+        for step_idx in range(num_steps):
+            hour = step_idx * step_hours
             state["hour"] = hour
 
             # Exterior conditions
@@ -101,13 +102,14 @@ def run_simulation(
             sol_power_kwh += power_w * step_hours / 1000
 
             # Heating decision: heat if below target
-            heater_w = 2000.0 if state["habitat"]["interior_temp_k"] < TARGET_TEMP_K else 0.0
+            heater_power = state["habitat"].get("heater_power_w", 8000.0)
+            heater_w = heater_power if state["habitat"]["interior_temp_k"] < TARGET_TEMP_K else 0.0
 
             # Thermal step
             result = thermal_step(
                 state["habitat"]["interior_temp_k"],
                 ext_temp, irr, heater_w,
-                r_value=state["habitat"]["insulation_r_value"],
+                r_value=state["habitat"].get("insulation_r_value", 12.0),
                 dt_seconds=step_hours * 3600,
             )
 
