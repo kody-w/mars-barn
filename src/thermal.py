@@ -119,8 +119,8 @@ def simulate_sol(
     start_temp_k: float = TARGET_TEMP_K,
     latitude_deg: float = 0.0,
     solar_longitude: float = 0.0,
-    r_value: float = 5.0,
-    heater_power_w: float = 2000.0,
+    r_value: float = 12.0,  # upgraded: aerogel + regolith sandwich
+    heater_power_w: float = 8000.0,  # upgraded: 2kW → 8kW (4x solar panels)
     dust_storm: bool = False,
 ) -> dict:
     """Simulate one sol of thermal behavior.
