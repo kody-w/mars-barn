@@ -42,17 +42,21 @@ HABITAT_SURFACE_AREA_M2 = 200.0     # exterior surface area
 HABITAT_VOLUME_M3 = 150.0           # pressurized interior volume
 HABITAT_TARGET_TEMP_K = 293.0       # 20°C interior target
 HABITAT_CREW_SIZE = 4
+HABITAT_HUMAN_METABOLIC_HEAT = True
+HUMAN_METABOLIC_HEAT_W = 120.0
 HABITAT_INTERIOR_PRESSURE_PA = 101325.0  # 1 atm
 HABITAT_SOLAR_PANEL_AREA_M2 = 400.0
 HABITAT_SOLAR_PANEL_EFFICIENCY = 0.22
 HABITAT_INSULATION_R_VALUE = 12.0   # m²·K/W (aerogel + regolith sandwich)
 HABITAT_HEATER_POWER_W = 8000.0     # watts
 HABITAT_STORED_ENERGY_KWH = 500.0   # initial battery reserve
-HABITAT_EMISSIVITY = 0.9            # exterior surface (no low-e coating)
+HABITAT_EMISSIVITY = 0.05           # exterior surface (low-e coating)
 HABITAT_WINDOW_AREA_M2 = 10.0       # window / solar collector area
 HABITAT_WINDOW_TRANSMITTANCE = 0.75
+HABITAT_GROUND_COUPLING = True      # thermal contact with mars regolith
+GROUND_COUPLING_U_VALUE = 0.5       # W/m²·K (approximate)
 
 # ── Interior Air Properties (pressurized at ~1 atm) ────────────────────
 AIR_DENSITY_KG_M3 = 1.2             # kg/m³ at ~1 atm, ~20°C
 AIR_SPECIFIC_HEAT_J_KGK = 1005      # J/(kg·K), dry air at ~20°C
-THERMAL_MASS_MULTIPLIER = 5.0       # habitat structure ≈ 5× air thermal mass
+THERMAL_MASS_MULTIPLIER = 20.0      # habitat structure ≈ 20× air thermal mass

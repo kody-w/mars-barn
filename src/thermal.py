@@ -25,6 +25,11 @@ from constants import (
     AIR_DENSITY_KG_M3,
     AIR_SPECIFIC_HEAT_J_KGK as AIR_SPECIFIC_HEAT,
     THERMAL_MASS_MULTIPLIER,
+    HABITAT_GROUND_COUPLING,
+    GROUND_COUPLING_U_VALUE,
+    HABITAT_HUMAN_METABOLIC_HEAT,
+    HUMAN_METABOLIC_HEAT_W,
+    HABITAT_CREW_SIZE,
 )
 
 
@@ -45,7 +50,7 @@ def heat_loss_conduction(
 def heat_loss_radiation(
     interior_temp_k: float,
     exterior_temp_k: float,
-    emissivity: float = 0.9,
+    emissivity: float = 0.05,
     surface_area_m2: float = HABITAT_SURFACE_AREA_M2,
 ) -> float:
     """Radiative heat loss in watts (Stefan-Boltzmann law).
@@ -93,8 +98,19 @@ def thermal_step(
     q_cond_loss = heat_loss_conduction(interior_temp_k, exterior_temp_k, r_value, surface_area_m2)
     q_rad_loss = heat_loss_radiation(interior_temp_k, exterior_temp_k, surface_area_m2=surface_area_m2)
 
+    # Missing physics: Ground coupling and Metabolic heat
+    q_ground = 0.0
+    if HABITAT_GROUND_COUPLING:
+        # Ground coupling conducts heat to/from the 210K regolith
+        floor_area_m2 = surface_area_m2 / 4  # Estimate floor is ~1/4 of total surface
+        q_ground = floor_area_m2 * GROUND_COUPLING_U_VALUE * (MARS_GROUND_TEMP_K - interior_temp_k)
+
+    q_metabolic = 0.0
+    if HABITAT_HUMAN_METABOLIC_HEAT:
+        q_metabolic = HUMAN_METABOLIC_HEAT_W * HABITAT_CREW_SIZE
+
     # Net heat flow
-    q_net = q_solar + q_electric - q_cond_loss - q_rad_loss
+    q_net = q_solar + q_electric - q_cond_loss - q_rad_loss + q_ground + q_metabolic
 
     # Temperature change: Q = m·c·ΔT
     thermal_mass = AIR_DENSITY_KG_M3 * volume_m3 * AIR_SPECIFIC_HEAT
@@ -111,6 +127,8 @@ def thermal_step(
         "q_electric_w": round(q_electric, 1),
         "q_cond_loss_w": round(q_cond_loss, 1),
         "q_rad_loss_w": round(q_rad_loss, 1),
+        "q_ground_loss_w": round(-q_ground, 1),
+        "q_metabolic_w": round(q_metabolic, 1),
         "q_net_w": round(q_net, 1),
         "heating_required": q_net < 0,
     }

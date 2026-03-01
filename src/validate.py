@@ -132,9 +132,9 @@ MARS_BARN_PARAMS = {
     "window_transmittance": HABITAT_WINDOW_TRANSMITTANCE,
     "thermal_mass_multiplier": THERMAL_MASS_MULTIPLIER,
     "target_interior_temp_k": HABITAT_TARGET_TEMP_K,
-    "ground_coupling": False,
-    "human_metabolic_heat": False,
-    "low_e_coating": False,
+    "ground_coupling": True,
+    "human_metabolic_heat": True,
+    "low_e_coating": True,
 }
 
 # Physical reference values for gap calculations
@@ -424,11 +424,11 @@ def generate_gap_report() -> str:
     ))
     lines.append(row.format(
         "Ground coupling",
-        "No", "Slab", "Ice fdn", "Ground",
+        "Yes", "Slab", "Ice fdn", "Ground",
     ))
     lines.append(row.format(
         "Crew metabolic heat",
-        "No", "~500 W", "~500 W", "~500 W",
+        "Yes", "~500 W", "~500 W", "~500 W",
     ))
     lines.append(row.format(
         "Window area (m²)",

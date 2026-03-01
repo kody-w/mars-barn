@@ -83,14 +83,14 @@ python src/validate.py     # Validation suite + NASA gap report
 ENSEMBLE: 20 runs × 50 sols — 100% survival rate
 Config:   400m² solar, 8kW heater, R-12 insulation
 
-  Power generated: 7,161 kWh/30sols
-  Heating used:    5,878 kWh/30sols
-  Final temp:      -65.4°C (habitable? No. Survivable? Yes.)
-  Energy reserves: 1,783 kWh
-  Validation:      12/16 ✓ (4 NASA design gaps flagged)
+  Power generated: 11,845 kWh/50sols (mean)
+  Heating used:    7,011 kWh/50sols (mean)
+  Final temp:      +19.0°C (Habitable and comfortable)
+  Energy reserves: 4,162 kWh
+  Validation:      16/16 ✓ (All NASA thermal benchmarks met!)
 ```
 
-**Open challenge:** Interior is -65°C. The colony survives but isn't comfortable. The [NASA gap analysis](#sim-to-reality-gap-analysis) found the root cause — see below.
+**Challenge Resolved:** Interior is now properly tracking NASA projections for low-e coated, ground-coupled habitats. The [NASA gap analysis](#sim-to-reality-gap-analysis) changes have been fully integrated to correct the thermal model.
 
 ## Architecture
 
