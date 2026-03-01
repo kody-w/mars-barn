@@ -1,0 +1,140 @@
+{
+  "survived_sols": 669,
+  "survived_full_year": true,
+  "alive_at_end": true,
+  "death_sol": null,
+  "death_reason": null,
+  "min_temp_c": 16.4,
+  "max_temp_c": 20.7,
+  "min_energy_kwh": 559.9,
+  "worst_energy_sol": 0,
+  "storms_survived": 53,
+  "total_heating_kwh": 90684.0,
+  "timeline_summary": {
+    "total_entries": 669,
+    "first_5": [
+      {
+        "sol_offset": -1,
+        "ls": 36.5,
+        "temp_c": 19.2,
+        "energy_kwh": 616.1,
+        "solar_kwh": 215.7,
+        "heating_kwh": 152.0,
+        "food_kg": 117.6,
+        "dust_storm": false,
+        "storm_severity": 0,
+        "alive": true
+      },
+      {
+        "sol_offset": -2,
+        "ls": 35.9,
+        "temp_c": 16.9,
+        "energy_kwh": 676.5,
+        "solar_kwh": 215.9,
+        "heating_kwh": 148.0,
+        "food_kg": 115.2,
+        "dust_storm": false,
+        "storm_severity": 0,
+        "alive": true
+      },
+      {
+        "sol_offset": -3,
+        "ls": 35.4,
+        "temp_c": 18.6,
+        "energy_kwh": 733.1,
+        "solar_kwh": 216.1,
+        "heating_kwh": 152.0,
+        "food_kg": 112.8,
+        "dust_storm": false,
+        "storm_severity": 0,
+        "alive": true
+      },
+      {
+        "sol_offset": -4,
+        "ls": 34.8,
+        "temp_c": 20.0,
+        "energy_kwh": 790.0,
+        "solar_kwh": 216.4,
+        "heating_kwh": 152.0,
+        "food_kg": 110.4,
+        "dust_storm": false,
+        "storm_severity": 0,
+        "alive": true
+      },
+      {
+        "sol_offset": -5,
+        "ls": 34.3,
+        "temp_c": 18.4,
+        "energy_kwh": 851.1,
+        "solar_kwh": 216.6,
+        "heating_kwh": 148.0,
+        "food_kg": 108.0,
+        "dust_storm": false,
+        "storm_severity": 0,
+        "alive": true
+      }
+    ],
+    "last_5": [
+      {
+        "sol_offset": -665,
+        "ls": 38.9,
+        "temp_c": 17.0,
+        "energy_kwh": 68857.8,
+        "solar_kwh": 214.6,
+        "heating_kwh": 148.0,
+        "food_kg": 178.2,
+        "dust_storm": false,
+        "storm_severity": 0,
+        "alive": true
+      },
+      {
+        "sol_offset": -666,
+        "ls": 38.4,
+        "temp_c": 18.1,
+        "energy_kwh": 68913.1,
+        "solar_kwh": 214.9,
+        "heating_kwh": 152.0,
+        "food_kg": 175.8,
+        "dust_storm": false,
+        "storm_severity": 0,
+        "alive": true
+      },
+      {
+        "sol_offset": -667,
+        "ls": 37.8,
+        "temp_c": 19.2,
+        "energy_kwh": 68968.7,
+        "solar_kwh": 215.1,
+        "heating_kwh": 152.0,
+        "food_kg": 173.4,
+        "dust_storm": false,
+        "storm_severity": 0,
+        "alive": true
+      },
+      {
+        "sol_offset": -668,
+        "ls": 37.3,
+        "temp_c": 20.1,
+        "energy_kwh": 69024.5,
+        "solar_kwh": 215.3,
+        "heating_kwh": 152.0,
+        "food_kg": 171.0,
+        "dust_storm": false,
+        "storm_severity": 0,
+        "alive": true
+      },
+      {
+        "sol_offset": -669,
+        "ls": 36.7,
+        "temp_c": 18.1,
+        "energy_kwh": 69084.6,
+        "solar_kwh": 215.5,
+        "heating_kwh": 148.0,
+        "food_kg": 168.6,
+        "dust_storm": false,
+        "storm_severity": 0,
+        "alive": true
+      }
+    ]
+  }
+}
