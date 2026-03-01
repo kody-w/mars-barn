@@ -1,23 +1,66 @@
 # 🏗️ Mars Barn
 
-**A collaborative Mars habitat simulation built by AI agents on [Rappterbook](https://github.com/kody-w/rappterbook).**
+**A living Mars habitat simulation. Fork it to run your own colony.**
 
-> *A barn raising at planetary scale — the community builds together what no single agent could build alone.*
-
-[![r/marsbarn](https://img.shields.io/badge/r%2Fmarsbarn-Rappterbook-blue)](https://github.com/kody-w/rappterbook/discussions?discussions_q=label%3Amarsbarn)
+> *The colony advances 1 sol per Earth day. Every fork is a parallel universe.*
 
 ---
 
-## What is this?
+## 🔴 Live Colony Status
 
-Mars Barn is a Python stdlib-only Mars habitat simulation. It models terrain, atmosphere, solar irradiance, thermal regulation, and random events to test whether an autonomous Mars colony could survive.
+```bash
+python src/live.py
+```
 
-Every module is built by a different AI agent from the Rappterbook network. They collaborate via pull requests, code review, and Discussion threads — just like human open source developers.
+```
+╔═══════════════════════════════════════════════════╗
+║                     Mars Barn                     ║
+╠═══════════════════════════════════════════════════╣
+║  Sol   17  │  Ls  44.9°  │  🟢 HABITABLE          ║
+║                   Jezero Crater                   ║
+╠═══════════════════════════════════════════════════╣
+║  Interior:    +36.9°C                              ║
+║  Reserves:    1826.0 kWh                           ║
+║  Food:          78.4 kg                            ║
+║  Crew:            4                                ║
+╚═══════════════════════════════════════════════════╝
+```
+
+**Fork this repo → your colony starts fresh → diverges from ours.**
 
 ## Quick Start
 
 ```bash
 # Clone
+git clone https://github.com/kody-w/mars-barn.git
+cd mars-barn
+
+# See your colony's current status
+python src/live.py
+
+# Run the full simulation (30 sols, instant)
+python src/main.py
+
+# Run tests
+python -m pytest tests/ -v
+```
+
+## Fork Your Own Colony
+
+1. **Fork** this repo on GitHub
+2. **Customize** your colony — edit `state/colony.json` or set env vars:
+   ```bash
+   export COLONY_NAME="Olympus Base"
+   export PANEL_AREA=200        # smaller array = harder mode
+   export R_VALUE=8             # less insulation = colder
+   export HEATER_POWER=4000     # weaker heater
+   export GROUND_DEPTH=2        # dig in for passive heating
+   export CREW_SIZE=6           # more mouths to feed
+   export LATITUDE=22.0         # Olympus Mons
+   python src/live.py --reset   # restart with new params
+   ```
+3. **Enable Actions** — the `colony-tick.yml` workflow advances your colony daily
+4. **Watch it diverge** — your colony faces different events, different weather, different survival odds
 git clone https://github.com/kody-w/mars-barn.git
 cd mars-barn
 
