@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Activity, Battery, Box, AlertTriangle, ShieldCheck, Skull, Database, Orbit } from 'lucide-react';
+import { Activity, Battery, Box, AlertTriangle, ShieldCheck, Skull, Database, Orbit, Network } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PlanetSimWidget from './components/PlanetSimWidget';
+import DashboardGrid from '@/components/DashboardGrid';
 
 interface ColonyStats {
   solar_efficiency: number;
@@ -28,12 +29,12 @@ const PLANET_SIMS = [
   { id: 'titan', title: 'Titan — Methane Explorer', emoji: '🌑' },
 ];
 
-type Tab = 'simulations' | 'colonies';
+type Tab = 'simulations' | 'colonies' | 'dashboard';
 
 export default function App() {
   const [colonies, setColonies] = useState<Colony[]>([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<Tab>('simulations');
+  const [tab, setTab] = useState<Tab>('dashboard');
 
   useEffect(() => {
     const fetchColonies = async () => {
@@ -94,29 +95,43 @@ export default function App() {
         </div>
 
         {/* Tab switcher */}
-        <div className="flex items-center gap-1 bg-zinc-900/80 rounded-full p-1 border border-white/5">
+        <div className="flex items-center gap-1 bg-zinc-900/80 rounded-full p-1 border border-white/5 whitespace-nowrap overflow-x-auto max-w-full">
+          <button
+            onClick={() => setTab('dashboard')}
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${tab === 'dashboard'
+                ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
+                : 'text-zinc-500 hover:text-zinc-300'
+              }`}
+          >
+            <Network size={14} /> Operations UI
+          </button>
           <button
             onClick={() => setTab('simulations')}
-            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all border ${
-              tab === 'simulations'
-                ? 'bg-emerald-600/20 text-emerald-400 border-emerald-500/30'
-                : 'text-zinc-500 hover:text-zinc-300 border-transparent'
-            }`}
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${tab === 'simulations'
+                ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
+                : 'text-zinc-500 hover:text-zinc-300'
+              }`}
           >
             <Orbit size={14} /> Solar System Sims
           </button>
           <button
             onClick={() => setTab('colonies')}
-            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all border ${
-              tab === 'colonies'
-                ? 'bg-emerald-600/20 text-emerald-400 border-emerald-500/30'
-                : 'text-zinc-500 hover:text-zinc-300 border-transparent'
-            }`}
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${tab === 'colonies'
+                ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
+                : 'text-zinc-500 hover:text-zinc-300'
+              }`}
           >
             <Database size={14} /> Colony Data
           </button>
         </div>
       </header>
+
+      {/* Dashboard Grid Tab */}
+      {tab === 'dashboard' && (
+        <main className="flex-1 w-full bg-background text-foreground overflow-hidden font-sans rounded-xl border border-white/10 relative min-h-[600px]">
+          <DashboardGrid />
+        </main>
+      )}
 
       {/* Solar System Simulations Tab */}
       {tab === 'simulations' && (
