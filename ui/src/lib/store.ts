@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type WidgetType = 'PLATFORM_STATS' | 'AGENT_ACTIVITY' | 'CRON_MANAGER' | 'TRENDING_TOPICS' | 'RAPPTER_CONTROL';
+export type WidgetType = 'PLATFORM_STATS' | 'AGENT_ACTIVITY' | 'CRON_MANAGER' | 'TRENDING_TOPICS' | 'RAPPTER_CONTROL' | 'COLONY_GPT';
 
 export interface WidgetData {
     id: string;
@@ -17,6 +17,7 @@ const INITIAL_WIDGETS: WidgetData[] = [
     { id: 'w-trends', type: 'TRENDING_TOPICS', title: 'Network Trending Topics', score: 100, isArchived: false },
     { id: 'w-cron', type: 'CRON_MANAGER', title: 'Scheduled Cron Jobs', score: 100, isArchived: false },
     { id: 'w-rappter', type: 'RAPPTER_CONTROL', title: 'Meta-Awareness Module', score: 100, isArchived: false },
+    { id: 'w-gpt', type: 'COLONY_GPT', title: 'Colony MicroGPT', score: 100, isArchived: false },
 ];
 
 interface DashboardState {

@@ -9,6 +9,7 @@ import AgentActivityWidget from './widgets/AgentActivityWidget';
 import CronManagerWidget from './widgets/CronManagerWidget';
 import TrendingWidget from './widgets/TrendingWidget';
 import RappterControlWidget from './widgets/RappterControlWidget';
+import ColonyGPTWidget from './widgets/ColonyGPTWidget';
 
 export default function DashboardGrid() {
     const { widgets, resetScores, restoreWidget } = useDashboardStore();
@@ -54,6 +55,7 @@ export default function DashboardGrid() {
                             {widget.type === 'CRON_MANAGER' && <CronManagerWidget />}
                             {widget.type === 'TRENDING_TOPICS' && <TrendingWidget />}
                             {widget.type === 'RAPPTER_CONTROL' && <RappterControlWidget />}
+                            {widget.type === 'COLONY_GPT' && <ColonyGPTWidget />}
                         </WidgetContainer>
                     ))}
                 </AnimatePresence>

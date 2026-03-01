@@ -49,12 +49,27 @@
     "meteorites": 0,
     "min_temp_k": 293.0,
     "max_temp_k": 310,
-    "harvests": 0
+    "harvests": 0,
+    "crew_illnesses": 0,
+    "evas_completed": 0,
+    "discoveries": 0
   },
   "_meta": {
     "version": 2,
     "created": "2026-03-01T13:21:55Z",
     "updated": "2026-03-01T13:48:06Z",
     "engine": "mars-barn-live-v2"
+  },
+  "crew": {
+    "morale": 0.8,
+    "health": 1.0,
+    "evas": 0,
+    "discoveries": 0
+  },
+  "greenhouse": {
+    "planted_area_m2": 30,
+    "growth_stage": 0,
+    "co2_ppm": 400,
+    "water_daily_l": 7
   }
 }

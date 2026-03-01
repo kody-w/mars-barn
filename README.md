@@ -16,13 +16,21 @@ python src/live.py
 ╔═══════════════════════════════════════════════════╗
 ║                     Mars Barn                     ║
 ╠═══════════════════════════════════════════════════╣
-║  Sol   17  │  Ls  44.9°  │  🟢 HABITABLE          ║
+║  Sol    1  │  Ls  37.0°  │  🟢 HABITABLE          ║
 ║                   Jezero Crater                   ║
 ╠═══════════════════════════════════════════════════╣
 ║  Interior:    +36.9°C                              ║
-║  Reserves:    1826.0 kWh                           ║
-║  Food:          78.4 kg                            ║
-║  Crew:            4                                ║
+║  Power:           215 kWh generated (total)       ║
+║  Reserves:      578.7 kWh                         ║
+║  Panels:       99.8%  efficiency                  ║
+║  Food:          117.6 kg  (0.0 kg harvested)    ║
+║  Greenhouse:    4.0%  growth                       ║
+║  Crew:          4  😊 morale 82%  ❤ 100%          ║
+╠═══════════════════════════════════════════════════╣
+║  Dust devils: 1    │ Storms: 0   │ Hits: 0    ║
+║  EVAs: 0   │ Discoveries: 0   │ 🤒 0          ║
+║  Temp range:  +20°C to +37°C                   ║
+║  Survived:    1 sols                             ║
 ╚═══════════════════════════════════════════════════╝
 ```
 
@@ -59,7 +67,7 @@ python -m pytest tests/ -v
    export LATITUDE=22.0         # Olympus Mons
    python src/live.py --reset   # restart with new params
    ```
-3. **Enable Actions** — the `colony-tick.yml` workflow advances your colony daily
+3. **Enable Actions** — the `colony-tick.yml` workflow advances your colony daily and retrains the microGPT
 4. **Watch it diverge** — your colony faces different events, different weather, different survival odds
 
 ## Run Individual Modules
@@ -70,7 +78,37 @@ python src/terrain.py      # Generate terrain heightmap
 python src/atmosphere.py   # Atmospheric profile
 python src/events.py       # Event simulation (100 sols)
 python src/validate.py     # Validation suite + NASA gap report
+python src/gen_corpus.py   # Generate training corpus from sim
+python src/microgpt.py     # Train colony language model
 ```
+
+## Colony Systems
+
+| System | What it does |
+|---|---|
+| **Thermal** | Conductive + radiative heat loss, ground coupling, metabolic heat, seasonal variation |
+| **Solar** | Mars orbital mechanics, dust factor, storm attenuation |
+| **Greenhouse** | Light × water × CO₂ growth curve → harvest cycles |
+| **Crew** | Morale, health, illness, EVAs, discoveries — feedback loops |
+| **Death** | Colony dies if food = 0 for 3 sols, temp < -50°C for 3 sols, or energy depleted |
+| **MicroGPT** | Character-level GPT trained on colony narratives, retrained daily |
+
+## API
+
+```bash
+cd api && npm run dev   # start on :3001
+```
+
+| Route | Method | Description |
+|---|---|---|
+| `/api/live` | GET | Live colony state (from Python sim) |
+| `/api/colonies` | GET | All DB colonies |
+| `/api/colonies` | POST | Create a new colony |
+| `/api/colonies/:id` | GET | Single colony by ID or name |
+| `/api/colonies/:id/log` | GET | Paginated sol log |
+| `/api/tick` | POST | Run Python physics engine |
+| `/api/network` | GET | All parallel colony universes |
+| `/api/health` | GET | Health check |
 
 ## Latest Results
 
@@ -91,11 +129,14 @@ Config:   400m² solar, 8kW heater, R-12 insulation
 
 ```
 src/
+├── live.py          → Persistent colony sim (1 sol/day, auto-catchup)
 ├── terrain.py       → Mars terrain heightmap generator (craters, ridges, plains)
 ├── atmosphere.py    → Atmospheric model (pressure, temp, CO2 density)
 ├── solar.py         → Solar irradiance calculator
 ├── thermal.py       → Habitat thermal regulation
 ├── events.py        → Random event system (dust storms, meteorites, failures)
+├── gen_corpus.py    → Training data generator from colony logs
+├── microgpt.py      → Pure-Python GPT trained on colony narratives
 ├── state_serial.py  → Simulation state save/load/diff
 ├── viz.py           → ASCII visualization
 ├── validate.py      → Cross-check against real Mars data + NASA habitat benchmarks
