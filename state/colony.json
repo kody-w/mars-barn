@@ -9,8 +9,8 @@
     "name": "Jezero Crater"
   },
   "habitat": {
-    "interior_temp_k": 219.1,
-    "stored_energy_kwh": 578.7,
+    "interior_temp_k": 290.9,
+    "stored_energy_kwh": 559.9,
     "solar_panel_area_m2": 400.0,
     "panel_efficiency": 0.22,
     "panel_dust_factor": 0.998,
@@ -23,14 +23,14 @@
     "harvest_total_kg": 0.0
   },
   "crew": {
-    "morale": 0.75,
+    "morale": 0.8200000000000001,
     "health": 1.0,
     "evas": 0,
     "discoveries": 0
   },
   "greenhouse": {
     "planted_area_m2": 20.0,
-    "growth_stage": 0.015,
+    "growth_stage": 0.04,
     "co2_ppm": 400,
     "water_daily_l": 5.0
   },
@@ -39,14 +39,14 @@
     {
       "sol": 1,
       "ls": 37.0,
-      "int_c": -54.0,
-      "ext_c": -55.1,
+      "int_c": 17.8,
+      "ext_c": -58.5,
       "solar_kwh": 215.4,
-      "heat_kwh": 129.2,
-      "stored_kwh": 579.0,
+      "heat_kwh": 148.0,
+      "stored_kwh": 560.0,
       "dust": 0.998,
       "food_kg": 117.6,
-      "morale": 0.75,
+      "morale": 0.82,
       "health": 1.0,
       "events": [],
       "storm": false
@@ -55,11 +55,11 @@
   "stats": {
     "sols_survived": 1,
     "total_power_kwh": 215.4,
-    "total_heating_kwh": 129.2,
+    "total_heating_kwh": 148.0,
     "dust_devils": 0,
     "storms_survived": 0,
     "meteorites": 0,
-    "min_temp_k": 219.1,
+    "min_temp_k": 290.9,
     "max_temp_k": 293.0,
     "harvests": 0,
     "crew_illnesses": 0,
@@ -68,8 +68,10 @@
   },
   "_meta": {
     "version": 2,
-    "created": "2026-03-01T21:08:26Z",
-    "updated": "2026-03-01T21:08:26Z",
+    "created": "2026-03-01T23:20:13Z",
+    "updated": "2026-03-01T23:20:13Z",
     "engine": "mars-barn-live-v2"
-  }
+  },
+  "_critical_sols": 0,
+  "_starving_sols": 0
 }

@@ -169,61 +169,36 @@ def tick_sol(colony: dict, sol: int) -> dict:
     peak_irr = 590 * dist * (1 - storm_sev * 0.7 if storm_active else 1)
     solar_kwh = round(peak_irr * 0.4 * 12 * hab["solar_panel_area_m2"] * hab["panel_efficiency"] * hab["panel_dust_factor"] / 1000, 1)
 
-    # === THERMAL ===
-    seasonal = 15 * math.sin(math.radians(ls - 250))
-    lat_effect = 40 * (1 - math.cos(math.radians(lat)))
-    base_temp = 210 + seasonal - lat_effect
-    diurnal_swing = 42
-    avg_exterior = base_temp
-
-    surface_area = hab["solar_panel_area_m2"]  # rough proxy
-
-    # Ground coupling: blend exterior toward stable 210K subsurface
-    ground_depth = hab.get("ground_coupling_depth_m", 0)
-    ground_coupling_w = 0.0
-    if ground_depth > 0:
-        ground_temp = 210  # stable subsurface
-        blend = min(1.0, ground_depth / 3.0)
-        avg_exterior = avg_exterior * (1 - blend * 0.3) + ground_temp * blend * 0.3
-    # Default ground coupling (thermal contact with regolith)
-    floor_area = surface_area / 4
-    ground_coupling_w = floor_area * 0.5 * (210 - hab["interior_temp_k"])
-
-    delta_t = hab["interior_temp_k"] - avg_exterior
-    r_val = hab["insulation_r_value"]
-    cond_loss_w = surface_area * delta_t / r_val
-
-    # Radiative loss with low-e coating (ε=0.05)
-    emissivity = 0.05
-    stefan_boltzmann = 5.67e-8
-    rad_loss_w = emissivity * stefan_boltzmann * surface_area * (
-        hab["interior_temp_k"] ** 4 - avg_exterior ** 4)
-
-    # Crew metabolic heat (120W per person)
-    metabolic_w = hab["crew_size"] * 120
-
-    heating_kwh = round(min(hab["heater_power_w"] * 20 / 1000, solar_kwh * 0.6), 1)
+    # === THERMAL (uses the real thermal model for accuracy) ===
+    from thermal import simulate_sol
+    from atmosphere import temperature_at_altitude
+    avg_exterior = temperature_at_altitude(0, lat, ls, hour=12.0, dust_storm=storm_active)
+    thermal_result = simulate_sol(
+        start_temp_k=hab["interior_temp_k"],
+        latitude_deg=lat,
+        solar_longitude=ls,
+        r_value=hab["insulation_r_value"],
+        heater_power_w=hab["heater_power_w"],
+        dust_storm=storm_active,
+    )
+    hab["interior_temp_k"] = thermal_result["end_temp_k"]
+    heating_kwh = round(thermal_result["heating_kwh"], 1)
 
     net_energy = solar_kwh - heating_kwh - 7.5
     hab["stored_energy_kwh"] = round(max(0, hab["stored_energy_kwh"] + net_energy), 1)
-
-    thermal_mass = surface_area * 20 * 1005  # 20× air thermal mass
-    net_heat_w = (heating_kwh * 1000 / 24.6) - cond_loss_w - rad_loss_w + metabolic_w + ground_coupling_w
-    temp_change = (net_heat_w * 24.6 * 3600) / thermal_mass
-    hab["interior_temp_k"] = round(max(150, min(310, hab["interior_temp_k"] + temp_change)), 1)
 
     # === GREENHOUSE (light × water × CO₂ → yield) ===
     gh = colony.get("greenhouse", {"planted_area_m2": 20, "growth_stage": 0, "co2_ppm": 400, "water_daily_l": 5})
     light_factor = min(1.0, solar_kwh / 150)  # normalized to typical good sol
     water_factor = min(1.0, hab["water_reserves_l"] / (gh["water_daily_l"] * 10))
     co2_factor = min(1.0, gh["co2_ppm"] / 800)
-    growth_rate = 0.03 * light_factor * water_factor * co2_factor * gh["planted_area_m2"] / 20
+    growth_rate = 0.08 * light_factor * water_factor * co2_factor * gh["planted_area_m2"] / 20
     gh["growth_stage"] = min(1.0, gh["growth_stage"] + growth_rate)
     hab["water_reserves_l"] = round(hab["water_reserves_l"] - gh["water_daily_l"] + gh["water_daily_l"] * 0.92, 1)  # 92% recycled
 
     harvest_kg = 0.0
     if gh["growth_stage"] >= 1.0:
-        harvest_kg = round(gh["planted_area_m2"] * random.uniform(0.08, 0.15), 2)
+        harvest_kg = round(gh["planted_area_m2"] * random.uniform(0.15, 0.3), 2)
         gh["growth_stage"] = 0.0
         stats["harvests"] += 1
         events.append(f"harvest({harvest_kg:.1f}kg)")
@@ -232,16 +207,21 @@ def tick_sol(colony: dict, sol: int) -> dict:
     colony["greenhouse"] = gh
 
     # === FOOD/WATER ===
-    hab["food_reserves_kg"] = round(hab["food_reserves_kg"] - hab["crew_size"] * 0.6 + harvest_kg, 1)
+    hab["food_reserves_kg"] = round(max(0, hab["food_reserves_kg"] - hab["crew_size"] * 0.6 + harvest_kg), 1)
 
     # === CREW EVENTS & MORALE ===
     crew = colony.get("crew", {"morale": 0.8, "health": 1.0, "evas": 0, "discoveries": 0})
 
-    # Morale drift based on conditions
-    if hab["interior_temp_k"] > 288 and hab["food_reserves_kg"] > 30:
-        crew["morale"] = min(1.0, crew["morale"] + 0.01)
-    elif hab["interior_temp_k"] < 273 or hab["food_reserves_kg"] < 15:
-        crew["morale"] = max(0.0, crew["morale"] - 0.05)
+    # Morale drift — wider comfort band, gentler penalties
+    int_c = hab["interior_temp_k"] - 273.15
+    if int_c > 15 and hab["food_reserves_kg"] > 30:
+        crew["morale"] = min(1.0, crew["morale"] + 0.02)
+    elif int_c > 0 and hab["food_reserves_kg"] > 10:
+        crew["morale"] = min(1.0, crew["morale"] + 0.005)
+    elif int_c < -30 or hab["food_reserves_kg"] <= 0:
+        crew["morale"] = max(0.0, crew["morale"] - 0.04)
+    elif int_c < 0 or hab["food_reserves_kg"] < 15:
+        crew["morale"] = max(0.0, crew["morale"] - 0.01)
 
     if storm_active:
         crew["morale"] = max(0.0, crew["morale"] - 0.03)
@@ -269,6 +249,30 @@ def tick_sol(colony: dict, sol: int) -> dict:
             events.append(f"discovery:{disc}")
 
     colony["crew"] = crew
+
+    # === DEATH / EVACUATION CONDITIONS ===
+    critical_sols = colony.get("_critical_sols", 0)
+    starving_sols = colony.get("_starving_sols", 0)
+
+    if hab["interior_temp_k"] < 223:  # below -50°C
+        critical_sols += 1
+    else:
+        critical_sols = 0
+
+    if hab["food_reserves_kg"] <= 0:
+        starving_sols += 1
+    else:
+        starving_sols = 0
+
+    colony["_critical_sols"] = critical_sols
+    colony["_starving_sols"] = starving_sols
+
+    if starving_sols >= 3:
+        events.append("COLONY_DEAD:starvation")
+    elif critical_sols >= 3:
+        events.append("COLONY_DEAD:hypothermia")
+    elif hab["stored_energy_kwh"] <= 0:
+        events.append("COLONY_DEAD:power_failure")
 
     # === STATS ===
     colony["sol"] = sol
