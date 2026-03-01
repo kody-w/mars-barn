@@ -61,15 +61,10 @@ python -m pytest tests/ -v
    ```
 3. **Enable Actions** — the `colony-tick.yml` workflow advances your colony daily
 4. **Watch it diverge** — your colony faces different events, different weather, different survival odds
-git clone https://github.com/kody-w/mars-barn.git
-cd mars-barn
 
-# Run the simulation
-python src/main.py
+## Run Individual Modules
 
-# Run tests
-python -m pytest tests/ -v
-
+```bash
 # Run individual modules
 python src/terrain.py      # Generate terrain heightmap
 python src/atmosphere.py   # Atmospheric profile
@@ -173,33 +168,35 @@ The validation suite now compares Mars Barn's thermal model against three real N
 | Surface area | 200 m² | 260 m² | 200 m² | 170 m² |
 | R-value (m²·K/W) | 12.0 | 7–11 | 8–15 | 5–11 |
 | Heater power | 8 kW | 5–10 kW | 3–8 kW | 10–25 kW |
-| **Emissivity** | **0.90** | **0.03–0.20** | **0.03–0.20** | **0.03–0.20** |
-| Thermal mass (×air) | 5× | 15–30× | 100×+ | 10–20× |
-| Ground coupling | No | Slab | Ice fdn | Ground |
-| Crew metabolic heat | No | ~500 W | ~500 W | ~500 W |
+| **Emissivity** | **0.05** | **0.03–0.20** | **0.03–0.20** | **0.03–0.20** |
+| Thermal mass (×air) | 20× | 15–30× | 100×+ | 10–20× |
+| Ground coupling | Yes | Slab | Ice fdn | Ground |
+| Crew metabolic heat | Yes (~480 W) | ~500 W | ~500 W | ~500 W |
 
-### 🔥 The Smoking Gun: Emissivity
+### ✅ The Smoking Gun: Emissivity (Resolved)
 
-The **#1 reason** the interior hits -65°C is the exterior emissivity of ε=0.9 (a near-blackbody surface). Every real Mars habitat design uses **low-emissivity coatings** (aluminized mylar, ε≈0.03–0.05) to minimize radiative heat loss.
+The **#1 reason** the interior previously hit -65°C was the exterior emissivity of ε=0.9 (a near-blackbody surface). Every real Mars habitat design uses **low-emissivity coatings** (aluminized mylar, ε≈0.03–0.05) to minimize radiative heat loss. This has now been fixed.
 
 ```
-Radiative loss at ε=0.90:   55.4 kW  ← overwhelms the 8 kW heater
-Radiative loss at ε=0.05:    3.1 kW  ← heater can easily compensate
+Radiative loss at ε=0.90:   55.4 kW  ← was overwhelming the 8 kW heater
+Radiative loss at ε=0.05:    3.1 kW  ← current (low-e coating applied)
 Conductive loss at R-12:     1.4 kW
 
-With low-e coating alone, total loss drops to ~4.5 kW.
-The existing 8 kW heater WOULD maintain 20°C.
+With low-e coating, total loss drops to ~4.5 kW.
+The existing 8 kW heater now maintains 20°C.
 ```
 
 It was never a power problem — it was a **surface coating** problem.
 
-### Recommended Fixes (Priority Order)
+### Applied Fixes
 
-1. **Add low-e exterior coating** (ε=0.05) → radiative loss from 55 kW to 3.1 kW
-2. **Increase thermal mass** to 15–20× → buffer against power interruptions
-3. **Add ground-coupling model** → regolith at 210 K stabilizes temperature
-4. **Add crew metabolic heat** → 4 crew ≈ 400–600 W free heating
-5. **Increase heater to 10–15 kW** → engineering margin
+All five recommended fixes from the NASA gap analysis have been integrated:
+
+1. ✅ **Low-e exterior coating** (ε=0.05) → radiative loss from 55 kW to 3.1 kW
+2. ✅ **Thermal mass increased** to 20× → buffers against power interruptions
+3. ✅ **Ground-coupling model** → regolith at 210 K stabilizes temperature
+4. ✅ **Crew metabolic heat** → 4 crew × 120 W = 480 W free heating
+5. ⬜ **Increase heater to 10–15 kW** → engineering margin (not yet needed with fixes 1–4)
 
 ### Sources
 
