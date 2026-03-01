@@ -1,0 +1,60 @@
+{
+  "name": "Dead on Arrival",
+  "launch_date": "2026-02-28T00:00:00Z",
+  "sol": 1,
+  "solar_longitude": 37.5,
+  "location": {
+    "latitude": 80.0,
+    "longitude": 0.0,
+    "name": "North Polar Region"
+  },
+  "habitat": {
+    "interior_temp_k": 150,
+    "stored_energy_kwh": 524.8,
+    "solar_panel_area_m2": 150,
+    "panel_efficiency": 0.22,
+    "panel_dust_factor": 0.998,
+    "insulation_r_value": 5,
+    "heater_power_w": 4000,
+    "ground_coupling_depth_m": 0,
+    "crew_size": 8,
+    "water_reserves_l": 200.0,
+    "food_reserves_kg": 235.2,
+    "harvest_total_kg": 0.0
+  },
+  "active_events": [],
+  "log": [
+    {
+      "sol": 1,
+      "ls": 37.5,
+      "int_c": -123.1,
+      "ext_c": -88.1,
+      "solar_kwh": 80.7,
+      "heat_kwh": 48.4,
+      "stored_kwh": 525.0,
+      "dust": 0.998,
+      "food_kg": 235.2,
+      "events": [
+        "dust_devil"
+      ],
+      "storm": false
+    }
+  ],
+  "stats": {
+    "sols_survived": 1,
+    "total_power_kwh": 296.1,
+    "total_heating_kwh": 177.6,
+    "dust_devils": 2,
+    "storms_survived": 0,
+    "meteorites": 0,
+    "min_temp_k": 150,
+    "max_temp_k": 310,
+    "harvests": 0
+  },
+  "_meta": {
+    "version": 2,
+    "created": "2026-03-01T13:21:55Z",
+    "updated": "2026-03-01T13:48:07Z",
+    "engine": "mars-barn-live-v2"
+  }
+}

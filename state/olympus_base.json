@@ -1,0 +1,60 @@
+{
+  "name": "Olympus Base",
+  "launch_date": "2026-02-28T00:00:00Z",
+  "sol": 1,
+  "solar_longitude": 37.5,
+  "location": {
+    "latitude": 18.6,
+    "longitude": 226.2,
+    "name": "Olympus Mons foothills"
+  },
+  "habitat": {
+    "interior_temp_k": 310,
+    "stored_energy_kwh": 621.6,
+    "solar_panel_area_m2": 600,
+    "panel_efficiency": 0.22,
+    "panel_dust_factor": 0.998,
+    "insulation_r_value": 8,
+    "heater_power_w": 12000,
+    "ground_coupling_depth_m": 0,
+    "crew_size": 6,
+    "water_reserves_l": 200.0,
+    "food_reserves_kg": 176.4,
+    "harvest_total_kg": 0.0
+  },
+  "active_events": [],
+  "log": [
+    {
+      "sol": 1,
+      "ls": 37.5,
+      "int_c": 36.9,
+      "ext_c": -57.2,
+      "solar_kwh": 322.8,
+      "heat_kwh": 193.7,
+      "stored_kwh": 622.0,
+      "dust": 0.998,
+      "food_kg": 176.4,
+      "events": [
+        "dust_devil"
+      ],
+      "storm": false
+    }
+  ],
+  "stats": {
+    "sols_survived": 1,
+    "total_power_kwh": 538.2,
+    "total_heating_kwh": 322.9,
+    "dust_devils": 2,
+    "storms_survived": 0,
+    "meteorites": 0,
+    "min_temp_k": 293.0,
+    "max_temp_k": 310,
+    "harvests": 0
+  },
+  "_meta": {
+    "version": 2,
+    "created": "2026-03-01T13:21:55Z",
+    "updated": "2026-03-01T13:48:06Z",
+    "engine": "mars-barn-live-v2"
+  }
+}
