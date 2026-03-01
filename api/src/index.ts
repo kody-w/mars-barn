@@ -1,13 +1,17 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaClient } from '@prisma/client';
 import * as fs from 'fs';
 import * as path from 'path';
 import { execSync } from 'child_process';
 
-const prisma = new PrismaClient();
-const app = express();
 const ROOT = path.resolve(__dirname, '..', '..');
+const dbPath = process.env.DATABASE_URL?.replace('file:', '') || path.join(__dirname, '..', 'dev.db');
+const adapter = new PrismaBetterSqlite3({ url: dbPath });
+const prisma = new PrismaClient({ adapter } as any);
+const app = express();
 const COLONY_JSON = path.join(ROOT, 'state', 'colony.json');
 
 app.use(cors());
@@ -197,7 +201,11 @@ app.get('/api/network', (_req, res) => {
     }
 });
 
+export { app, prisma };
+
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-    console.log(`Mars Barn Engine running on port ${PORT}`);
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Mars Barn Engine running on port ${PORT}`);
+    });
+}

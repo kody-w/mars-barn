@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 
+// Prefer local API; fall back to GitHub raw for static deploys
+const API_LIVE_URL = '/api/live';
 const GITHUB_RAW_URL =
   'https://raw.githubusercontent.com/kody-w/mars-barn/main/state/colony.json';
 
@@ -16,6 +18,20 @@ export interface ColonyHabitat {
   water_reserves_l: number;
   food_reserves_kg: number;
   harvest_total_kg: number;
+}
+
+export interface CrewState {
+  morale: number;
+  health: number;
+  evas: number;
+  discoveries: number;
+}
+
+export interface GreenhouseState {
+  planted_area_m2: number;
+  growth_stage: number;
+  co2_ppm: number;
+  water_daily_l: number;
 }
 
 export interface ColonyEvent {
@@ -35,6 +51,8 @@ export interface LogEntry {
   stored_kwh: number;
   dust: number;
   food_kg: number;
+  morale?: number;
+  health?: number;
   events: string[];
   storm: boolean;
 }
@@ -50,6 +68,8 @@ export interface ColonyState {
     name: string;
   };
   habitat: ColonyHabitat;
+  crew?: CrewState;
+  greenhouse?: GreenhouseState;
   active_events: ColonyEvent[];
   log: LogEntry[];
   stats: {
@@ -62,6 +82,9 @@ export interface ColonyState {
     min_temp_k: number;
     max_temp_k: number;
     harvests: number;
+    crew_illnesses?: number;
+    evas_completed?: number;
+    discoveries?: number;
   };
   _meta: {
     version: number;
@@ -102,7 +125,11 @@ export const useColonyStore = create<ColonyStore>((set, get) => ({
   fetchColony: async () => {
     set({ loading: true, error: null });
     try {
-      const res = await fetch(GITHUB_RAW_URL + `?t=${Date.now()}`);
+      // Try local API first, fall back to GitHub raw
+      let res = await fetch(API_LIVE_URL + `?t=${Date.now()}`);
+      if (!res.ok) {
+        res = await fetch(GITHUB_RAW_URL + `?t=${Date.now()}`);
+      }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data: ColonyState = await res.json();
       set({
