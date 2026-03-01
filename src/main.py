@@ -148,7 +148,6 @@ def run_simulation(
     if verbose:
         print()
         print(render_dashboard(state))
-        print()
 
     # Run validation
     atm_profile = atmosphere_profile(50000, 10)
@@ -160,10 +159,13 @@ def run_simulation(
     )
 
     if verbose:
-        print(f"\n  Validation: {validation['passed']}/{validation['total']} checks passed")
-        for r in validation["results"]:
-            if not r["passed"]:
-                print(f"    ❌ {r['check']}: {r['detail']}")
+        if validation["passed"] == validation["total"]:
+            print(f"  Validation:      {validation['passed']}/{validation['total']} ✓ all checks passed")
+        else:
+            print(f"  Validation:      {validation['passed']}/{validation['total']} checks passed")
+            for r in validation["results"]:
+                if not r["passed"]:
+                    print(f"    ❌ {r['check']}: {r['detail']}")
 
     return {
         "state": state,
@@ -201,10 +203,10 @@ if __name__ == "__main__":
     s = result["summary"]
     print(f"\n{'='*50}")
     print(f"  SIMULATION COMPLETE — {s['sols_survived']} sols survived")
-    print(f"  Power generated: {s['total_power_kwh']:.0f} kWh")
-    print(f"  Heating used:    {s['total_heating_kwh']:.0f} kWh")
-    print(f"  Final temp:      {s['final_temp_c']:+.1f}°C")
-    print(f"  Energy reserves: {s['stored_energy_kwh']:.0f} kWh")
-    print(f"  Events survived: {s['events_survived']}")
-    print(f"  Validation:      {s['validation_passed']}/{s['validation_total']} ✓")
+    print(f"  Power generated:    {s['total_power_kwh']:>6.0f} kWh")
+    print(f"  Heating used:       {s['total_heating_kwh']:>6.0f} kWh")
+    print(f"  Final temp:         {s['final_temp_c']:>+6.1f} °C")
+    print(f"  Energy reserves:    {s['stored_energy_kwh']:>6.0f} kWh")
+    print(f"  Events survived:    {s['events_survived']:>6d}")
+    print(f"  Validation:         {s['validation_passed']}/{s['validation_total']} ✓")
     print(f"{'='*50}")

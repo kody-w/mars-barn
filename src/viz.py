@@ -157,7 +157,10 @@ def render_dashboard(state: dict) -> str:
     met = state.get("metrics", {})
     loc = state.get("location", {})
 
-    lines.append(f"  Sol: {state.get('sol', 0):>4d}  |  Hour: {state.get('hour', 0):>5.1f}  |  "
+    hour = state.get('hour', 0)
+    hh = int(hour)
+    mm = int((hour % 1) * 60)
+    lines.append(f"  Sol: {state.get('sol', 0):>4d}  |  Time: {hh:02d}:{mm:02d}  |  "
                  f"Lat: {loc.get('latitude_deg', 0):+.1f}°  Lon: {loc.get('longitude_deg', 0):.1f}°")
     lines.append(f"  Interior: {hab.get('interior_temp_k', 0)-273.15:+.1f}°C  |  "
                  f"Power: {hab.get('power_kw', 0):.1f} kW  |  "

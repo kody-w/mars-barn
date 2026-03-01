@@ -99,8 +99,8 @@ export default function App() {
           <button
             onClick={() => setTab('dashboard')}
             className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${tab === 'dashboard'
-                ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
-                : 'text-zinc-500 hover:text-zinc-300'
+              ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
+              : 'text-zinc-500 hover:text-zinc-300'
               }`}
           >
             <Network size={14} /> Operations UI
@@ -108,8 +108,8 @@ export default function App() {
           <button
             onClick={() => setTab('simulations')}
             className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${tab === 'simulations'
-                ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
-                : 'text-zinc-500 hover:text-zinc-300'
+              ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
+              : 'text-zinc-500 hover:text-zinc-300'
               }`}
           >
             <Orbit size={14} /> Solar System Sims
@@ -117,8 +117,8 @@ export default function App() {
           <button
             onClick={() => setTab('colonies')}
             className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${tab === 'colonies'
-                ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
-                : 'text-zinc-500 hover:text-zinc-300'
+              ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
+              : 'text-zinc-500 hover:text-zinc-300'
               }`}
           >
             <Database size={14} /> Colony Data
@@ -128,7 +128,7 @@ export default function App() {
 
       {/* Dashboard Grid Tab */}
       {tab === 'dashboard' && (
-        <main className="flex-1 w-full bg-background text-foreground overflow-hidden font-sans rounded-xl border border-white/10 relative min-h-[600px]">
+        <main className="flex-1 w-full bg-background text-foreground overflow-hidden font-sans rounded-[2rem] border border-white/10 relative min-h-[600px] shadow-2xl">
           <DashboardGrid />
         </main>
       )}
@@ -185,7 +185,7 @@ export default function App() {
                   key={colony.id}
                   initial={{ opacity: 0, scale: 0.95, y: 10 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
-                  className={`p-5 rounded-2xl border backdrop-blur-xl transition-all duration-500 flex flex-col ${getStatusStyles(colony.status)}`}
+                  className={`p-6 rounded-[2rem] border backdrop-blur-3xl shadow-2xl transition-all duration-500 flex flex-col ${getStatusStyles(colony.status)}`}
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
@@ -198,7 +198,7 @@ export default function App() {
                   </div>
 
                   <div className="grid grid-cols-2 gap-3 mb-6">
-                    <div className="bg-black/20 rounded-lg p-3 border border-white/5">
+                    <div className="bg-black/20 rounded-2xl p-4 border border-white/5 shadow-inner">
                       <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-1 flex items-center gap-1.5">
                         <Box size={10} /> Consumables
                       </div>
@@ -206,7 +206,7 @@ export default function App() {
                         {colony.stats.supply_reserves_tons.toFixed(1)}<span className="text-xs text-zinc-600">t</span>
                       </div>
                     </div>
-                    <div className="bg-black/20 rounded-lg p-3 border border-white/5">
+                    <div className="bg-black/20 rounded-2xl p-4 border border-white/5 shadow-inner">
                       <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-1 flex items-center gap-1.5">
                         <Activity size={10} /> Solar Multiplier
                       </div>
@@ -233,7 +233,7 @@ export default function App() {
                     </div>
                   </div>
 
-                  <div className="bg-black/30 border-l-2 border-current p-3 text-xs leading-relaxed italic text-zinc-400 mt-2 font-mono">
+                  <div className="bg-black/20 rounded-2xl p-4 text-xs leading-relaxed italic text-zinc-400 mt-2 font-mono shadow-inner">
                     &gt; {colony.last_event}
                   </div>
                 </motion.div>

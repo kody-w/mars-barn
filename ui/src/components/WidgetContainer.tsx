@@ -62,10 +62,10 @@ export default function WidgetContainer({ widget, children }: Props) {
             onMouseEnter={handleHover}
             onClick={handleClick}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className={`widget-panel flex flex-col relative group ${sizeClass} ${borderClass}`}
+            className={`widget-panel flex flex-col relative group rounded-[2rem] overflow-hidden backdrop-blur-2xl bg-white/5 border border-white/5 shadow-2xl transition-all ${sizeClass} ${borderClass}`}
         >
             {/* Header */}
-            <div className="flex items-center gap-2 p-4 border-b border-white/5 bg-white/5 rounded-t-2xl">
+            <div className="flex items-center gap-2 p-5 border-b border-white/5 bg-white/5">
                 <div className="text-slate-400">
                     {getIcon(widget.type)}
                 </div>
@@ -86,7 +86,7 @@ export default function WidgetContainer({ widget, children }: Props) {
             </div>
 
             {/* Content Body */}
-            <div className="flex-1 p-4 overflow-hidden relative">
+            <div className="flex-1 p-5 overflow-hidden relative">
                 {children}
             </div>
         </motion.div>

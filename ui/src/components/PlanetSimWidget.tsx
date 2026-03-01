@@ -46,7 +46,7 @@ export default function PlanetSimWidget({ planetId, title, emoji, index = 0 }: P
       initial={{ opacity: 0, scale: 0.95, y: 10 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       transition={{ delay: index * 0.07, duration: 0.4 }}
-      className={`p-5 rounded-2xl border backdrop-blur-xl transition-all duration-500 flex flex-col ${STATUS_COLORS[t.status]}`}
+      className={`p-6 rounded-[2rem] border backdrop-blur-3xl shadow-2xl transition-all duration-500 flex flex-col ${STATUS_COLORS[t.status]}`}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
@@ -90,7 +90,7 @@ export default function PlanetSimWidget({ planetId, title, emoji, index = 0 }: P
       </div>
 
       {/* Event ticker */}
-      <div className={`bg-black/30 border-l-2 ${STATUS_ACCENT[t.status]} p-3 text-xs leading-relaxed italic text-zinc-400 font-mono mt-auto`}>
+      <div className="bg-black/20 rounded-2xl p-4 text-xs leading-relaxed italic text-zinc-400 font-mono mt-auto shadow-inner">
         <motion.span
           key={t.lastEvent}
           initial={{ opacity: 0, y: 4 }}

@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Colony {
+  id              String   @id @default(uuid())
+  name            String
+  status          String   @default("ALIVE") // ALIVE, DEAD, DIGITAL_TWIN
+  launchDate      DateTime @default(now())
+  sol             Int      @default(0)
+  solarLongitude  Float    @default(0.0)
+  
+  // Location
+  latitude        Float    @default(-4.5)
+  longitude       Float    @default(137.4)
+  locationName    String   @default("Jezero Crater")
+
+  // Habitat Parameters
+  panelAreaM2     Float    @default(400)
+  insulationR     Float    @default(12)
+  heaterPowerW    Float    @default(8000)
+  groundDepthM    Float    @default(0)
+  crewSize        Int      @default(4)
+
+  // Current State
+  interiorTempK   Float    @default(293.0)
+  storedEnergyKwh Float    @default(500.0)
+  panelDustFactor Float    @default(1.0)
+  waterReservesL  Float    @default(200.0)
+  foodReservesKg  Float    @default(120.0)
+  harvestTotalKg  Float    @default(0.0)
+
+  // Stats over time
+  solsSurvived    Int      @default(0)
+  totalPowerKwh   Float    @default(0.0)
+  totalHeatingKwh Float    @default(0.0)
+  dustDevils      Int      @default(0)
+  stormsSurvived  Int      @default(0)
+  meteorites      Int      @default(0)
+  minTempK        Float    @default(293.0)
+  maxTempK        Float    @default(293.0)
+  harvests        Int      @default(0)
+
+  // Relations
+  events          Event[]
+  logs            Log[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  colonyId    String
+  colony      Colony   @relation(fields: [colonyId], references: [id], onDelete: Cascade)
+  type        String
+  severity    Float    @default(0.0)
+  startSol    Int
+  endSol      Int
+  description String
+}
+
+model Log {
+  id          String   @id @default(uuid())
+  colonyId    String
+  colony      Colony   @relation(fields: [colonyId], references: [id], onDelete: Cascade)
+  sol         Int
+  ls          Float
+  intC        Float
+  extC        Float
+  solarKwh    Float
+  heatKwh     Float
+  storedKwh   Float
+  dust        Float
+  foodKg      Float
+  events      String // comma-separated or JSON
+  storm       Boolean  @default(false)
+}
