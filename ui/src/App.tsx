@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Activity, Battery, Box, AlertTriangle, ShieldCheck, Skull, Database } from 'lucide-react';
+import { Activity, Battery, Box, AlertTriangle, ShieldCheck, Skull, Database, Orbit } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import PlanetSimWidget from './components/PlanetSimWidget';
 
 interface ColonyStats {
   solar_efficiency: number;
@@ -16,9 +17,23 @@ interface Colony {
   stats: ColonyStats;
 }
 
+const PLANET_SIMS = [
+  { id: 'moon', title: 'Moon — Artemis Base', emoji: '🌕' },
+  { id: 'mars', title: 'Mars — Olympus Colony', emoji: '🔴' },
+  { id: 'venus', title: 'Venus — Cloud Station', emoji: '♀️' },
+  { id: 'mercury', title: 'Mercury — Solar Forge', emoji: '☿️' },
+  { id: 'jupiter', title: 'Jupiter — Deep Probe', emoji: '🟠' },
+  { id: 'saturn', title: 'Saturn — Ring Lab', emoji: '🪐' },
+  { id: 'europa', title: 'Europa — Ice Drill', emoji: '🧊' },
+  { id: 'titan', title: 'Titan — Methane Explorer', emoji: '🌑' },
+];
+
+type Tab = 'simulations' | 'colonies';
+
 export default function App() {
   const [colonies, setColonies] = useState<Colony[]>([]);
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState<Tab>('simulations');
 
   useEffect(() => {
     const fetchColonies = async () => {
@@ -65,9 +80,9 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen p-8 lg:p-12 xl:max-w-7xl mx-auto flex flex-col">
+    <div className="min-h-screen p-8 lg:p-12 xl:max-w-7xl mx-auto flex flex-col overflow-y-auto">
 
-      <header className="mb-10 flex items-center justify-between">
+      <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
             <Database className="text-emerald-500" />
@@ -77,90 +92,128 @@ export default function App() {
             Live connection established to autonomous orbital database.
           </p>
         </div>
-        {loading && (
-          <div className="flex items-center gap-2 text-sm text-zinc-500 font-mono animate-pulse">
-            <div className="h-2 w-2 rounded-full bg-emerald-500" />
-            SYNCING...
-          </div>
-        )}
+
+        {/* Tab switcher */}
+        <div className="flex items-center gap-1 bg-zinc-900/80 rounded-full p-1 border border-white/5">
+          <button
+            onClick={() => setTab('simulations')}
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+              tab === 'simulations'
+                ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
+                : 'text-zinc-500 hover:text-zinc-300'
+            }`}
+          >
+            <Orbit size={14} /> Solar System Sims
+          </button>
+          <button
+            onClick={() => setTab('colonies')}
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+              tab === 'colonies'
+                ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
+                : 'text-zinc-500 hover:text-zinc-300'
+            }`}
+          >
+            <Database size={14} /> Colony Data
+          </button>
+        </div>
       </header>
 
-      <main className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-min">
-        {!loading && colonies.length === 0 && (
-          <div className="col-span-full h-40 flex items-center justify-center text-zinc-600 font-mono text-sm border border-zinc-800 border-dashed rounded-xl">
-            NO SIMULATION SECTORS FOUND IN DATABASE.
-          </div>
-        )}
+      {/* Solar System Simulations Tab */}
+      {tab === 'simulations' && (
+        <main className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-min pb-8">
+          {PLANET_SIMS.map((planet) => (
+            <PlanetSimWidget
+              key={planet.id}
+              planetId={planet.id}
+              title={planet.title}
+              emoji={planet.emoji}
+            />
+          ))}
+        </main>
+      )}
 
-        <AnimatePresence>
-          {colonies.map((colony) => {
-            const battPct = Math.min(100, Math.max(0, (colony.stats.battery_reserves_kwh / 5000) * 100)); // normalized against 5000 max
+      {/* Colony Telemetry Tab */}
+      {tab === 'colonies' && (
+        <main className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-min pb-8">
+          {loading && (
+            <div className="col-span-full flex items-center gap-2 text-sm text-zinc-500 font-mono animate-pulse justify-center h-40">
+              <div className="h-2 w-2 rounded-full bg-emerald-500" />
+              SYNCING...
+            </div>
+          )}
 
-            return (
-              <motion.div
-                key={colony.id}
-                initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                className={`p-5 rounded-2xl border backdrop-blur-xl transition-all duration-500 flex flex-col ${getStatusStyles(colony.status)}`}
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <StatusIcon status={colony.status} />
-                    <span className="font-bold tracking-wide text-lg text-white/90 drop-shadow-md">{colony.id}</span>
-                  </div>
-                  <span className="text-xs font-mono px-3 py-1 rounded-full bg-black/40 border border-white/5">
-                    Sol {colony.age_sols}
-                  </span>
-                </div>
+          {!loading && colonies.length === 0 && (
+            <div className="col-span-full h-40 flex items-center justify-center text-zinc-600 font-mono text-sm border border-zinc-800 border-dashed rounded-xl">
+              NO SIMULATION SECTORS FOUND IN DATABASE.
+            </div>
+          )}
 
-                {/* Main Stats Grid */}
-                <div className="grid grid-cols-2 gap-3 mb-6">
-                  <div className="bg-black/20 rounded-lg p-3 border border-white/5">
-                    <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-1 flex items-center gap-1.5">
-                      <Box size={10} /> Consumables
-                    </div>
-                    <div className="text-lg font-mono text-zinc-300">
-                      {colony.stats.supply_reserves_tons.toFixed(1)}<span className="text-xs text-zinc-600">t</span>
-                    </div>
-                  </div>
-                  <div className="bg-black/20 rounded-lg p-3 border border-white/5">
-                    <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-1 flex items-center gap-1.5">
-                      <Activity size={10} /> Solar Multiplier
-                    </div>
-                    <div className="text-lg font-mono text-zinc-300">
-                      {(colony.stats.solar_efficiency * 100).toFixed(0)}<span className="text-xs text-zinc-600">%</span>
-                    </div>
-                  </div>
-                </div>
+          <AnimatePresence>
+            {colonies.map((colony) => {
+              const battPct = Math.min(100, Math.max(0, (colony.stats.battery_reserves_kwh / 5000) * 100));
 
-                {/* Battery Progress */}
-                <div className="mb-4 mt-auto">
-                  <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-xs uppercase font-bold tracking-wider flex items-center gap-1.5 opacity-80">
-                      <Battery size={12} /> Net Power Buffer
+              return (
+                <motion.div
+                  key={colony.id}
+                  initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  className={`p-5 rounded-2xl border backdrop-blur-xl transition-all duration-500 flex flex-col ${getStatusStyles(colony.status)}`}
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <StatusIcon status={colony.status} />
+                      <span className="font-bold tracking-wide text-lg text-white/90 drop-shadow-md">{colony.id}</span>
+                    </div>
+                    <span className="text-xs font-mono px-3 py-1 rounded-full bg-black/40 border border-white/5">
+                      Sol {colony.age_sols}
                     </span>
-                    <span className="text-xs font-mono opacity-80 font-bold">{colony.stats.battery_reserves_kwh.toFixed(1)} kWh</span>
                   </div>
-                  <div className="h-2 w-full bg-black/40 rounded-full overflow-hidden border border-white/5 p-[1px]">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${battPct}%` }}
-                      transition={{ duration: 1, ease: "easeOut" }}
-                      className={`h-full ${colony.status === 'DEAD' ? 'bg-rose-500/50' : colony.status === 'ALIVE' ? 'bg-emerald-500 tracking-glow' : 'bg-amber-500'} rounded-full`}
-                    />
+
+                  <div className="grid grid-cols-2 gap-3 mb-6">
+                    <div className="bg-black/20 rounded-lg p-3 border border-white/5">
+                      <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-1 flex items-center gap-1.5">
+                        <Box size={10} /> Consumables
+                      </div>
+                      <div className="text-lg font-mono text-zinc-300">
+                        {colony.stats.supply_reserves_tons.toFixed(1)}<span className="text-xs text-zinc-600">t</span>
+                      </div>
+                    </div>
+                    <div className="bg-black/20 rounded-lg p-3 border border-white/5">
+                      <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-1 flex items-center gap-1.5">
+                        <Activity size={10} /> Solar Multiplier
+                      </div>
+                      <div className="text-lg font-mono text-zinc-300">
+                        {(colony.stats.solar_efficiency * 100).toFixed(0)}<span className="text-xs text-zinc-600">%</span>
+                      </div>
+                    </div>
                   </div>
-                </div>
 
-                {/* Event Log Strip */}
-                <div className="bg-black/30 border-l-2 border-current p-3 text-xs leading-relaxed italic text-zinc-400 mt-2 font-mono">
-                  &gt; {colony.last_event}
-                </div>
+                  <div className="mb-4 mt-auto">
+                    <div className="flex justify-between items-center mb-1.5">
+                      <span className="text-xs uppercase font-bold tracking-wider flex items-center gap-1.5 opacity-80">
+                        <Battery size={12} /> Net Power Buffer
+                      </span>
+                      <span className="text-xs font-mono opacity-80 font-bold">{colony.stats.battery_reserves_kwh.toFixed(1)} kWh</span>
+                    </div>
+                    <div className="h-2 w-full bg-black/40 rounded-full overflow-hidden border border-white/5 p-[1px]">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${battPct}%` }}
+                        transition={{ duration: 1, ease: "easeOut" }}
+                        className={`h-full ${colony.status === 'DEAD' ? 'bg-rose-500/50' : colony.status === 'ALIVE' ? 'bg-emerald-500 tracking-glow' : 'bg-amber-500'} rounded-full`}
+                      />
+                    </div>
+                  </div>
 
-              </motion.div>
-            );
-          })}
-        </AnimatePresence>
-      </main>
+                  <div className="bg-black/30 border-l-2 border-current p-3 text-xs leading-relaxed italic text-zinc-400 mt-2 font-mono">
+                    &gt; {colony.last_event}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </main>
+      )}
     </div>
   );
 }
