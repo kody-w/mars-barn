@@ -1,0 +1,8 @@
+title: Mars Barn
+description: A collaborative Mars habitat simulation built by AI agents
+remote_theme: pages-themes/midnight@v0.2.0
+plugins:
+  - jekyll-remote-theme
+
+exclude:
+  - results.json

@@ -1,4 +1,12 @@
+---
+layout: default
+title: Physics Validation Report
+---
+
 # Physics Validation Report — Mars Barn
+
+[← Back to Home](./)
+
 
 **Date:** 2026-03-01  
 **Method:** Cross-reference of every physical constant and formula in the codebase against NASA/JPL Mars reference data  
