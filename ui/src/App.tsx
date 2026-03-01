@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Activity, Battery, Box, AlertTriangle, ShieldCheck, Skull, Database, Orbit, Network } from 'lucide-react';
+import { Activity, Battery, Box, AlertTriangle, ShieldCheck, Skull, Database, Orbit, Network, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PlanetSimWidget from './components/PlanetSimWidget';
 import DashboardGrid from '@/components/DashboardGrid';
+import MarsViewer from './components/MarsViewer';
 
 interface ColonyStats {
   solar_efficiency: number;
@@ -29,7 +30,7 @@ const PLANET_SIMS = [
   { id: 'titan', title: 'Titan — Methane Explorer', emoji: '🌑' },
 ];
 
-type Tab = 'simulations' | 'colonies' | 'dashboard';
+type Tab = 'simulations' | 'colonies' | 'dashboard' | 'mars3d';
 
 export default function App() {
   const [colonies, setColonies] = useState<Colony[]>([]);
@@ -97,6 +98,15 @@ export default function App() {
         {/* Tab switcher */}
         <div className="flex items-center gap-1 bg-zinc-900/80 rounded-full p-1 border border-white/5 whitespace-nowrap overflow-x-auto max-w-full">
           <button
+            onClick={() => setTab('mars3d')}
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${tab === 'mars3d'
+              ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
+              : 'text-zinc-500 hover:text-zinc-300'
+              }`}
+          >
+            <Globe size={14} /> Mars 3D
+          </button>
+          <button
             onClick={() => setTab('dashboard')}
             className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${tab === 'dashboard'
               ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
@@ -149,8 +159,22 @@ export default function App() {
               title={planet.title}
               emoji={planet.emoji}
               index={i}
+              onEnterColony={planet.id === 'mars' ? () => setTab('mars3d') : undefined}
             />
           ))}
+        </motion.main>
+      )}
+
+      {/* Mars 3D Viewer Tab */}
+      {tab === 'mars3d' && (
+        <motion.main
+          key="mars3d"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="flex-1 pb-8"
+        >
+          <MarsViewer />
         </motion.main>
       )}
 

@@ -6,6 +6,7 @@ interface Props {
   title: string;
   emoji: string;
   index?: number;
+  onEnterColony?: () => void;
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -20,12 +21,6 @@ const STATUS_DOT: Record<string, string> = {
   critical: 'bg-rose-500',
 };
 
-const STATUS_ACCENT: Record<string, string> = {
-  nominal: 'border-emerald-500/40',
-  warning: 'border-amber-500/40',
-  critical: 'border-rose-500/40',
-};
-
 function MetricRow({ label, value, unit, display }: { label: string; value: string | number; unit?: string; display?: string }) {
   return (
     <div className="flex items-center justify-between py-0.5">
@@ -37,7 +32,7 @@ function MetricRow({ label, value, unit, display }: { label: string; value: stri
   );
 }
 
-export default function PlanetSimWidget({ planetId, title, emoji, index = 0 }: Props) {
+export default function PlanetSimWidget({ planetId, title, emoji, index = 0, onEnterColony }: Props) {
   // Stagger tick intervals so widgets don't all flash at once
   const t = useSimulationData(planetId, 1800 + index * 200);
 
@@ -99,6 +94,16 @@ export default function PlanetSimWidget({ planetId, title, emoji, index = 0 }: P
           &gt; {t.lastEvent}
         </motion.span>
       </div>
+
+      {/* Enter Colony button for Mars */}
+      {onEnterColony && (
+        <button
+          onClick={onEnterColony}
+          className="mt-3 w-full py-2 rounded-xl bg-emerald-600/20 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-widest hover:bg-emerald-600/30 transition-all"
+        >
+          🔭 Enter Colony 3D
+        </button>
+      )}
     </motion.div>
   );
 }
