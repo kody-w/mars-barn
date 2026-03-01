@@ -3,10 +3,12 @@ import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
 import * as fs from 'fs';
 import * as path from 'path';
+import { execSync } from 'child_process';
 
 const prisma = new PrismaClient();
 const app = express();
-const COLONY_JSON = path.resolve(__dirname, '..', '..', 'state', 'colony.json');
+const ROOT = path.resolve(__dirname, '..', '..');
+const COLONY_JSON = path.join(ROOT, 'state', 'colony.json');
 
 app.use(cors());
 app.use(express.json());
@@ -69,58 +71,25 @@ app.post('/api/colonies', async (req, res) => {
     }
 });
 
-// Force a tick for all alive colonies
-app.post('/api/tick', async (req, res) => {
+// Force a tick — delegates to the real Python physics engine
+app.post('/api/tick', async (_req, res) => {
     try {
-        // In a real production system we'd port the dense Python math to TS.
-        // For now, we will simulate passing the math check by bridging out.
-        // We update all ALIVE colonies by 1 sol roughly based on python rules.
+        // Run the authoritative Python simulation (advances to current sol)
+        const output = execSync('python3 src/live.py', {
+            cwd: ROOT,
+            timeout: 30_000,
+            encoding: 'utf-8',
+        });
 
-        const active = await prisma.colony.findMany({ where: { status: 'ALIVE' } });
-        let updated = 0;
+        // Read the updated state
+        const colony = JSON.parse(fs.readFileSync(COLONY_JSON, 'utf-8'));
 
-        for (const c of active) {
-            // Basic simulation logic (ported roughly from live.py)
-            let storedKwh = c.storedEnergyKwh;
-            let food = c.foodReservesKg;
-            let status = c.status;
-            let dust = c.panelDustFactor;
-            let temp = c.interiorTempK;
-
-            // Solar math
-            const ls = (c.solarLongitude + 0.524) % 360;
-            dust = Math.max(0.4, dust - 0.002);
-            const solar_kwh = (590 * 0.4 * 12 * c.panelAreaM2 * 0.22 * dust) / 1000;
-            const heating_kwh = Math.min(c.heaterPowerW * 20 / 1000, solar_kwh * 0.6);
-
-            storedKwh = Math.max(0, storedKwh + solar_kwh - heating_kwh - 15);
-
-            // Consumption
-            food = Math.max(0, food - (c.crewSize * 0.6));
-
-            // Survivability check
-            if (storedKwh <= 0 || food <= 0 || temp < 200) {
-                status = 'DEAD';
-            }
-
-            await prisma.colony.update({
-                where: { id: c.id },
-                data: {
-                    sol: c.sol + 1,
-                    solarLongitude: ls,
-                    storedEnergyKwh: storedKwh,
-                    foodReservesKg: food,
-                    panelDustFactor: dust,
-                    status,
-                    solsSurvived: c.sol + 1,
-                    totalPowerKwh: c.totalPowerKwh + solar_kwh
-                }
-            });
-
-            updated++;
-        }
-
-        res.json({ success: true, ticked: updated });
+        res.json({
+            success: true,
+            sol: colony.sol,
+            status: colony.habitat.interior_temp_k > 273.15 ? 'HABITABLE' : 'CRITICAL',
+            output: output.trim(),
+        });
     } catch (error) {
         const err = error as Error;
         res.status(500).json({ error: err.message });
@@ -199,6 +168,32 @@ app.get('/api/health', async (_req, res) => {
         res.json({ status: 'ok', uptime: process.uptime() });
     } catch (error) {
         res.status(503).json({ status: 'degraded', db: 'unreachable' });
+    }
+});
+
+// ── Colony network — all parallel universes from state/*.json ───────
+app.get('/api/network', (_req, res) => {
+    try {
+        const stateDir = path.join(ROOT, 'state');
+        const files = fs.readdirSync(stateDir).filter(f => f.endsWith('.json') && f !== 'marsbarn-gpt.json');
+        const colonies = files.map(f => {
+            try {
+                const data = JSON.parse(fs.readFileSync(path.join(stateDir, f), 'utf-8'));
+                return {
+                    file: f,
+                    name: data.name ?? f.replace('.json', ''),
+                    sol: data.sol ?? data.age_sols ?? 0,
+                    status: data.status ?? (data.habitat ? 'ALIVE' : 'UNKNOWN'),
+                    crew: data.crew ?? null,
+                    location: data.location ?? null,
+                };
+            } catch { return null; }
+        }).filter(Boolean);
+
+        res.json({ count: colonies.length, colonies });
+    } catch (error) {
+        const err = error as Error;
+        res.status(500).json({ error: err.message });
     }
 });
 

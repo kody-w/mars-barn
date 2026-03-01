@@ -73,6 +73,18 @@ def default_colony() -> dict:
             "food_reserves_kg": 120.0,
             "harvest_total_kg": 0.0,
         },
+        "crew": {
+            "morale": 0.8,
+            "health": 1.0,
+            "evas": 0,
+            "discoveries": 0,
+        },
+        "greenhouse": {
+            "planted_area_m2": 20.0,
+            "growth_stage": 0.0,
+            "co2_ppm": 400,
+            "water_daily_l": 5.0,
+        },
         "active_events": [],
         "log": [],
         "stats": {
@@ -85,6 +97,9 @@ def default_colony() -> dict:
             "min_temp_k": 293.0,
             "max_temp_k": 293.0,
             "harvests": 0,
+            "crew_illnesses": 0,
+            "evas_completed": 0,
+            "discoveries": 0,
         },
         "_meta": {
             "version": 2,
@@ -197,14 +212,63 @@ def tick_sol(colony: dict, sol: int) -> dict:
     temp_change = (net_heat_w * 24.6 * 3600) / thermal_mass
     hab["interior_temp_k"] = round(max(150, min(310, hab["interior_temp_k"] + temp_change)), 1)
 
-    # === FOOD/WATER ===
-    hab["water_reserves_l"] = round(hab["water_reserves_l"] - 3 + 3, 1)
-    hab["food_reserves_kg"] = round(hab["food_reserves_kg"] - hab["crew_size"] * 0.6, 1)
-    if sol % 7 == 0 and sol > 0:
-        harvest = round(random.uniform(0.3, 1.2), 2)
-        hab["harvest_total_kg"] = round(hab["harvest_total_kg"] + harvest, 2)
-        hab["food_reserves_kg"] = round(hab["food_reserves_kg"] + harvest, 1)
+    # === GREENHOUSE (light × water × CO₂ → yield) ===
+    gh = colony.get("greenhouse", {"planted_area_m2": 20, "growth_stage": 0, "co2_ppm": 400, "water_daily_l": 5})
+    light_factor = min(1.0, solar_kwh / 150)  # normalized to typical good sol
+    water_factor = min(1.0, hab["water_reserves_l"] / (gh["water_daily_l"] * 10))
+    co2_factor = min(1.0, gh["co2_ppm"] / 800)
+    growth_rate = 0.03 * light_factor * water_factor * co2_factor * gh["planted_area_m2"] / 20
+    gh["growth_stage"] = min(1.0, gh["growth_stage"] + growth_rate)
+    hab["water_reserves_l"] = round(hab["water_reserves_l"] - gh["water_daily_l"] + gh["water_daily_l"] * 0.92, 1)  # 92% recycled
+
+    harvest_kg = 0.0
+    if gh["growth_stage"] >= 1.0:
+        harvest_kg = round(gh["planted_area_m2"] * random.uniform(0.08, 0.15), 2)
+        gh["growth_stage"] = 0.0
         stats["harvests"] += 1
+        events.append(f"harvest({harvest_kg:.1f}kg)")
+
+    hab["harvest_total_kg"] = round(hab["harvest_total_kg"] + harvest_kg, 2)
+    colony["greenhouse"] = gh
+
+    # === FOOD/WATER ===
+    hab["food_reserves_kg"] = round(hab["food_reserves_kg"] - hab["crew_size"] * 0.6 + harvest_kg, 1)
+
+    # === CREW EVENTS & MORALE ===
+    crew = colony.get("crew", {"morale": 0.8, "health": 1.0, "evas": 0, "discoveries": 0})
+
+    # Morale drift based on conditions
+    if hab["interior_temp_k"] > 288 and hab["food_reserves_kg"] > 30:
+        crew["morale"] = min(1.0, crew["morale"] + 0.01)
+    elif hab["interior_temp_k"] < 273 or hab["food_reserves_kg"] < 15:
+        crew["morale"] = max(0.0, crew["morale"] - 0.05)
+
+    if storm_active:
+        crew["morale"] = max(0.0, crew["morale"] - 0.03)
+
+    # Illness (higher chance at low morale/health)
+    illness_chance = 0.02 + (1 - crew["health"]) * 0.05
+    if random.random() < illness_chance:
+        crew["health"] = max(0.3, crew["health"] - random.uniform(0.05, 0.15))
+        stats["crew_illnesses"] = stats.get("crew_illnesses", 0) + 1
+        events.append("crew:illness")
+    else:
+        crew["health"] = min(1.0, crew["health"] + 0.005)
+
+    # EVA (only when morale > 0.5 and no storm)
+    if not storm_active and crew["morale"] > 0.5 and random.random() < 0.15:
+        crew["evas"] += 1
+        stats["evas_completed"] = stats.get("evas_completed", 0) + 1
+        events.append("eva")
+        # EVAs can yield discoveries
+        if random.random() < 0.25:
+            crew["discoveries"] += 1
+            crew["morale"] = min(1.0, crew["morale"] + 0.05)
+            stats["discoveries"] = stats.get("discoveries", 0) + 1
+            disc = random.choice(["mineral_deposit", "ice_lens", "lava_tube", "fossil_candidate", "regolith_anomaly"])
+            events.append(f"discovery:{disc}")
+
+    colony["crew"] = crew
 
     # === STATS ===
     colony["sol"] = sol
@@ -224,6 +288,8 @@ def tick_sol(colony: dict, sol: int) -> dict:
         "stored_kwh": round(hab["stored_energy_kwh"], 0),
         "dust": round(hab["panel_dust_factor"], 3),
         "food_kg": round(hab["food_reserves_kg"], 1),
+        "morale": round(crew["morale"], 2),
+        "health": round(crew["health"], 2),
         "events": events, "storm": storm_active,
     }
     colony["log"].append(entry)
@@ -237,10 +303,13 @@ def print_status(colony: dict) -> None:
     hab = colony["habitat"]
     stats = colony["stats"]
     loc = colony["location"]
+    crew = colony.get("crew", {"morale": 0.8, "health": 1.0, "evas": 0, "discoveries": 0})
+    gh = colony.get("greenhouse", {"growth_stage": 0})
     int_c = round(hab["interior_temp_k"] - 273.15, 1)
 
     status = "🟢 HABITABLE" if int_c > 0 else "🟡 COLD" if int_c > -30 else "🔴 CRITICAL"
     storm = " 🌪️ STORM" if colony["active_events"] else ""
+    morale_icon = "😊" if crew["morale"] > 0.6 else "😐" if crew["morale"] > 0.3 else "😰"
 
     print(f"""
 ╔═══════════════════════════════════════════════════╗
@@ -254,9 +323,11 @@ def print_status(colony: dict) -> None:
 ║  Reserves:   {hab['stored_energy_kwh']:>8.1f} kWh                         ║
 ║  Panels:     {hab['panel_dust_factor']*100:>6.1f}%  efficiency                  ║
 ║  Food:       {hab['food_reserves_kg']:>8.1f} kg  ({hab['harvest_total_kg']:.1f} kg harvested)    ║
-║  Crew:       {hab['crew_size']:>4d}                                    ║
+║  Greenhouse: {gh['growth_stage']*100:>5.1f}%  growth                       ║
+║  Crew:       {hab['crew_size']:>4d}  {morale_icon} morale {crew['morale']:.0%}  ❤ {crew['health']:.0%}     ║
 ╠═══════════════════════════════════════════════════╣
 ║  Dust devils: {stats['dust_devils']:<4d} │ Storms: {stats['storms_survived']:<3d} │ Hits: {stats['meteorites']:<3d}  ║
+║  EVAs: {stats.get('evas_completed',0):<3d} │ Discoveries: {stats.get('discoveries',0):<3d} │ 🤒 {stats.get('crew_illnesses',0):<3d}   ║
 ║  Temp range:  {stats['min_temp_k']-273.15:>+.0f}°C to {stats['max_temp_k']-273.15:>+.0f}°C                   ║
 ║  Survived:    {stats['sols_survived']} sols                             ║
 ╚═══════════════════════════════════════════════════╝

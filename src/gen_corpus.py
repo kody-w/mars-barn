@@ -21,9 +21,7 @@ from live import default_colony, tick_sol
 def sol_to_narrative(entry: dict, colony: dict) -> str:
     """Convert a sol log entry into a natural text narrative."""
     parts = []
-    hab = colony["habitat"]
     temp_c = entry["int_c"]
-    ext_c = entry["ext_c"]
 
     # Status
     if temp_c > 15:
@@ -41,6 +39,15 @@ def sol_to_narrative(entry: dict, colony: dict) -> str:
     parts.append(f"{temp_c:+.0f}c")
     parts.append(f"{entry['solar_kwh']:.0f}kw")
     parts.append(f"{entry['stored_kwh']:.0f}r")
+
+    # Morale/health if present
+    if "morale" in entry:
+        m = entry["morale"]
+        parts.append("happy" if m > 0.7 else "ok" if m > 0.4 else "stressed")
+    if "health" in entry:
+        h = entry["health"]
+        if h < 0.7:
+            parts.append("sick")
 
     for ev in entry["events"]:
         if ev != "dust_devil":
