@@ -121,6 +121,8 @@ The validation suite compares Mars Barn's thermal model against three real NASA-
 
 📝 **[Blog: Local-First Intelligence — Shipping a GPT Inside a Git Repo →](local-first-intelligence)**
 
+📖 **[The Mars Barn Glossary — Patterns & Coinages for Local-First Autonomous Systems →](glossary)**
+
 ### Designs Compared
 
 | Design | Organization | Key Feature |
