@@ -10,8 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bitcoinjs-lib": "^7.0.1",
     "cors": "^2.8.6",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "tiny-secp256k1": "^2.2.4"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",

@@ -7,11 +7,12 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url      = env("DATABASE_URL")
 }
 
 model Colony {
   id              String   @id @default(uuid())
+  ownerUtxo       String   @unique // Bitcoin txid:vout
   name            String
   status          String   @default("ALIVE") // ALIVE, DEAD, DIGITAL_TWIN
   launchDate      DateTime @default(now())
