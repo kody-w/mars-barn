@@ -42,12 +42,13 @@ app.get('/api/colonies', async (req, res) => {
 // Create a new colony (The Cradle)
 app.post('/api/colonies', async (req, res) => {
     try {
-        const { name, latitude, longitude, panelAreaM2, crewSize } = req.body;
+        const { name, latitude, longitude, panelAreaM2, crewSize, ownerUtxo } = req.body;
 
         if (!name) return res.status(400).json({ error: "Colony name required" });
 
         const newColony = await prisma.colony.create({
             data: {
+                ownerUtxo: ownerUtxo ?? `unowned:${Date.now()}`,
                 name,
                 latitude: latitude ?? -4.5,
                 longitude: longitude ?? 137.4,
