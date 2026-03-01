@@ -76,17 +76,25 @@ def backtest(
         # Go BACKWARDS in Ls (earlier in the Mars year)
         ls = (start_ls - sol_offset * MARS_LS_PER_SOL) % 360
 
-        # Determine if a dust storm hits (historical probability)
-        # Dust storm season peaks around Ls 200-330 (southern spring/summer)
-        storm_probability = 0.03  # base rate
-        if 200 < ls < 330:
-            storm_probability = 0.12  # peak dust storm season
-        if 260 < ls < 300:
-            storm_probability = 0.25  # global dust storm risk zone
+        # Use real measured climate statistics for storm probability
+        from mars_climate import dust_storm_stats, interpolate_climate, DUST_STORM_BY_LS
+        storm_stats = interpolate_climate(ls, DUST_STORM_BY_LS)
+        storm_probability = storm_stats[0]  # any_storm_prob_per_sol
+        global_storm_prob = storm_stats[2]
+        mean_severity = storm_stats[3]
+        max_severity = storm_stats[4]
+
         import random
         random.seed(sol_offset * 7919 + int(ls * 100))
         dust_storm = random.random() < storm_probability
-        storm_severity = random.uniform(0.3, 0.8) if dust_storm else 0.0
+        is_global = dust_storm and random.random() < (global_storm_prob / max(storm_probability, 0.001))
+        if dust_storm:
+            if is_global:
+                storm_severity = random.uniform(max_severity * 0.8, max_severity)
+            else:
+                storm_severity = random.uniform(mean_severity * 0.5, mean_severity * 1.5)
+        else:
+            storm_severity = 0.0
 
         if dust_storm:
             storms_survived += 1
@@ -234,7 +242,7 @@ def print_report(result: dict):
 
 def main():
     parser = argparse.ArgumentParser(description="Mars Barn Colony Backtest")
-    parser.add_argument("--sols", type=int, default=669, help="Sols to simulate backwards")
+    parser.add_argument("--sols", type=int, default=17400, help="Sols to simulate backwards (17400 = Viking era 1976)")
     parser.add_argument("--output", default=None, help="Save results to JSON file")
     args = parser.parse_args()
 
