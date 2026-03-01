@@ -1,0 +1,42 @@
+name: Simulate Mars
+
+on:
+  schedule:
+    - cron: '*/15 * * * *' # Run every 15 minutes
+  workflow_dispatch: # Allow manual triggers
+
+jobs:
+  run-simulation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Run simulation step
+        run: |
+          # Create data directory if it doesn't exist
+          mkdir -p data
+          
+          # Run a single day of simulation
+          python src/main.py --sols 1 --quiet
+          
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "Mars Barn Simulation Bot"
+          git config --global user.email "bot@marsbarn.ai"
+          
+          # Check if state.json has changed
+          if git diff --quiet data/state.json; then
+            echo "No state changes to commit."
+          else
+            git add data/state.json
+            git commit -m "chore(sim): auto-advance simulation by 1 sol"
+            git push origin main
+          fi
