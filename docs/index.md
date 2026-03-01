@@ -123,6 +123,8 @@ The validation suite compares Mars Barn's thermal model against three real NASA-
 
 📖 **[The Mars Barn Glossary — Patterns & Coinages for Local-First Autonomous Systems →](glossary)**
 
+📚 **[Blog — 20 Articles on Local-First Autonomous System Design →](blog)**
+
 ### Designs Compared
 
 | Design | Organization | Key Feature |
