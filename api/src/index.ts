@@ -1,11 +1,12 @@
 import express from 'express';
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
-import * as util from 'util';
+import * as fs from 'fs';
 import * as path from 'path';
 
 const prisma = new PrismaClient();
 const app = express();
+const COLONY_JSON = path.resolve(__dirname, '..', '..', 'state', 'colony.json');
 
 app.use(cors());
 app.use(express.json());
@@ -122,6 +123,81 @@ app.post('/api/tick', async (req, res) => {
     } catch (error) {
         const err = error as Error;
         res.status(500).json({ error: err.message });
+    }
+});
+
+// ── Single colony by ID ─────────────────────────────────────────────
+app.get('/api/colonies/:id', async (req, res) => {
+    try {
+        const colony = await prisma.colony.findFirst({
+            where: {
+                OR: [
+                    { id: req.params.id },
+                    { name: req.params.id },
+                ],
+            },
+            include: { events: true },
+        });
+        if (!colony) return res.status(404).json({ error: 'Colony not found' });
+        res.json(colony);
+    } catch (error) {
+        const err = error as Error;
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ── Colony log entries (paginated) ──────────────────────────────────
+app.get('/api/colonies/:id/log', async (req, res) => {
+    try {
+        const colony = await prisma.colony.findFirst({
+            where: {
+                OR: [
+                    { id: req.params.id },
+                    { name: req.params.id },
+                ],
+            },
+        });
+        if (!colony) return res.status(404).json({ error: 'Colony not found' });
+
+        const page = Math.max(1, parseInt(req.query.page as string) || 1);
+        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 50));
+
+        const logs = await prisma.log.findMany({
+            where: { colonyId: colony.id },
+            orderBy: { sol: 'desc' },
+            skip: (page - 1) * limit,
+            take: limit,
+        });
+        const total = await prisma.log.count({ where: { colonyId: colony.id } });
+
+        res.json({ logs, page, limit, total });
+    } catch (error) {
+        const err = error as Error;
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ── Live colony state (from Python sim's colony.json) ───────────────
+app.get('/api/live', (_req, res) => {
+    try {
+        if (!fs.existsSync(COLONY_JSON)) {
+            return res.status(404).json({ error: 'No live colony state found' });
+        }
+        const data = JSON.parse(fs.readFileSync(COLONY_JSON, 'utf-8'));
+        res.json(data);
+    } catch (error) {
+        const err = error as Error;
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ── Health check ────────────────────────────────────────────────────
+app.get('/api/health', async (_req, res) => {
+    try {
+        await prisma.$queryRaw`SELECT 1`;
+        res.json({ status: 'ok', uptime: process.uptime() });
+    } catch (error) {
+        res.status(503).json({ status: 'degraded', db: 'unreachable' });
     }
 });
 

@@ -20,10 +20,15 @@ jobs:
       - name: Advance colony to current sol
         run: python src/live.py
 
+      - name: Retrain microGPT on latest colony data
+        run: |
+          python src/gen_corpus.py
+          python src/microgpt.py --steps 500
+
       - name: Commit state
         run: |
           git config user.name "mars-barn-bot"
           git config user.email "mars-barn-bot@users.noreply.github.com"
-          git add state/colony.json
-          git diff --staged --quiet || git commit -m "chore: Sol $(python -c 'import json; print(json.load(open(\"state/colony.json\"))[\"sol\"])') [skip ci]"
+          git add state/colony.json state/corpus.txt state/marsbarn-gpt.json
+          git diff --staged --quiet || git commit -m "chore: Sol $(python -c 'import json; print(json.load(open(\"state/colony.json\"))[\"sol\"])') — retrain microGPT [skip ci]"
           git push
