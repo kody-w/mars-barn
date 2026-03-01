@@ -15,16 +15,17 @@ Author: unclaimed (open workstream)
 import math
 from typing import Optional
 
-# Physical constants
-STEFAN_BOLTZMANN = 5.67e-8  # W/(m²·K⁴)
-MARS_GROUND_TEMP_K = 210.0  # approximate ground temp
-
-# Habitat defaults
-HABITAT_SURFACE_AREA_M2 = 200.0  # exterior surface
-HABITAT_VOLUME_M3 = 150.0
-AIR_DENSITY_KG_M3 = 1.2  # pressurized interior at ~1 atm
-AIR_SPECIFIC_HEAT = 1005  # J/(kg·K)
-TARGET_TEMP_K = 293.0  # 20°C
+from constants import (
+    STEFAN_BOLTZMANN,
+    MARS_SURFACE_TEMP_K as MARS_GROUND_TEMP_K,
+    MARS_SOL_HOURS,
+    HABITAT_SURFACE_AREA_M2,
+    HABITAT_VOLUME_M3,
+    HABITAT_TARGET_TEMP_K as TARGET_TEMP_K,
+    AIR_DENSITY_KG_M3,
+    AIR_SPECIFIC_HEAT_J_KGK as AIR_SPECIFIC_HEAT,
+    THERMAL_MASS_MULTIPLIER,
+)
 
 
 def heat_loss_conduction(
@@ -97,8 +98,8 @@ def thermal_step(
 
     # Temperature change: Q = m·c·ΔT
     thermal_mass = AIR_DENSITY_KG_M3 * volume_m3 * AIR_SPECIFIC_HEAT
-    # Add habitat structure thermal mass (~5x air)
-    thermal_mass *= 5.0
+    # Add habitat structure thermal mass
+    thermal_mass *= THERMAL_MASS_MULTIPLIER
     delta_t = (q_net * dt_seconds) / thermal_mass
 
     new_temp = interior_temp_k + delta_t
@@ -130,7 +131,7 @@ def simulate_sol(
     from atmosphere import temperature_at_altitude
     from solar import surface_irradiance
 
-    hours_per_sol = 24.616
+    hours_per_sol = MARS_SOL_HOURS
     step_hours = 0.5
     step_seconds = step_hours * 3600
 

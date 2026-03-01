@@ -18,7 +18,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from terrain import generate_heightmap, elevation_stats
 from atmosphere import atmosphere_profile, temperature_at_altitude
 from solar import daily_energy, surface_irradiance
-from thermal import thermal_step, TARGET_TEMP_K
+from thermal import thermal_step
+from constants import HABITAT_TARGET_TEMP_K as TARGET_TEMP_K, MARS_SOL_HOURS, MARS_LS_PER_SOL
 from events import generate_events, tick_events, aggregate_effects
 from state_serial import create_state, snapshot, diff_states
 from viz import render_terrain, render_dashboard, render_events
@@ -62,7 +63,7 @@ def run_simulation(
 
     for sol in range(1, num_sols + 1):
         # Solar longitude advances ~0.5° per sol
-        state["solar_longitude"] = (state["solar_longitude"] + 0.524) % 360
+        state["solar_longitude"] = (state["solar_longitude"] + MARS_LS_PER_SOL) % 360
 
         # Generate and manage events
         new_events = generate_events(sol, seed=seed, active_events=state["active_events"])
@@ -75,7 +76,7 @@ def run_simulation(
                 print(f"  Sol {sol:>3d}: ⚡ {e['description']}")
 
         # Simulate 24.6 hours in 1-hour steps
-        hours_per_sol = 24.616
+        hours_per_sol = MARS_SOL_HOURS
         step_hours = 0.25  # 15-min steps for thermal accuracy
         sol_heating_kwh = 0.0
         sol_power_kwh = 0.0

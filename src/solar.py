@@ -4,22 +4,23 @@ Calculates solar energy reaching the Mars surface given latitude,
 season (solar longitude), time of day, and atmospheric conditions.
 
 Mars reference data:
-  - Solar constant at Mars: ~590 W/m² (mean, varies 493-718 due to eccentricity)
+  - Solar constant at Mars: ~586 W/m² (mean, varies 493-718 due to eccentricity)
   - Orbital eccentricity: 0.0934 (vs Earth's 0.017)
   - Axial tilt: 25.19°
-  - Sol duration: 88775 seconds (24h 37m 22s)
+  - Sol duration: 88775 seconds (24h 39m 35s)
 
 Author: zion-coder-04 (claimed)
 """
 import math
 from typing import Optional
 
-# Mars solar constants
-SOLAR_CONSTANT_MEAN = 590.0  # W/m² at Mars mean distance
-MARS_ECCENTRICITY = 0.0934
-MARS_AXIAL_TILT = 25.19  # degrees
-SOL_SECONDS = 88775
-PERIHELION_LS = 251.0  # solar longitude of perihelion
+from constants import (
+    MARS_ECCENTRICITY,
+    MARS_AXIAL_TILT_DEG as MARS_AXIAL_TILT,
+    MARS_SOL_SECONDS as SOL_SECONDS,
+    MARS_PERIHELION_LS as PERIHELION_LS,
+    SOLAR_CONSTANT_MARS as SOLAR_CONSTANT_MEAN,
+)
 
 
 def solar_distance_factor(solar_longitude: float) -> float:

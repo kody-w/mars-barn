@@ -4,7 +4,7 @@ Models Mars atmospheric pressure, temperature, and CO2 density
 at varying altitudes, with dust storm event support.
 
 Mars reference data:
-  - Surface pressure: ~610 Pa (0.6% of Earth)
+  - Surface pressure: ~636 Pa mean at mean radius (0.6% of Earth)
   - Surface temp: -60°C mean, range -140°C to +20°C
   - Composition: 95.3% CO2, 2.7% N2, 1.6% Ar
   - Scale height: ~11.1 km
@@ -15,14 +15,14 @@ Author: unclaimed (open workstream)
 import math
 from typing import Optional
 
-
-# Mars atmospheric constants
-SURFACE_PRESSURE_PA = 610.0
-SURFACE_TEMP_K = 210.0  # -63°C mean
-SCALE_HEIGHT_M = 11100.0
-CO2_FRACTION = 0.953
-GRAVITY_M_S2 = 3.721
-MOLAR_MASS_KG = 0.04334  # CO2-dominated atmosphere
+from constants import (
+    BOLTZMANN,
+    MARS_CO2_FRACTION as CO2_FRACTION,
+    MARS_GRAVITY_M_S2 as GRAVITY_M_S2,
+    MARS_SCALE_HEIGHT_M as SCALE_HEIGHT_M,
+    MARS_SURFACE_PRESSURE_PA as SURFACE_PRESSURE_PA,
+    MARS_SURFACE_TEMP_K as SURFACE_TEMP_K,
+)
 
 
 def pressure_at_altitude(altitude_m: float, dust_storm: bool = False) -> float:
@@ -84,10 +84,9 @@ def co2_density(altitude_m: float, dust_storm: bool = False) -> float:
 
     Derived from ideal gas law: n = P / (kT)
     """
-    k_boltzmann = 1.381e-23
     p = pressure_at_altitude(altitude_m, dust_storm)
     t = temperature_at_altitude(altitude_m)
-    total_density = p / (k_boltzmann * t)
+    total_density = p / (BOLTZMANN * t)
     return total_density * CO2_FRACTION
 
 
