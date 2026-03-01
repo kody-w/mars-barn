@@ -179,13 +179,17 @@ function generateTelemetry(planetId: string, prev?: PlanetTelemetry): PlanetTele
     ? prev.surfaceTemp + (Math.random() - 0.5) * 4
     : randomInRange(...baseline.surfaceTemp);
 
-  const atmosphericPressure = prev
-    ? Math.max(0, prev.atmosphericPressure + (Math.random() - 0.5) * (baseline.atmosphericPressure[1] * 0.01))
-    : randomInRange(...baseline.atmosphericPressure);
+  const atmosphericPressure = baseline.atmosphericPressure[1] < 0.01
+    ? baseline.atmosphericPressure[0]
+    : prev
+      ? Math.max(0, prev.atmosphericPressure + (Math.random() - 0.5) * (baseline.atmosphericPressure[1] * 0.01))
+      : randomInRange(...baseline.atmosphericPressure);
 
-  const windSpeed = prev
-    ? Math.max(0, prev.windSpeed + (Math.random() - 0.5) * 10)
-    : randomInRange(...baseline.windSpeed);
+  const windSpeed = baseline.windSpeed[1] === 0
+    ? 0
+    : prev
+      ? Math.max(0, prev.windSpeed + (Math.random() - 0.5) * 10)
+      : randomInRange(...baseline.windSpeed);
 
   const radiation = prev
     ? Math.max(0, prev.radiation + (Math.random() - 0.5) * 0.3)
@@ -195,7 +199,10 @@ function generateTelemetry(planetId: string, prev?: PlanetTelemetry): PlanetTele
     ? Math.max(0, prev.powerOutput + (Math.random() - 0.5) * 20)
     : randomInRange(...baseline.powerOutput);
 
-  const commsLatency = randomInRange(...baseline.commsLatency);
+  const commsLatency = prev
+    ? Math.max(baseline.commsLatency[0], Math.min(baseline.commsLatency[1],
+        prev.commsLatency + (Math.random() - 0.5) * (baseline.commsLatency[1] - baseline.commsLatency[0]) * 0.05))
+    : randomInRange(...baseline.commsLatency);
 
   const activeExperiments = prev
     ? prev.activeExperiments + (Math.random() > 0.9 ? (Math.random() > 0.5 ? 1 : -1) : 0)

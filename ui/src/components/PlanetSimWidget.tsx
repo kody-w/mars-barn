@@ -8,9 +8,9 @@ interface Props {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  nominal: 'border-emerald-500/20 bg-emerald-950/20',
-  warning: 'border-amber-500/20 bg-amber-950/20',
-  critical: 'border-rose-500/20 bg-rose-950/20',
+  nominal: 'border-emerald-500/20 bg-emerald-950/20 shadow-[0_0_15px_rgba(16,185,129,0.05)]',
+  warning: 'border-amber-500/20 bg-amber-950/20 shadow-[0_0_15px_rgba(245,158,11,0.08)]',
+  critical: 'border-rose-500/20 bg-rose-950/20 shadow-[0_0_20px_rgba(239,68,68,0.1)]',
 };
 
 const STATUS_DOT: Record<string, string> = {
@@ -19,10 +19,10 @@ const STATUS_DOT: Record<string, string> = {
   critical: 'bg-rose-500',
 };
 
-const STATUS_TEXT: Record<string, string> = {
-  nominal: 'text-emerald-400',
-  warning: 'text-amber-400',
-  critical: 'text-rose-400',
+const STATUS_ACCENT: Record<string, string> = {
+  nominal: 'border-emerald-500/40',
+  warning: 'border-amber-500/40',
+  critical: 'border-rose-500/40',
 };
 
 function MetricRow({ label, value, unit }: { label: string; value: string | number; unit?: string }) {
@@ -63,7 +63,7 @@ export default function PlanetSimWidget({ planetId, title, emoji }: Props) {
           animate={{ opacity: t.status === 'critical' ? [1, 0.3, 1] : 1 }}
           transition={{ repeat: t.status === 'critical' ? Infinity : 0, duration: 0.8 }}
         />
-        <span className={`text-xs font-semibold uppercase tracking-widest ${STATUS_TEXT[t.status]}`}>
+        <span className={`text-xs font-semibold uppercase tracking-widest ${STATUS_DOT[t.status].replace('bg-', 'text-').replace('-500', '-400')}`}>
           {t.status}
         </span>
         {t.crewCount > 0 && (
@@ -84,7 +84,7 @@ export default function PlanetSimWidget({ planetId, title, emoji }: Props) {
       </div>
 
       {/* Event ticker */}
-      <div className="bg-black/30 border-l-2 border-current p-3 text-xs leading-relaxed italic text-zinc-400 font-mono mt-auto">
+      <div className={`bg-black/30 border-l-2 ${STATUS_ACCENT[t.status]} p-3 text-xs leading-relaxed italic text-zinc-400 font-mono mt-auto`}>
         <motion.span
           key={t.lastEvent}
           initial={{ opacity: 0, y: 4 }}

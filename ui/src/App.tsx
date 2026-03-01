@@ -97,20 +97,20 @@ export default function App() {
         <div className="flex items-center gap-1 bg-zinc-900/80 rounded-full p-1 border border-white/5">
           <button
             onClick={() => setTab('simulations')}
-            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all border ${
               tab === 'simulations'
-                ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
-                : 'text-zinc-500 hover:text-zinc-300'
+                ? 'bg-emerald-600/20 text-emerald-400 border-emerald-500/30'
+                : 'text-zinc-500 hover:text-zinc-300 border-transparent'
             }`}
           >
             <Orbit size={14} /> Solar System Sims
           </button>
           <button
             onClick={() => setTab('colonies')}
-            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all border ${
               tab === 'colonies'
-                ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
-                : 'text-zinc-500 hover:text-zinc-300'
+                ? 'bg-emerald-600/20 text-emerald-400 border-emerald-500/30'
+                : 'text-zinc-500 hover:text-zinc-300 border-transparent'
             }`}
           >
             <Database size={14} /> Colony Data
