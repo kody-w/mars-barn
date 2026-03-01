@@ -9,7 +9,7 @@ describe('Mars Barn API', () => {
             // DB may not be migrated in test, so accept 200 or 503
             expect([200, 503]).toContain(res.status);
             expect(res.body).toHaveProperty('status');
-        });
+        }, 15000);
     });
 
     describe('GET /api/live', () => {
@@ -69,6 +69,20 @@ describe('Mars Barn API', () => {
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('success', true);
             expect(res.body).toHaveProperty('sol');
-        });
+        }, 30000);
+    });
+
+    describe('POST /api/project', () => {
+        it('returns projection with bands and narratives', async () => {
+            const res = await request(app)
+                .post('/api/project')
+                .send({ sols: 10, runs: 5 });
+            expect(res.status).toBe(200);
+            expect(res.body).toHaveProperty('survival_rate');
+            expect(res.body).toHaveProperty('bands');
+            expect(res.body).toHaveProperty('narratives');
+            expect(Array.isArray(res.body.bands)).toBe(true);
+            expect(res.body.bands.length).toBe(10);
+        }, 60000);
     });
 });

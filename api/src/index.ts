@@ -100,6 +100,25 @@ app.post('/api/tick', async (_req, res) => {
     }
 });
 
+// ── Project forward — Monte Carlo colony projection ─────────────────
+app.post('/api/project', (_req, res) => {
+    try {
+        const sols = Math.min(200, Math.max(1, parseInt(_req.body?.sols) || 30));
+        const runs = Math.min(50, Math.max(5, parseInt(_req.body?.runs) || 20));
+
+        const output = execSync(
+            `python3 src/project.py --sols ${sols} --runs ${runs} --seed 42 --json`,
+            { cwd: ROOT, timeout: 120_000, encoding: 'utf-8' }
+        );
+
+        const result = JSON.parse(output);
+        res.json(result);
+    } catch (error) {
+        const err = error as Error;
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // ── Single colony by ID ─────────────────────────────────────────────
 app.get('/api/colonies/:id', async (req, res) => {
     try {
