@@ -5,6 +5,7 @@ interface Props {
   planetId: string;
   title: string;
   emoji: string;
+  index?: number;
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -25,24 +26,26 @@ const STATUS_ACCENT: Record<string, string> = {
   critical: 'border-rose-500/40',
 };
 
-function MetricRow({ label, value, unit }: { label: string; value: string | number; unit?: string }) {
+function MetricRow({ label, value, unit, display }: { label: string; value: string | number; unit?: string; display?: string }) {
   return (
     <div className="flex items-center justify-between py-0.5">
       <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">{label}</span>
       <span className="text-sm font-mono text-zinc-300">
-        {value}{unit && <span className="text-zinc-600 ml-0.5">{unit}</span>}
+        {display ?? <>{value}{unit && <span className="text-zinc-600 ml-0.5">{unit}</span>}</>}
       </span>
     </div>
   );
 }
 
-export default function PlanetSimWidget({ planetId, title, emoji }: Props) {
-  const t = useSimulationData(planetId, 2000);
+export default function PlanetSimWidget({ planetId, title, emoji, index = 0 }: Props) {
+  // Stagger tick intervals so widgets don't all flash at once
+  const t = useSimulationData(planetId, 1800 + index * 200);
 
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95, y: 10 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ delay: index * 0.07, duration: 0.4 }}
       className={`p-5 rounded-2xl border backdrop-blur-xl transition-all duration-500 flex flex-col ${STATUS_COLORS[t.status]}`}
     >
       {/* Header */}
@@ -74,12 +77,15 @@ export default function PlanetSimWidget({ planetId, title, emoji }: Props) {
       {/* Metrics */}
       <div className="flex-1 space-y-0.5 mb-3">
         <MetricRow label="Surface Temp" value={t.surfaceTemp} unit="°C" />
-        <MetricRow label="Pressure" value={t.atmosphericPressure} unit="kPa" />
-        <MetricRow label="Wind" value={t.windSpeed} unit="km/h" />
+        <MetricRow label="Pressure" value={t.atmosphericPressure} unit="kPa"
+          display={t.atmosphericPressure < 0.001 ? '< 0.001 kPa' : undefined} />
+        <MetricRow label="Wind" value={t.windSpeed} unit="km/h"
+          display={t.windSpeed === 0 ? '—' : undefined} />
         <MetricRow label="Radiation" value={t.radiation} unit="mSv/h" />
         <MetricRow label="Gravity" value={t.gravity} unit="m/s²" />
         <MetricRow label="Power" value={t.powerOutput} unit="kW" />
-        <MetricRow label="Comms Delay" value={t.commsLatency} unit="s" />
+        <MetricRow label="Comms Delay" value={t.commsLatency} unit="s"
+          display={t.commsLatency < 2 ? `${t.commsLatency}s` : `${(t.commsLatency / 60).toFixed(1)} min`} />
         <MetricRow label="Experiments" value={t.activeExperiments} />
       </div>
 

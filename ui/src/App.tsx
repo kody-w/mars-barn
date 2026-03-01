@@ -120,21 +120,34 @@ export default function App() {
 
       {/* Solar System Simulations Tab */}
       {tab === 'simulations' && (
-        <main className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-min pb-8">
-          {PLANET_SIMS.map((planet) => (
+        <motion.main
+          key="simulations"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-min pb-8"
+        >
+          {PLANET_SIMS.map((planet, i) => (
             <PlanetSimWidget
               key={planet.id}
               planetId={planet.id}
               title={planet.title}
               emoji={planet.emoji}
+              index={i}
             />
           ))}
-        </main>
+        </motion.main>
       )}
 
       {/* Colony Telemetry Tab */}
       {tab === 'colonies' && (
-        <main className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-min pb-8">
+        <motion.main
+          key="colonies"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-min pb-8"
+        >
           {loading && (
             <div className="col-span-full flex items-center gap-2 text-sm text-zinc-500 font-mono animate-pulse justify-center h-40">
               <div className="h-2 w-2 rounded-full bg-emerald-500" />
@@ -212,7 +225,7 @@ export default function App() {
               );
             })}
           </AnimatePresence>
-        </main>
+        </motion.main>
       )}
     </div>
   );

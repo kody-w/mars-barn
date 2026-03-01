@@ -176,7 +176,8 @@ function generateTelemetry(planetId: string, prev?: PlanetTelemetry): PlanetTele
   const baseline = PLANET_BASELINES[planetId] ?? PLANET_BASELINES.mars;
 
   const surfaceTemp = prev
-    ? prev.surfaceTemp + (Math.random() - 0.5) * 4
+    ? Math.max(baseline.surfaceTemp[0], Math.min(baseline.surfaceTemp[1],
+        prev.surfaceTemp + (Math.random() - 0.5) * 4))
     : randomInRange(...baseline.surfaceTemp);
 
   const atmosphericPressure = baseline.atmosphericPressure[1] < 0.01
@@ -188,15 +189,18 @@ function generateTelemetry(planetId: string, prev?: PlanetTelemetry): PlanetTele
   const windSpeed = baseline.windSpeed[1] === 0
     ? 0
     : prev
-      ? Math.max(0, prev.windSpeed + (Math.random() - 0.5) * 10)
+      ? Math.max(0, Math.min(baseline.windSpeed[1] * 1.15,
+          prev.windSpeed + (Math.random() - 0.5) * 10))
       : randomInRange(...baseline.windSpeed);
 
   const radiation = prev
-    ? Math.max(0, prev.radiation + (Math.random() - 0.5) * 0.3)
+    ? Math.max(baseline.radiation[0] * 0.5, Math.min(baseline.radiation[1] * 1.2,
+        prev.radiation + (Math.random() - 0.5) * 0.3))
     : randomInRange(...baseline.radiation);
 
   const powerOutput = prev
-    ? Math.max(0, prev.powerOutput + (Math.random() - 0.5) * 20)
+    ? Math.max(baseline.powerOutput[0] * 0.1, Math.min(baseline.powerOutput[1] * 1.1,
+        prev.powerOutput + (Math.random() - 0.5) * 20))
     : randomInRange(...baseline.powerOutput);
 
   const commsLatency = prev
