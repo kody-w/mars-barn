@@ -18,7 +18,7 @@ export default defineConfig({
         target: 'http://localhost:5173', // dummy target to satisfy vite proxy check
         bypass: (req, res) => {
           if (req.url === '/api/colonies') {
-            fetch('https://raw.githubusercontent.com/kody-w/mars-barn/main/data/state.json')
+            fetch('https://raw.githubusercontent.com/kody-w/mars-barn/main/state/colony.json')
               .then(r => r.json())
               .then((state: any) => {
                 const colony = {
