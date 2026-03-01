@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useColonyStore } from '../lib/colonyStore';
+import { useColonyAgent } from '../lib/useColonyAgent';
 import {
   Thermometer,
   Battery,
@@ -53,6 +54,7 @@ function Stat({ icon: Icon, label, value, unit, warn }: {
 export default function ColonyHUD() {
   const { colony, loading, error, lastFetchedAt, fetchColony, importState, exportState, stateKey } =
     useColonyStore();
+  const agent = useColonyAgent();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Auto-refresh every 60s
@@ -196,9 +198,40 @@ export default function ColonyHUD() {
             </div>
           </div>
         )}
-      </div>
 
-      {/* Bottom center: Controls */}
+        {/* Local Intelligence Agent */}
+        {agent.ready && agent.elaboration && (
+          <div className="bg-emerald-950/20 border border-emerald-500/20 rounded-lg p-2.5 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <div className="text-[9px] text-emerald-500/70 uppercase tracking-widest font-bold">🧠 Colony AI (Local)</div>
+              <button
+                onClick={agent.regenerate}
+                className="text-[9px] text-zinc-600 hover:text-zinc-400 transition-colors"
+              >
+                ↻
+              </button>
+            </div>
+            <div className="text-xs text-zinc-300 leading-relaxed">
+              {agent.elaboration}
+            </div>
+            {agent.predictions.length > 0 && (
+              <div className="pt-1 border-t border-white/5">
+                <div className="text-[9px] text-zinc-600 uppercase tracking-widest font-bold mb-0.5">Next Sol Forecast</div>
+                <div className="text-[10px] font-mono text-zinc-500 space-y-0.5">
+                  {agent.predictions.map((p, i) => (
+                    <div key={i} className="truncate">→ {p}</div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        {agent.loading && (
+          <div className="text-[10px] text-zinc-600 font-mono animate-pulse">
+            Loading colony intelligence...
+          </div>
+        )}
+      </div>
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
         <button
           onClick={() => fetchColony()}

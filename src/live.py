@@ -161,6 +161,8 @@ def tick_sol(colony: dict, sol: int) -> dict:
     diurnal_swing = 42
     avg_exterior = base_temp
 
+    surface_area = hab["solar_panel_area_m2"]  # rough proxy
+
     # Ground coupling: blend exterior toward stable 210K subsurface
     ground_depth = hab.get("ground_coupling_depth_m", 0)
     ground_coupling_w = 0.0
@@ -174,7 +176,6 @@ def tick_sol(colony: dict, sol: int) -> dict:
 
     delta_t = hab["interior_temp_k"] - avg_exterior
     r_val = hab["insulation_r_value"]
-    surface_area = hab["solar_panel_area_m2"]  # rough proxy
     cond_loss_w = surface_area * delta_t / r_val
 
     # Radiative loss with low-e coating (ε=0.05)

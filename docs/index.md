@@ -119,6 +119,8 @@ The validation suite compares Mars Barn's thermal model against three real NASA-
 
 📄 **[Read the full Physics Validation Report →](physics-validation-report)**
 
+📝 **[Blog: Local-First Intelligence — Shipping a GPT Inside a Git Repo →](local-first-intelligence)**
+
 ### Designs Compared
 
 | Design | Organization | Key Feature |
