@@ -1,0 +1,35 @@
+[
+  {
+    "id": "Sector-Alpha",
+    "status": "ALIVE",
+    "age_sols": 13,
+    "last_event": "Weather nominal.",
+    "stats": {
+      "solar_efficiency": 1.0,
+      "battery_reserves_kwh": 1414.0,
+      "supply_reserves_tons": 50.0
+    }
+  },
+  {
+    "id": "Sector-Bravo",
+    "status": "ALIVE",
+    "age_sols": 345,
+    "last_event": "Weather nominal.",
+    "stats": {
+      "solar_efficiency": 0.95,
+      "battery_reserves_kwh": 3083.5,
+      "supply_reserves_tons": 12.0
+    }
+  },
+  {
+    "id": "Sector-Charlie",
+    "status": "DEAD",
+    "age_sols": 41,
+    "last_event": "CRITICAL FAILURE: Battery depleted fighting thermal deficit. Died on Sol 42. Post-Mortem: Global dust storm active. Solar generation plummeted.",
+    "stats": {
+      "solar_efficiency": 0.75,
+      "battery_reserves_kwh": 0.0,
+      "supply_reserves_tons": 4.0
+    }
+  }
+]
