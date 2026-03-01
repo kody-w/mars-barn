@@ -4,30 +4,22 @@
     "sols_per_run": 50,
     "survival_rate_pct": 100.0,
     "temp_range_c": [
-      -66.9,
-      -66.9
+      18.6,
+      19.4
     ],
     "energy_range_kwh": [
-      1569.8,
-      1603.3
+      4142.6,
+      4180.8
     ],
     "events_mean": 42.5
   },
   "single_run": {
     "seed": 42,
     "sols": 30,
-    "power_generated_kwh": 7161,
-    "heating_used_kwh": 5878,
-    "final_temp_c": -65.4,
-    "energy_reserves_kwh": 1783,
-    "events_survived": 27,
-    "validation": "10/10"
-  },
-  "config": {
-    "solar_panel_area_m2": 400,
-    "panel_efficiency": 0.22,
-    "heater_power_w": 8000,
-    "insulation_r_value": 12,
-    "latitude_deg": -4.5
+    "power_generated_kwh": 7107,
+    "heating_used_kwh": 4206,
+    "final_temp_c": 18.6,
+    "stored_energy_kwh": 3401.1,
+    "validation": "16/16"
   }
 }

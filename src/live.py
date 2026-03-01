@@ -161,24 +161,38 @@ def tick_sol(colony: dict, sol: int) -> dict:
     diurnal_swing = 42
     avg_exterior = base_temp
 
-    # Ground coupling reduces effective exterior temp toward ground temp
+    # Ground coupling: blend exterior toward stable 210K subsurface
     ground_depth = hab.get("ground_coupling_depth_m", 0)
+    ground_coupling_w = 0.0
     if ground_depth > 0:
         ground_temp = 210  # stable subsurface
         blend = min(1.0, ground_depth / 3.0)
         avg_exterior = avg_exterior * (1 - blend * 0.3) + ground_temp * blend * 0.3
+    # Default ground coupling (thermal contact with regolith)
+    floor_area = surface_area / 4
+    ground_coupling_w = floor_area * 0.5 * (210 - hab["interior_temp_k"])
 
     delta_t = hab["interior_temp_k"] - avg_exterior
     r_val = hab["insulation_r_value"]
     surface_area = hab["solar_panel_area_m2"]  # rough proxy
     cond_loss_w = surface_area * delta_t / r_val
+
+    # Radiative loss with low-e coating (ε=0.05)
+    emissivity = 0.05
+    stefan_boltzmann = 5.67e-8
+    rad_loss_w = emissivity * stefan_boltzmann * surface_area * (
+        hab["interior_temp_k"] ** 4 - avg_exterior ** 4)
+
+    # Crew metabolic heat (120W per person)
+    metabolic_w = hab["crew_size"] * 120
+
     heating_kwh = round(min(hab["heater_power_w"] * 20 / 1000, solar_kwh * 0.6), 1)
 
     net_energy = solar_kwh - heating_kwh - 7.5
     hab["stored_energy_kwh"] = round(max(0, hab["stored_energy_kwh"] + net_energy), 1)
 
-    thermal_mass = surface_area * 5 * 1005
-    net_heat_w = (heating_kwh * 1000 / 24.6) - cond_loss_w
+    thermal_mass = surface_area * 20 * 1005  # 20× air thermal mass
+    net_heat_w = (heating_kwh * 1000 / 24.6) - cond_loss_w - rad_loss_w + metabolic_w + ground_coupling_w
     temp_change = (net_heat_w * 24.6 * 3600) / thermal_mass
     hab["interior_temp_k"] = round(max(150, min(310, hab["interior_temp_k"] + temp_change)), 1)
 

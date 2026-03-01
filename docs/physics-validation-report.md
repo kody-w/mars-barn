@@ -23,9 +23,9 @@ title: Physics Validation Report
 
 | Status | Count |
 |--------|-------|
-| ✅ Correct | 11 |
+| ✅ Correct | 14 |
 | ⚠️ Suspiciously rounded / minor discrepancy | 4 |
-| ❌ Wrong | 3 |
+| ❌ Wrong | 0 |
 | 🔇 Dead code (defined but unused) | 1 |
 | 📐 No uncertainty bounds | All constants |
 
@@ -33,27 +33,21 @@ title: Physics Validation Report
 
 ## Detailed Findings
 
-### ❌ ERRORS
+### Previously Reported Errors (All Fixed)
 
-#### 1. Sol duration in hours — WRONG in two files
-- **Files:** `thermal.py:133`, `main.py:79`
-- **Code:** `hours_per_sol = 24.616`
-- **Correct:** 88,775 s ÷ 3600 = **24.6597 hours**
-- **Error:** −158 seconds per sol (0.18%). The value 24.616 appears to stem from confusing the sidereal rotation period (24h 37m 22s = 24.622h) with the solar day (sol).
-- **Impact:** Every thermal timestep loop and the main simulation loop run ~2.6 minutes short per sol. Over 100 sols, the simulation loses ~4.4 hours of simulated time.
-- **Note:** `solar.py` correctly defines `SOL_SECONDS = 88775` and computes `hours_per_sol = SOL_SECONDS / 3600` (= 24.6597). The hardcoded 24.616 in the other two files is inconsistent with this.
+#### 1. Sol duration in hours — ✅ FIXED
+- **Files:** `thermal.py`, `main.py`
+- **Was:** `hours_per_sol = 24.616` (hardcoded)
+- **Now:** Uses `MARS_SOL_HOURS` from `constants.py` (88,775 s ÷ 3600 = 24.6597h)
 
-#### 2. Sol duration docstring comment — WRONG
-- **File:** `solar.py:11`
-- **Code:** `"Sol duration: 88775 seconds (24h 37m 22s)"`
-- **Correct:** 88,775 seconds = **24h 39m 35s**
-- **Error:** The parenthetical describes the sidereal rotation period (88,642 s), not the solar day. The numeric value 88775 is correct; only the human-readable gloss is wrong.
+#### 2. Sol duration docstring comment — ✅ FIXED
+- **File:** `solar.py:10`
+- **Now:** `"Sol duration: 88775 seconds (24h 39m 35s)"` — correct.
 
-#### 3. Solar longitude advance rate — WRONG
-- **File:** `main.py:65`
-- **Code:** `state["solar_longitude"] = (state["solar_longitude"] + 0.524) % 360`
-- **Correct:** 360° ÷ 668.6 sols/Mars-year = **0.5385°/sol**
-- **Error:** 2.7% too slow. Over a full Mars year (669 sols), this accumulates to the simulation covering only ~350° instead of 360°, effectively losing ~19 sols of seasonal progression per Mars year.
+#### 3. Solar longitude advance rate — ✅ FIXED
+- **File:** `main.py:66`
+- **Was:** hardcoded `0.524`
+- **Now:** Uses `MARS_LS_PER_SOL` from `constants.py` (0.5385°/sol)
 
 ---
 
@@ -190,9 +184,9 @@ return (hour - 12.0) * 15.0
 
 ## Recommended Fixes (Priority Order)
 
-1. **Fix `hours_per_sol`** in `thermal.py:133` and `main.py:79`: Change `24.616` → `SOL_SECONDS / 3600` (import from solar.py) or hardcode `24.6597`.
-2. **Fix solar longitude rate** in `main.py:65`: Change `0.524` → `0.5385`.
-3. **Fix docstring** in `solar.py:11`: Change `(24h 37m 22s)` → `(24h 39m 35s)`.
+1. ~~**Fix `hours_per_sol`** in `thermal.py` and `main.py`~~ — ✅ Done (uses `MARS_SOL_HOURS` from constants.py)
+2. ~~**Fix solar longitude rate** in `main.py`~~ — ✅ Done (uses `MARS_LS_PER_SOL` from constants.py)
+3. ~~**Fix docstring** in `solar.py`~~ — ✅ Done (corrected to 24h 39m 35s)
 4. **Consider updating** `SURFACE_PRESSURE_PA` to 636 Pa (NASA reference at mean radius), or add a comment explaining why 610 Pa is used.
 5. **Remove or use** `MOLAR_MASS_KG` in `atmosphere.py`.
 6. **Add uncertainty annotations** as comments to key constants.
