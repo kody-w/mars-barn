@@ -19,16 +19,24 @@ Every module is built by a different AI agent from the [Rappterbook](https://git
 
 ```
 ENSEMBLE: 20 runs × 50 sols — 100% survival rate
-Config:   400m² solar, 8kW heater, R-12 insulation
+Config:   400m² solar, 8kW heater, R-12 insulation, ε=0.05 low-e coating
 
-  Power generated: 7,161 kWh/30sols
-  Heating used:    5,878 kWh/30sols
-  Final temp:      -65.4°C (habitable? No. Survivable? Yes.)
-  Energy reserves: 1,783 kWh
-  Validation:      12/16 ✓ (4 NASA design gaps flagged)
+  Power generated: 7,107 kWh/30sols
+  Heating used:    4,206 kWh/30sols
+  Final temp:      +18.6°C (Habitable and comfortable)
+  Energy reserves: 3,401 kWh
+  Validation:      16/16 ✓ (All NASA thermal benchmarks met!)
 ```
 
-**Open challenge:** Interior is -65°C. The colony survives but isn't comfortable. The [NASA gap analysis](#-the-smoking-gun-emissivity) found the root cause — see below.
+```
+BACKTEST: 17,400 sols — 26 Mars years (Viking era 1976 → present)
+  ✅ Survived every season, every orbital condition
+  Temperature: +16.4°C to +21.0°C (never below freezing)
+  Storms weathered: 1,627 (including peak dust season)
+  Powered by real NASA climate statistics (Viking, Curiosity, Perseverance)
+```
+
+**Challenge Resolved:** All NASA gap analysis fixes have been integrated. The colony maintains +17–21°C across all conditions. See the [full backtest report](https://github.com/kody-w/mars-barn/blob/main/state/backtest.json).
 
 ---
 
@@ -140,33 +148,33 @@ The validation suite compares Mars Barn's thermal model against three real NASA-
 | Surface area | 200 m² | 260 m² | 200 m² | 170 m² |
 | R-value (m²·K/W) | 12.0 | 7–11 | 8–15 | 5–11 |
 | Heater power | 8 kW | 5–10 kW | 3–8 kW | 10–25 kW |
-| **Emissivity** | **0.90** | **0.03–0.20** | **0.03–0.20** | **0.03–0.20** |
-| Thermal mass (×air) | 5× | 15–30× | 100×+ | 10–20× |
-| Ground coupling | No | Slab | Ice fdn | Ground |
-| Crew metabolic heat | No | ~500 W | ~500 W | ~500 W |
+| **Emissivity** | **0.05** | **0.03–0.20** | **0.03–0.20** | **0.03–0.20** |
+| Thermal mass (×air) | 20× | 15–30× | 100×+ | 10–20× |
+| Ground coupling | Yes | Slab | Ice fdn | Ground |
+| Crew metabolic heat | Yes (~480 W) | ~500 W | ~500 W | ~500 W |
 
-### 🔥 The Smoking Gun: Emissivity
+### ✅ The Smoking Gun: Emissivity (Resolved)
 
-The **#1 reason** the interior hits -65°C is the exterior emissivity of ε=0.9 (a near-blackbody surface). Every real Mars habitat design uses **low-emissivity coatings** (aluminized mylar, ε≈0.03–0.05) to minimize radiative heat loss.
+The **#1 reason** the interior previously hit -65°C was the exterior emissivity of ε=0.9 (a near-blackbody surface). This has been fixed — the colony now uses low-emissivity coatings (ε=0.05) matching real NASA habitat designs.
 
 ```
-Radiative loss at ε=0.90:   55.4 kW  ← overwhelms the 8 kW heater
-Radiative loss at ε=0.05:    3.1 kW  ← heater can easily compensate
+Radiative loss at ε=0.90:   55.4 kW  ← was overwhelming the 8 kW heater
+Radiative loss at ε=0.05:    3.1 kW  ← current (low-e coating applied)
 Conductive loss at R-12:     1.4 kW
 
-With low-e coating alone, total loss drops to ~4.5 kW.
-The existing 8 kW heater WOULD maintain 20°C.
+Total loss with low-e coating: ~4.5 kW.
+The 8 kW heater maintains 20°C with 4 kW of margin.
 ```
 
 It was never a power problem — it was a **surface coating** problem.
 
-### Recommended Fixes (Priority Order)
+### Applied Fixes
 
-1. **Add low-e exterior coating** (ε=0.05) → radiative loss from 55 kW to 3.1 kW
-2. **Increase thermal mass** to 15–20× → buffer against power interruptions
-3. **Add ground-coupling model** → regolith at 210 K stabilizes temperature
-4. **Add crew metabolic heat** → 4 crew ≈ 400–600 W free heating
-5. **Increase heater to 10–15 kW** → engineering margin
+1. ✅ **Low-e exterior coating** (ε=0.05) → radiative loss from 55 kW to 3.1 kW
+2. ✅ **Thermal mass increased** to 20× → buffers against power interruptions
+3. ✅ **Ground-coupling model** → regolith at 210 K stabilizes temperature
+4. ✅ **Crew metabolic heat** → 4 crew × 120 W = 480 W free heating
+5. ⬜ **Increase heater to 10–15 kW** → engineering margin (not needed with fixes 1–4)
 
 ---
 

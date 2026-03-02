@@ -2,15 +2,15 @@
   "name": "Mars Barn",
   "launch_date": "2026-02-28T00:00:00Z",
   "sol": 1,
-  "solar_longitude": 37.0,
+  "solar_longitude": 37.6,
   "location": {
     "latitude": -4.5,
     "longitude": 137.4,
     "name": "Jezero Crater"
   },
   "habitat": {
-    "interior_temp_k": 290.9,
-    "stored_energy_kwh": 559.9,
+    "interior_temp_k": 290.4,
+    "stored_energy_kwh": 559.7,
     "solar_panel_area_m2": 400.0,
     "panel_efficiency": 0.22,
     "panel_dust_factor": 0.998,
@@ -19,7 +19,8 @@
     "ground_coupling_depth_m": 0.0,
     "crew_size": 4,
     "water_reserves_l": 199.6,
-    "food_reserves_kg": 117.6,
+    "food_reserves_kg": 298.0,
+    "fresh_greens_kg": 0,
     "harvest_total_kg": 0.0
   },
   "crew": {
@@ -34,18 +35,64 @@
     "co2_ppm": 400,
     "water_daily_l": 5.0
   },
+  "resupply": {
+    "shuttles": [
+      {
+        "id": "shuttle-alpha",
+        "launched_sol": -100,
+        "eta_sol": 100,
+        "manifest": {
+          "protein_powder_kg": 200,
+          "dehydrated_greens_kg": 40,
+          "vitamin_packs": 500,
+          "water_l": 100,
+          "spare_panels_m2": 20
+        },
+        "status": "in_transit"
+      },
+      {
+        "id": "shuttle-bravo",
+        "launched_sol": -50,
+        "eta_sol": 210,
+        "manifest": {
+          "protein_powder_kg": 180,
+          "dehydrated_greens_kg": 30,
+          "vitamin_packs": 400,
+          "water_l": 80,
+          "spare_panels_m2": 0
+        },
+        "status": "in_transit"
+      },
+      {
+        "id": "shuttle-charlie",
+        "launched_sol": 0,
+        "eta_sol": 320,
+        "manifest": {
+          "protein_powder_kg": 200,
+          "dehydrated_greens_kg": 40,
+          "vitamin_packs": 500,
+          "water_l": 100,
+          "spare_panels_m2": 10
+        },
+        "status": "in_transit"
+      }
+    ],
+    "next_launch_sol": 120,
+    "launch_cadence_sols": 120,
+    "total_deliveries": 0
+  },
   "active_events": [],
   "log": [
     {
       "sol": 1,
-      "ls": 37.0,
-      "int_c": 17.8,
-      "ext_c": -58.5,
-      "solar_kwh": 215.4,
+      "ls": 37.6,
+      "int_c": 17.2,
+      "ext_c": -58.6,
+      "solar_kwh": 215.2,
       "heat_kwh": 148.0,
       "stored_kwh": 560.0,
       "dust": 0.998,
-      "food_kg": 117.6,
+      "food_kg": 298.0,
       "morale": 0.82,
       "health": 1.0,
       "events": [],
@@ -54,22 +101,24 @@
   ],
   "stats": {
     "sols_survived": 1,
-    "total_power_kwh": 215.4,
+    "total_power_kwh": 215.2,
     "total_heating_kwh": 148.0,
     "dust_devils": 0,
     "storms_survived": 0,
     "meteorites": 0,
-    "min_temp_k": 290.9,
+    "min_temp_k": 290.4,
     "max_temp_k": 293.0,
     "harvests": 0,
     "crew_illnesses": 0,
     "evas_completed": 0,
-    "discoveries": 0
+    "discoveries": 0,
+    "resupply_deliveries": 0,
+    "resupply_kg_received": 0
   },
   "_meta": {
     "version": 2,
-    "created": "2026-03-01T23:20:13Z",
-    "updated": "2026-03-01T23:20:13Z",
+    "created": "2026-03-02T00:16:33Z",
+    "updated": "2026-03-02T00:16:33Z",
     "engine": "mars-barn-live-v2"
   },
   "_critical_sols": 0,
