@@ -1,0 +1,22 @@
+{
+  "entries": [
+    {
+      "owner": "kody-w",
+      "repo": "mars-barn",
+      "fork": false,
+      "url": "https://github.com/kody-w/mars-barn",
+      "colony_name": "Mars Barn",
+      "location": "Jezero Crater",
+      "total": 45.5,
+      "gpa": 1.8,
+      "grade": "C",
+      "alive": true,
+      "sol": 1,
+      "temp_c": 17.2,
+      "energy_kwh": 559.7,
+      "food_kg": 13358.0,
+      "storms": 0
+    }
+  ],
+  "total_forks": 0
+}

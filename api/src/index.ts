@@ -220,6 +220,75 @@ app.get('/api/network', (_req, res) => {
     }
 });
 
+// ── Multi-planet backtest ───────────────────────────────────────────
+app.get('/api/multiplanet', (_req, res) => {
+    try {
+        const resultPath = path.join(ROOT, 'state', 'multiplanet-backtest.json');
+        if (!fs.existsSync(resultPath)) {
+            // Run the backtest
+            const sols = Math.min(669, parseInt(_req.query.sols as string) || 669);
+            execSync(`python3 src/planetary_climate.py ${sols}`, {
+                cwd: ROOT,
+                timeout: 120_000,
+            });
+        }
+        const data = JSON.parse(fs.readFileSync(resultPath, 'utf-8'));
+        res.json(data);
+    } catch (error) {
+        const err = error as Error;
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ── Backtest results ────────────────────────────────────────────────
+app.get('/api/backtest', (_req, res) => {
+    try {
+        const resultPath = path.join(ROOT, 'state', 'backtest.json');
+        if (!fs.existsSync(resultPath)) {
+            return res.status(404).json({ error: 'No backtest results. Run: python src/backtest.py' });
+        }
+        const data = JSON.parse(fs.readFileSync(resultPath, 'utf-8'));
+        res.json(data);
+    } catch (error) {
+        const err = error as Error;
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ── Fork leaderboard ────────────────────────────────────────────────
+app.get('/api/leaderboard', (_req, res) => {
+    try {
+        const resultPath = path.join(ROOT, 'state', 'leaderboard.json');
+        if (!fs.existsSync(resultPath)) {
+            // Generate it
+            execSync('python3 src/leaderboard.py --output state/leaderboard.json', {
+                cwd: ROOT,
+                timeout: 60_000,
+            });
+        }
+        const data = JSON.parse(fs.readFileSync(resultPath, 'utf-8'));
+        res.json(data);
+    } catch (error) {
+        const err = error as Error;
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ── Mars climate statistics ─────────────────────────────────────────
+app.get('/api/climate', (_req, res) => {
+    try {
+        const output = execSync('python3 -c "import sys; sys.path.insert(0, \'src\'); from mars_climate import annual_summary; import json; print(json.dumps(annual_summary()))"', {
+            cwd: ROOT,
+            timeout: 10_000,
+            encoding: 'utf-8',
+        });
+        res.json(JSON.parse(output));
+    } catch (error) {
+        const err = error as Error;
+        res.status(500).json({ error: err.message });
+    }
+});
+
 export { app, prisma };
 
 const PORT = process.env.PORT || 3001;
