@@ -289,6 +289,23 @@ app.get('/api/climate', (_req, res) => {
     }
 });
 
+// ── Rappter integration (stub — returns static/empty data) ──────────
+app.get('/api/rappter', (req, res) => {
+    const file = req.query.file as string;
+    if (file === 'agents.json') return res.json([]);
+    if (file === 'trending.json') return res.json({ topics: [], updated: new Date().toISOString() });
+    res.json({});
+});
+
+// ── Engine status (stub) ────────────────────────────────────────────
+app.get('/api/engine/status', (_req, res) => {
+    res.json({ status: 'offline', message: 'Local engine not running' });
+});
+
+app.get('/api/engine/gateway', (_req, res) => {
+    res.json({ connected: false, endpoint: null });
+});
+
 export { app, prisma };
 
 const PORT = process.env.PORT || 3001;

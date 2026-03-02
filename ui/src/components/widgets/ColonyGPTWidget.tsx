@@ -151,7 +151,7 @@ export default function ColonyGPTWidget() {
     const [mode, setMode] = useState<Mode>('gpt');
 
     useEffect(() => {
-        fetch('/state/marsbarn-gpt.json')
+        fetch(import.meta.env.BASE_URL + 'state/marsbarn-gpt.json')
             .then(r => r.ok ? r : fetch('https://raw.githubusercontent.com/kody-w/mars-barn/main/state/marsbarn-gpt.json'))
             .then(r => { if (!r.ok) throw new Error('No weights'); return r.json(); })
             .then((data: GPTWeights) => { setWeights(data); setLoading(false); })
