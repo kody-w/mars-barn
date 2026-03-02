@@ -1,16 +1,16 @@
 {
   "name": "Mars Barn",
   "launch_date": "2026-02-28T00:00:00Z",
-  "sol": 1,
-  "solar_longitude": 37.6,
+  "sol": 2,
+  "solar_longitude": 38.1,
   "location": {
     "latitude": -4.5,
     "longitude": 137.4,
     "name": "Jezero Crater"
   },
   "habitat": {
-    "interior_temp_k": 289.8,
-    "stored_energy_kwh": 550.2,
+    "interior_temp_k": 290.2,
+    "stored_energy_kwh": 606.1,
     "solar_panel_area_m2": 400.0,
     "panel_efficiency": 0.22,
     "panel_dust_factor": 0.998,
@@ -18,13 +18,13 @@
     "heater_power_w": 8000.0,
     "ground_coupling_depth_m": 0.0,
     "crew_size": 4,
-    "water_reserves_l": 199.6,
-    "food_reserves_kg": 13358.0,
+    "water_reserves_l": 199.2,
+    "food_reserves_kg": 13356.0,
     "fresh_greens_kg": 0,
     "harvest_total_kg": 0.0
   },
   "crew": {
-    "morale": 0.8200000000000001,
+    "morale": 0.8400000000000001,
     "health": 1.0,
     "evas": 0,
     "discoveries": 0,
@@ -37,31 +37,31 @@
   },
   "equipment": {
     "solar_panels": {
-      "health": 0.9992,
+      "health": 0.9984,
       "decay_rate": 0.0008,
       "repair_cost_hrs": 4,
       "spare_parts": 5
     },
     "heater": {
-      "health": 0.9694,
+      "health": 0.9689,
       "decay_rate": 0.0005,
       "repair_cost_hrs": 3,
       "spare_parts": 3
     },
     "water_recycler": {
-      "health": 0.9994,
+      "health": 0.9988,
       "decay_rate": 0.0006,
       "repair_cost_hrs": 5,
       "spare_parts": 3
     },
     "hab_seals": {
-      "health": 0.9997,
+      "health": 0.9994,
       "decay_rate": 0.0003,
       "repair_cost_hrs": 6,
       "spare_parts": 4
     },
     "comms": {
-      "health": 0.9998,
+      "health": 0.9996,
       "decay_rate": 0.0002,
       "repair_cost_hrs": 2,
       "spare_parts": 2
@@ -69,7 +69,7 @@
   },
   "greenhouse": {
     "planted_area_m2": 20.0,
-    "growth_stage": 0.04,
+    "growth_stage": 0.08,
     "co2_ppm": 400,
     "water_daily_l": 5.0
   },
@@ -116,13 +116,30 @@
         "adapt:heater_bypass"
       ],
       "storm": false
+    },
+    {
+      "sol": 2,
+      "ls": 38.1,
+      "int_c": 17.1,
+      "ext_c": -58.7,
+      "solar_kwh": 214.6,
+      "heat_kwh": 151.2,
+      "stored_kwh": 606.0,
+      "dust": 0.998,
+      "food_kg": 13356.0,
+      "morale": 0.84,
+      "health": 1.0,
+      "events": [
+        "dust_devil"
+      ],
+      "storm": false
     }
   ],
   "stats": {
-    "sols_survived": 1,
-    "total_power_kwh": 215.0,
-    "total_heating_kwh": 147.3,
-    "dust_devils": 1,
+    "sols_survived": 2,
+    "total_power_kwh": 429.6,
+    "total_heating_kwh": 298.5,
+    "dust_devils": 2,
     "storms_survived": 0,
     "meteorites": 0,
     "min_temp_k": 289.8,
@@ -139,7 +156,7 @@
   "_meta": {
     "version": 2,
     "created": "2026-03-02T01:00:50Z",
-    "updated": "2026-03-02T01:00:50Z",
+    "updated": "2026-03-02T01:30:40Z",
     "engine": "mars-barn-live-v2"
   },
   "adaptations": {},
