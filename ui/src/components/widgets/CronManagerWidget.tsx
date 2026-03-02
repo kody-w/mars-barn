@@ -96,7 +96,7 @@ export default function CronManagerWidget() {
                         <span className="text-sm font-semibold text-slate-200 tracking-tight flex items-center gap-2">
                             OpenRappter Daemon
                             {isConnected && (
-                                <button
+                                <button type="button"
                                     onClick={handleStopDaemon}
                                     disabled={isDaemonLoading}
                                     title="Kill Local Daemon"
@@ -112,7 +112,7 @@ export default function CronManagerWidget() {
                     </div>
                 </div>
 
-                <button
+                <button type="button"
                     onClick={handleCreateTestCron}
                     disabled={!isConnected || loadingId === 'create'}
                     className="text-[11px] bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 font-medium px-3 py-1.5 rounded-md transition-colors border border-blue-500/20 disabled:opacity-50"
@@ -128,7 +128,7 @@ export default function CronManagerWidget() {
                         <PowerOff size={32} className="opacity-40" />
                         <p className="text-sm">Daemon Unreachable</p>
                         <div className="flex gap-2 mt-2">
-                            <button
+                            <button type="button"
                                 onClick={handleStartDaemon}
                                 disabled={isDaemonLoading}
                                 className="text-[11px] bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded font-semibold transition disabled:opacity-50"
@@ -166,7 +166,7 @@ export default function CronManagerWidget() {
 
                                 {/* macOS style discrete action icons */}
                                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button
+                                    <button type="button"
                                         onClick={() => handleAction(job.id, 'cron.run')}
                                         disabled={loadingId !== null}
                                         className="p-1.5 bg-black/20 hover:bg-blue-500/20 text-slate-400 hover:text-blue-400 rounded-md transition border border-transparent hover:border-blue-500/20"
@@ -174,7 +174,7 @@ export default function CronManagerWidget() {
                                     >
                                         <Play size={14} className="fill-current" />
                                     </button>
-                                    <button
+                                    <button type="button"
                                         onClick={() => handleAction(job.id, 'cron.enable', { enabled: !job.enabled })}
                                         disabled={loadingId !== null}
                                         className="p-1.5 bg-black/20 hover:bg-yellow-500/20 text-slate-400 hover:text-yellow-500 rounded-md transition border border-transparent hover:border-yellow-500/20"
@@ -182,7 +182,7 @@ export default function CronManagerWidget() {
                                     >
                                         {job.enabled ? <Pause size={14} className="fill-current" /> : <Power size={14} />}
                                     </button>
-                                    <button
+                                    <button type="button"
                                         onClick={() => handleAction(job.id, 'cron.remove')}
                                         disabled={loadingId !== null}
                                         className="p-1.5 bg-black/20 hover:bg-red-500/20 text-slate-400 hover:text-red-400 rounded-md transition border border-transparent hover:border-red-500/20 ml-1"

@@ -124,7 +124,7 @@ export default function PlanetSimWidget({ planetId, title, emoji, index = 0, onE
 
       {/* Enter Colony button for Mars */}
       {onEnterColony && (
-        <button
+        <button type="button"
           onClick={onEnterColony}
           className="mt-3 w-full py-2 rounded-xl bg-emerald-600/20 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-widest hover:bg-emerald-600/30 transition-all"
         >

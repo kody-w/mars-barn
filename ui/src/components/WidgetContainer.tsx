@@ -76,7 +76,7 @@ export default function WidgetContainer({ widget, children }: Props) {
                 {/* <span className="ml-auto text-xs font-mono text-slate-500">Pts: {Math.round(widget.score)}</span> */}
 
                 <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
-                    <button
+                    <button type="button"
                         onClick={(e) => { e.stopPropagation(); archiveWidget(widget.id); }}
                         className="text-slate-500 hover:text-red-400 transition-colors p-1"
                     >

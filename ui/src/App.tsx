@@ -102,7 +102,7 @@ export default function App() {
 
         {/* Tab switcher */}
         <div className="flex items-center gap-1 bg-zinc-900/80 rounded-full p-1 border border-white/5 whitespace-nowrap overflow-x-auto max-w-full">
-          <button
+          <button type="button"
             onClick={() => setTab('dashboard')}
             className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${tab === 'dashboard'
               ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
@@ -111,7 +111,7 @@ export default function App() {
           >
             <Network size={14} /> Operations UI
           </button>
-          <button
+          <button type="button"
             onClick={() => setTab('simulations')}
             className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${tab === 'simulations'
               ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
@@ -120,7 +120,7 @@ export default function App() {
           >
             <Orbit size={14} /> Solar System Sims
           </button>
-          <button
+          <button type="button"
             onClick={() => setTab('colonies')}
             className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${tab === 'colonies'
               ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'

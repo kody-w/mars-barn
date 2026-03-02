@@ -25,7 +25,7 @@ export default class ErrorBoundary extends Component<Props, State> {
           <p className="text-zinc-500 text-sm font-mono max-w-md">
             {this.state.error?.message ?? 'Unknown error'}
           </p>
-          <button
+          <button type="button"
             onClick={() => this.setState({ hasError: false, error: null })}
             className="mt-4 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-zinc-300 text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-all"
           >

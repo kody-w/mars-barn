@@ -31,7 +31,7 @@ export default function DockerWidget() {
                     </div>
 
                     <div className="flex gap-2">
-                        <button
+                        <button type="button"
                             onClick={(e) => { e.stopPropagation(); toggleStatus(i); }}
                             className="p-1.5 rounded bg-white/10 hover:bg-white/20 text-slate-300 transition-colors"
                         >

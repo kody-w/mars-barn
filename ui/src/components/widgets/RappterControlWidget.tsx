@@ -130,7 +130,7 @@ export default function RappterControlWidget() {
                     onMouseEnter={(e) => e.stopPropagation()}
                     className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-3 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors disabled:opacity-50 text-sm font-sans shadow-lg"
                 />
-                <button
+                <button type="button"
                     type="submit"
                     disabled={!isOnline || loading || !input.trim()}
                     onClick={(e) => e.stopPropagation()}

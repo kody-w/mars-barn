@@ -35,7 +35,7 @@ export default function DashboardGrid() {
                         The interface adapts to your workflow. Higher usage = higher priority space.
                     </p>
                 </div>
-                <button
+                <button type="button"
                     onClick={resetScores}
                     className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-white/5 hover:bg-white/10 text-sm text-slate-300 transition-colors border border-white/10"
                 >
@@ -73,7 +73,7 @@ export default function DashboardGrid() {
                     </h4>
                     <div className="flex gap-3 flex-wrap">
                         {archivedWidgets.map((w: WidgetData) => (
-                            <button
+                            <button type="button"
                                 key={w.id}
                                 onClick={() => restoreWidget(w.id)}
                                 className="px-3 py-1.5 rounded-full bg-surface border border-white/10 text-sm text-slate-400 hover:text-white hover:border-slate-500 transition-all flex items-center gap-2 group"

@@ -18,7 +18,7 @@ export default function SmartHomeWidget() {
                         <p className="text-xs text-slate-500">{lights ? 'On - 85% Brightness' : 'Off'}</p>
                     </div>
                 </div>
-                <button
+                <button type="button"
                     onClick={(e) => { e.stopPropagation(); setLights(!lights); }}
                     className={`w-12 h-6 rounded-full relative transition-colors ${lights ? 'bg-blue-500' : 'bg-slate-700'}`}
                 >

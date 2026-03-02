@@ -204,7 +204,7 @@ export default function ColonyHUD() {
           <div className="bg-emerald-950/20 border border-emerald-500/20 rounded-lg p-2.5 space-y-1.5">
             <div className="flex items-center justify-between">
               <div className="text-[9px] text-emerald-500/70 uppercase tracking-widest font-bold">🧠 Colony AI (Local)</div>
-              <button
+              <button type="button"
                 onClick={agent.regenerate}
                 className="text-[9px] text-zinc-600 hover:text-zinc-400 transition-colors"
               >
@@ -233,7 +233,7 @@ export default function ColonyHUD() {
         )}
       </div>
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
-        <button
+        <button type="button"
           onClick={() => fetchColony()}
           disabled={loading}
           className="flex items-center gap-2 px-4 py-2 bg-black/70 backdrop-blur-xl rounded-xl border border-white/10 text-xs font-mono text-zinc-300 hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50"
@@ -241,14 +241,14 @@ export default function ColonyHUD() {
           <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
           {loading ? 'Syncing…' : 'Refresh'}
         </button>
-        <button
+        <button type="button"
           onClick={handleExport}
           className="flex items-center gap-2 px-4 py-2 bg-black/70 backdrop-blur-xl rounded-xl border border-white/10 text-xs font-mono text-zinc-300 hover:text-white hover:border-sky-500/30 transition-all"
         >
           <Download size={12} />
           Export State
         </button>
-        <button
+        <button type="button"
           onClick={handleImport}
           className="flex items-center gap-2 px-4 py-2 bg-black/70 backdrop-blur-xl rounded-xl border border-white/10 text-xs font-mono text-zinc-300 hover:text-white hover:border-amber-500/30 transition-all"
         >

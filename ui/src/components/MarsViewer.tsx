@@ -11,7 +11,7 @@ export default function MarsViewer({ onBack }: MarsViewerProps) {
       <MarsScene />
       <ColonyHUD />
       {onBack && (
-        <button
+        <button type="button"
           onClick={onBack}
           className="absolute top-4 left-4 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-black/60 backdrop-blur-sm border border-white/10 text-zinc-300 text-xs font-bold uppercase tracking-widest hover:bg-black/80 hover:text-white transition-all"
         >
