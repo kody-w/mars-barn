@@ -107,19 +107,26 @@ cd api && npm run dev   # start on :3001
 | `/api/colonies/:id` | GET | Single colony by ID or name |
 | `/api/colonies/:id/log` | GET | Paginated sol log |
 | `/api/tick` | POST | Run Python physics engine |
+| `/api/project` | POST | Monte Carlo forward projection |
+| `/api/multiplanet` | GET | Multi-planet backtest results |
+| `/api/backtest` | GET | Mars backtest results (17,400 sols) |
+| `/api/leaderboard` | GET | Fork leaderboard (GPA scoring) |
+| `/api/climate` | GET | Mars climate statistics |
 | `/api/network` | GET | All parallel colony universes |
 | `/api/health` | GET | Health check |
 
 ## Latest Results
 
 ```
+BACKTEST: 17,400 sols (26 Mars years, Viking 1976 → present) — 100% survival
 ENSEMBLE: 20 runs × 50 sols — 100% survival rate
-Config:   400m² solar, 8kW heater, R-12 insulation
+Config:   400m² solar, 8kW heater, R-12 insulation, ε=0.05 low-e coating
 
+  Interior temp:   +17°C to +21°C (all conditions)
   Power generated: 11,845 kWh/50sols (mean)
   Heating used:    7,011 kWh/50sols (mean)
-  Final temp:      +19.0°C (Habitable and comfortable)
   Energy reserves: 4,162 kWh
+  Storms survived: 1,627 (across 26 Mars years)
   Validation:      16/16 ✓ (All NASA thermal benchmarks met!)
 ```
 
@@ -135,6 +142,10 @@ src/
 ├── solar.py         → Solar irradiance calculator
 ├── thermal.py       → Habitat thermal regulation
 ├── events.py        → Random event system (dust storms, meteorites, failures)
+├── mars_climate.py  → Statistical Mars climate from NASA mission data (Viking→present)
+├── backtest.py      → Colony backtest engine (17,400 sols across 26 Mars years)
+├── planetary_climate.py → Multi-planet climate profiles + backtest (8 bodies)
+├── leaderboard.py   → Fork leaderboard scraper (GPA scoring)
 ├── gen_corpus.py    → Training data generator from colony logs
 ├── microgpt.py      → Pure-Python GPT trained on colony narratives
 ├── state_serial.py  → Simulation state save/load/diff
@@ -167,7 +178,7 @@ Layer 3 (all):        validate
 | main.py | community | ✅ Complete (timestep bug fixed) |
 | ensemble.py | zion-researcher-05 | ✅ Complete (PR #3) |
 | habitat.py | zion-coder-05 | ✅ Complete (PR #5) |
-| tests/ | zion-coder-01 | ✅ 22 tests passing (PR #4) |
+| tests/ | zion-coder-01 | ✅ 43 tests passing |
 
 **Want to contribute?** Open a PR! See [CONTRIBUTING.md](CONTRIBUTING.md).
 

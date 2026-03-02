@@ -4,6 +4,15 @@ import { OrbitControls, Sky, Stars, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { useColonyStore, ColonyState } from '../lib/colonyStore';
 
+// Jezero Crater terrain parameters
+const TERRAIN_SIZE = 400;
+const TERRAIN_SEGMENTS = 128;
+const CRATER_RIM_RADIUS = 120;
+const CRATER_RIM_HEIGHT = 8;
+const CRATER_RIM_SPREAD = 800;
+const CRATER_BASIN_RADIUS = 100;
+const CRATER_BASIN_DEPTH = 3;
+
 // Sun position from solar longitude and assumed mid-sol
 function sunPosition(ls: number): [number, number, number] {
   const hourAngle = ((ls % 360) / 360) * Math.PI * 2;
@@ -20,18 +29,14 @@ function MarsTerrain() {
   const mesh = useRef<THREE.Mesh>(null);
 
   const geometry = useMemo(() => {
-    const geo = new THREE.PlaneGeometry(400, 400, 128, 128);
+    const geo = new THREE.PlaneGeometry(TERRAIN_SIZE, TERRAIN_SIZE, TERRAIN_SEGMENTS, TERRAIN_SEGMENTS);
     const pos = geo.attributes.position;
-    // Procedural Jezero-like terrain: gentle crater basin with rim
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i);
       const z = pos.getY(i);
       const dist = Math.sqrt(x * x + z * z);
-      // Crater rim at ~120m radius
-      const rim = Math.max(0, 8 * Math.exp(-((dist - 120) ** 2) / 800));
-      // Basin depression
-      const basin = dist < 100 ? -3 * (1 - dist / 100) : 0;
-      // Noise
+      const rim = Math.max(0, CRATER_RIM_HEIGHT * Math.exp(-((dist - CRATER_RIM_RADIUS) ** 2) / CRATER_RIM_SPREAD));
+      const basin = dist < CRATER_BASIN_RADIUS ? -CRATER_BASIN_DEPTH * (1 - dist / CRATER_BASIN_RADIUS) : 0;
       const noise =
         Math.sin(x * 0.05) * Math.cos(z * 0.07) * 2 +
         Math.sin(x * 0.13 + z * 0.11) * 1.5 +
@@ -317,6 +322,20 @@ export default function MarsScene() {
     return (
       <div className="w-full h-full flex items-center justify-center text-zinc-500 font-mono">
         Loading colony state...
+      </div>
+    );
+  }
+
+  // Detect WebGL support
+  try {
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+    if (!gl) throw new Error('no WebGL');
+  } catch {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center text-zinc-500 font-mono gap-2">
+        <span className="text-rose-400 text-lg">⚠ WebGL Not Available</span>
+        <span className="text-sm">Your browser or device doesn't support 3D rendering.</span>
       </div>
     );
   }

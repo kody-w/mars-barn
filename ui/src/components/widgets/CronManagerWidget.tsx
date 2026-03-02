@@ -1,9 +1,5 @@
 import useSWR from "swr";
-"use client";
-
-
 import { Clock, Play, Pause, Trash2, CalendarClock, Power, PowerOff, Activity } from 'lucide-react';
-
 import { useState } from 'react';
 
 
@@ -42,10 +38,10 @@ export default function CronManagerWidget() {
         }
     };
 
-    const handleAction = async (jobId: string, action: string, actionParams: any = {}) => {
+    const handleAction = async (jobId: string, action: string, actionParams: Record<string, unknown> = {}) => {
         setLoadingId(`${jobId}-${action}`);
         try {
-            await fetch('/api/engine/gateway', {
+            const res = await fetch('/api/engine/gateway', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -53,9 +49,10 @@ export default function CronManagerWidget() {
                     params: { jobId, ...actionParams }
                 })
             });
-            mutate(); // Refresh the list
-        } catch (err) {
-            console.error(err);
+            if (!res.ok) throw new Error(`Action failed (${res.status})`);
+            mutate();
+        } catch {
+            // Engine is offline — action silently ignored
         } finally {
             setLoadingId(null);
         }

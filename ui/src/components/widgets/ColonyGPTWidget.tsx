@@ -148,14 +148,17 @@ export default function ColonyGPTWidget() {
     const [loading, setLoading] = useState(true);
     const [generating, setGenerating] = useState(false);
     const [projecting, setProjecting] = useState(false);
+    const [projError, setProjError] = useState<string | null>(null);
     const [mode, setMode] = useState<Mode>('gpt');
 
     useEffect(() => {
-        fetch(import.meta.env.BASE_URL + 'state/marsbarn-gpt.json')
-            .then(r => r.ok ? r : fetch('https://raw.githubusercontent.com/kody-w/mars-barn/main/state/marsbarn-gpt.json'))
+        const controller = new AbortController();
+        fetch(import.meta.env.BASE_URL + 'state/marsbarn-gpt.json', { signal: controller.signal })
+            .then(r => r.ok ? r : fetch('https://raw.githubusercontent.com/kody-w/mars-barn/main/state/marsbarn-gpt.json', { signal: controller.signal }))
             .then(r => { if (!r.ok) throw new Error('No weights'); return r.json(); })
             .then((data: GPTWeights) => { setWeights(data); setLoading(false); })
-            .catch(() => setLoading(false));
+            .catch((err) => { if (err.name !== 'AbortError') setLoading(false); });
+        return () => controller.abort();
     }, []);
 
     const generate = useCallback(() => {
@@ -169,6 +172,7 @@ export default function ColonyGPTWidget() {
 
     const runProjection = useCallback(async () => {
         setProjecting(true);
+        setProjError(null);
         try {
             const res = await fetch('/api/project', {
                 method: 'POST',
@@ -178,8 +182,8 @@ export default function ColonyGPTWidget() {
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data: ProjectionResult = await res.json();
             setProjection(data);
-        } catch (err: any) {
-            console.error('Projection failed:', err);
+        } catch (err: unknown) {
+            setProjError(err instanceof Error ? err.message : 'Projection failed');
         }
         setProjecting(false);
     }, []);
@@ -230,11 +234,17 @@ export default function ColonyGPTWidget() {
                     </button>
 
                     <div className="flex-1 overflow-y-auto pr-2 space-y-3">
-                        {!projection && !projecting && (
+                        {!projection && !projecting && !projError && (
                             <p className="text-xs text-slate-500 italic">
                                 Monte Carlo projection: 20 parallel universes simulated forward using real physics,
                                 statistical trend analysis, and extreme-event modeling (Poisson-sampled thousand-year events).
                             </p>
+                        )}
+
+                        {projError && (
+                            <div className="text-xs text-rose-400 font-mono p-3 rounded bg-rose-500/10 border border-rose-500/20">
+                                ⚠ Projection failed: {projError}
+                            </div>
                         )}
 
                         {projecting && (
