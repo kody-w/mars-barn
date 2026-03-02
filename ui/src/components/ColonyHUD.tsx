@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { useColonyStore } from '../lib/colonyStore';
 import { useColonyAgent } from '../lib/useColonyAgent';
 import {
@@ -33,7 +33,7 @@ function StatusBadge({ alive }: { alive: boolean }) {
 }
 
 function Stat({ icon: Icon, label, value, unit, warn }: {
-  icon: any;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
   label: string;
   value: string | number;
   unit?: string;

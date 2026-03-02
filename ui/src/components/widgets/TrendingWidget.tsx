@@ -1,11 +1,7 @@
 import useSWR from "swr";
-"use client";
-
-
 import { Flame } from 'lucide-react';
 
-
-const fetcher = (url: string) => fetch(url).then(r => r.json());
+const fetcher = (url: string) => fetch(url).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); });
 
 export default function TrendingWidget() {
     const { data, error, isLoading } = useSWR('/api/rappter?file=trending.json', fetcher, { refreshInterval: 15000 });
@@ -17,7 +13,7 @@ export default function TrendingWidget() {
 
     return (
         <div className="flex flex-col h-full gap-3 overflow-y-auto pr-2">
-            {topics.map((t: any, i: number) => (
+            {topics.map((t: Record<string, string | number>, i: number) => (
                 <div key={i} className="flex flex-col gap-1 p-3 rounded bg-white/5 border border-white/5 hover:border-orange-500/50 transition-colors group">
                     <div className="flex items-start justify-between">
                         <h4 className="text-sm font-semibold text-orange-400 group-hover:text-orange-300 transition-colors">#{t.topic || t.id || 'Unknown_Topic'}</h4>

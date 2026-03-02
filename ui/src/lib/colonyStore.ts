@@ -125,11 +125,14 @@ export const useColonyStore = create<ColonyStore>((set, get) => ({
   fetchColony: async () => {
     set({ loading: true, error: null });
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10_000);
       // Try local API first, fall back to GitHub raw
-      let res = await fetch(API_LIVE_URL + `?t=${Date.now()}`);
-      if (!res.ok) {
-        res = await fetch(GITHUB_RAW_URL + `?t=${Date.now()}`);
+      let res = await fetch(API_LIVE_URL + `?t=${Date.now()}`, { signal: controller.signal }).catch(() => null);
+      if (!res?.ok) {
+        res = await fetch(GITHUB_RAW_URL + `?t=${Date.now()}`, { signal: controller.signal });
       }
+      clearTimeout(timeout);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data: ColonyState = await res.json();
       set({
@@ -137,8 +140,12 @@ export const useColonyStore = create<ColonyStore>((set, get) => ({
         loading: false,
         lastFetchedAt: new Date().toISOString(),
       });
-    } catch (err: any) {
-      set({ error: err.message, loading: false });
+    } catch (err: unknown) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        set({ error: 'Request timed out', loading: false });
+      } else {
+        set({ error: err instanceof Error ? err.message : 'Unknown error', loading: false });
+      }
     }
   },
 
@@ -152,8 +159,8 @@ export const useColonyStore = create<ColonyStore>((set, get) => ({
         lastFetchedAt: new Date().toISOString(),
         error: null,
       });
-    } catch (err: any) {
-      set({ error: `Import failed: ${err.message}` });
+    } catch (err: unknown) {
+      set({ error: `Import failed: ${err instanceof Error ? err.message : 'Invalid JSON'}` });
     }
   },
 

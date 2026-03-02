@@ -1,4 +1,3 @@
-"use client";
 
 import { useEffect, useState } from 'react';
 
@@ -25,7 +24,7 @@ export default function CpuWidget() {
                 <span className="text-slate-400 mb-1">Global User Metric Load</span>
             </div>
 
-            <div className="flex-1 w-full flex items-end justify-between items-stretch gap-1 mt-auto h-24">
+            <div className="flex-1 w-full flex items-end justify-between gap-1 mt-auto h-24">
                 {load.map((val, i) => (
                     <div key={i} className="flex-1 bg-slate-800 rounded-t-sm relative overflow-hidden group">
                         <div

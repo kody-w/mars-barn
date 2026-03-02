@@ -1,11 +1,7 @@
 import useSWR from "swr";
-"use client";
-
-
 import { useEffect, useRef } from 'react';
 
-
-const fetcher = (url: string) => fetch(url).then(r => r.json());
+const fetcher = (url: string) => fetch(url).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); });
 
 export default function AutonomyLogWidget() {
     const { data, error, isLoading } = useSWR('/api/rappter?file=autonomy_log.json', fetcher, { refreshInterval: 5000 });
@@ -22,7 +18,7 @@ export default function AutonomyLogWidget() {
 
     return (
         <div className="h-full w-full bg-black/50 rounded-lg p-3 overflow-y-auto font-mono text-[11px] leading-relaxed border border-white/5 break-words">
-            {entries.slice(-50).map((log: any, i: number) => (
+            {entries.slice(-50).map((log: Record<string, string>, i: number) => (
                 <div key={i} className={`mb-1.5 ${log.level === 'ERROR' ? 'text-red-400' :
                         log.level === 'WARN' ? 'text-yellow-400' :
                             log.level === 'DEBUG' ? 'text-slate-500' : 'text-green-400'

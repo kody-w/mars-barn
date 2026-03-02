@@ -149,7 +149,7 @@ export default function CronManagerWidget() {
                     </div>
                 ) : (
                     <div className="space-y-1">
-                        {jobs.map((job: any) => (
+                        {jobs.map((job: Record<string, string | boolean>) => (
                             <div key={job.id} className="group flex items-center justify-between p-3 rounded bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/5 transition-all">
                                 <div className="flex items-start gap-3">
                                     <div className="mt-1">

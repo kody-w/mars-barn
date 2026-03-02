@@ -1,13 +1,8 @@
 import useSWR from "swr";
-"use client";
-
-
 import { useState, useRef, useEffect } from 'react';
-
 import { RadioReceiver, Send, Loader2, User, Bot } from 'lucide-react';
 
-
-const fetcher = (url: string) => fetch(url).then(r => r.json());
+const fetcher = (url: string) => fetch(url).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); });
 
 interface Message {
     role: 'user' | 'agent';
@@ -54,8 +49,8 @@ export default function RappterControlWidget() {
             } else {
                 setMessages(prev => [...prev, { role: 'agent', content: `Error: ${result.error || result.stderr}`, isError: true }]);
             }
-        } catch (err: any) {
-            setMessages(prev => [...prev, { role: 'agent', content: `Network Error: ${err.message}`, isError: true }]);
+        } catch (err: unknown) {
+            setMessages(prev => [...prev, { role: 'agent', content: `Network Error: ${err instanceof Error ? err.message : 'Connection failed'}`, isError: true }]);
         } finally {
             setLoading(false);
         }

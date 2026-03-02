@@ -1,11 +1,7 @@
 import useSWR from "swr";
-"use client";
 
 
-
-
-
-const fetcher = (url: string) => fetch(url).then(r => r.json());
+const fetcher = (url: string) => fetch(url).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); });
 
 export default function PlatformStatsWidget() {
     const { data, error, isLoading } = useSWR('/api/engine/stats', fetcher, { refreshInterval: 5000 });

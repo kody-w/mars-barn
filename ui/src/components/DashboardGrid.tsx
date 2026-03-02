@@ -1,4 +1,3 @@
-"use client";
 
 import { useDashboardStore, type WidgetData } from '@/lib/store';
 import { AnimatePresence } from 'framer-motion';
