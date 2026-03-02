@@ -5,7 +5,7 @@ import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaClient } from '@prisma/client';
 import * as fs from 'fs';
 import * as path from 'path';
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 
 const ROOT = path.resolve(__dirname, '..', '..');
 const dbPath = process.env.DATABASE_URL?.replace('file:', '') || path.join(__dirname, '..', 'dev.db');
@@ -79,7 +79,7 @@ app.post('/api/colonies', async (req, res) => {
 app.post('/api/tick', async (_req, res) => {
     try {
         // Run the authoritative Python simulation (advances to current sol)
-        const output = execSync('python3 src/live.py', {
+        const output = execFileSync('python3', ['src/live.py'], {
             cwd: ROOT,
             timeout: 30_000,
             encoding: 'utf-8',
@@ -106,10 +106,9 @@ app.post('/api/project', (_req, res) => {
         const sols = Math.min(200, Math.max(1, parseInt(_req.body?.sols) || 30));
         const runs = Math.min(50, Math.max(5, parseInt(_req.body?.runs) || 20));
 
-        const output = execSync(
-            `python3 src/project.py --sols ${sols} --runs ${runs} --seed 42 --json`,
-            { cwd: ROOT, timeout: 120_000, encoding: 'utf-8' }
-        );
+        const output = execFileSync('python3', [
+            'src/project.py', '--sols', String(sols), '--runs', String(runs), '--seed', '42', '--json'
+        ], { cwd: ROOT, timeout: 120_000, encoding: 'utf-8' });
 
         const result = JSON.parse(output);
         res.json(result);
@@ -225,9 +224,8 @@ app.get('/api/multiplanet', (_req, res) => {
     try {
         const resultPath = path.join(ROOT, 'state', 'multiplanet-backtest.json');
         if (!fs.existsSync(resultPath)) {
-            // Run the backtest
-            const sols = Math.min(669, parseInt(_req.query.sols as string) || 669);
-            execSync(`python3 src/planetary_climate.py ${sols}`, {
+            const sols = Math.min(669, Math.max(1, parseInt(_req.query.sols as string) || 669));
+            execFileSync('python3', ['src/planetary_climate.py', String(sols)], {
                 cwd: ROOT,
                 timeout: 120_000,
             });
@@ -261,7 +259,7 @@ app.get('/api/leaderboard', (_req, res) => {
         const resultPath = path.join(ROOT, 'state', 'leaderboard.json');
         if (!fs.existsSync(resultPath)) {
             // Generate it
-            execSync('python3 src/leaderboard.py --output state/leaderboard.json', {
+            execFileSync('python3', ['src/leaderboard.py', '--output', 'state/leaderboard.json'], {
                 cwd: ROOT,
                 timeout: 60_000,
             });
@@ -277,7 +275,10 @@ app.get('/api/leaderboard', (_req, res) => {
 // ── Mars climate statistics ─────────────────────────────────────────
 app.get('/api/climate', (_req, res) => {
     try {
-        const output = execSync('python3 -c "import sys; sys.path.insert(0, \'src\'); from mars_climate import annual_summary; import json; print(json.dumps(annual_summary()))"', {
+        const output = execFileSync('python3', [
+            '-c',
+            'import sys; sys.path.insert(0, "src"); from mars_climate import annual_summary; import json; print(json.dumps(annual_summary()))'
+        ], {
             cwd: ROOT,
             timeout: 10_000,
             encoding: 'utf-8',

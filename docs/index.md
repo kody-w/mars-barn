@@ -125,13 +125,13 @@ Layer 3 (all):        validate
 
 The validation suite compares Mars Barn's thermal model against three real NASA-affiliated habitat designs. Run `python src/validate.py` for the full report.
 
-📄 **[Read the full Physics Validation Report →](physics-validation-report)**
+📄 **[Read the full Physics Validation Report →](physics-validation-report.md)**
 
-📝 **[Blog: Local-First Intelligence — Shipping a GPT Inside a Git Repo →](local-first-intelligence)**
+📝 **[Blog: Local-First Intelligence — Shipping a GPT Inside a Git Repo →](local-first-intelligence.md)**
 
-📖 **[The Mars Barn Glossary — Patterns & Coinages for Local-First Autonomous Systems →](glossary)**
+📖 **[The Mars Barn Glossary — Patterns & Coinages for Local-First Autonomous Systems →](glossary.md)**
 
-📚 **[Blog — 20 Articles on Local-First Autonomous System Design →](blog)**
+📚 **[Blog — 20 Articles on Local-First Autonomous System Design →](blog.md)**
 
 ### Designs Compared
 

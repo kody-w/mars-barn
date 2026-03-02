@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import PlanetSimWidget from './components/PlanetSimWidget';
 import DashboardGrid from '@/components/DashboardGrid';
 import MarsViewer from './components/MarsViewer';
+import ErrorBoundary from './components/ErrorBoundary';
 
 interface ColonyStats {
   solar_efficiency: number;
