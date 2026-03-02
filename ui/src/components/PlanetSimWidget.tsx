@@ -1,6 +1,18 @@
 import { useSimulationData } from '../lib/useSimulationData';
 import { motion } from 'framer-motion';
 
+// Multi-planet backtest results (from src/planetary_climate.py, 669 sols)
+const BACKTEST_RESULTS: Record<string, { survived: boolean; sols: number; tempRange: string; penalty: string }> = {
+  moon:    { survived: true,  sols: 669, tempRange: '+15 to +22°C', penalty: '2.0×' },
+  mars:    { survived: true,  sols: 669, tempRange: '+17 to +20°C', penalty: '1.0×' },
+  venus:   { survived: false, sols: 1,   tempRange: '-110°C',       penalty: '5.0×' },
+  mercury: { survived: false, sols: 12,  tempRange: '-76 to +11°C', penalty: '3.0×' },
+  jupiter: { survived: false, sols: 4,   tempRange: '-19 to -12°C', penalty: '6.0×' },
+  saturn:  { survived: false, sols: 4,   tempRange: '-27 to -13°C', penalty: '5.0×' },
+  europa:  { survived: false, sols: 4,   tempRange: '-26 to -12°C', penalty: '4.0×' },
+  titan:   { survived: false, sols: 4,   tempRange: '-40 to -17°C', penalty: '4.5×' },
+};
+
 interface Props {
   planetId: string;
   title: string;
@@ -94,6 +106,21 @@ export default function PlanetSimWidget({ planetId, title, emoji, index = 0, onE
           &gt; {t.lastEvent}
         </motion.span>
       </div>
+
+      {/* Backtest survival badge */}
+      {BACKTEST_RESULTS[planetId] && (
+        <div className={`mt-2 px-3 py-1.5 rounded-xl text-[10px] font-mono border ${
+          BACKTEST_RESULTS[planetId].survived
+            ? 'bg-emerald-950/30 border-emerald-500/20 text-emerald-400'
+            : 'bg-rose-950/30 border-rose-500/20 text-rose-400'
+        }`}>
+          <div className="flex items-center justify-between">
+            <span>{BACKTEST_RESULTS[planetId].survived ? '✅' : '❌'} Backtest: {BACKTEST_RESULTS[planetId].sols} sols</span>
+            <span className="text-zinc-600">{BACKTEST_RESULTS[planetId].penalty}</span>
+          </div>
+          <div className="text-zinc-500 mt-0.5">{BACKTEST_RESULTS[planetId].tempRange}</div>
+        </div>
+      )}
 
       {/* Enter Colony button for Mars */}
       {onEnterColony && (
