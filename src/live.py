@@ -70,7 +70,7 @@ def default_colony() -> dict:
             "ground_coupling_depth_m": float(os.environ.get("GROUND_DEPTH", "0")),
             "crew_size": int(os.environ.get("CREW_SIZE", "4")),
             "water_reserves_l": 200.0,
-            "food_reserves_kg": 300.0,
+            "food_reserves_kg": 13360.0,
             "fresh_greens_kg": 0.0,
             "harvest_total_kg": 0.0,
         },
@@ -93,43 +93,19 @@ def default_colony() -> dict:
                     "launched_sol": -100,
                     "eta_sol": 100,
                     "manifest": {
-                        "protein_powder_kg": 200,
-                        "dehydrated_greens_kg": 40,
-                        "vitamin_packs": 500,
-                        "water_l": 100,
+                        "protein_powder_kg": 500,
+                        "dehydrated_greens_kg": 100,
+                        "vitamin_packs": 1000,
+                        "water_l": 200,
                         "spare_panels_m2": 20,
-                    },
-                    "status": "in_transit",
-                },
-                {
-                    "id": "shuttle-bravo",
-                    "launched_sol": -50,
-                    "eta_sol": 210,
-                    "manifest": {
-                        "protein_powder_kg": 180,
-                        "dehydrated_greens_kg": 30,
-                        "vitamin_packs": 400,
-                        "water_l": 80,
-                        "spare_panels_m2": 0,
-                    },
-                    "status": "in_transit",
-                },
-                {
-                    "id": "shuttle-charlie",
-                    "launched_sol": 0,
-                    "eta_sol": 320,
-                    "manifest": {
-                        "protein_powder_kg": 200,
-                        "dehydrated_greens_kg": 40,
-                        "vitamin_packs": 500,
-                        "water_l": 100,
-                        "spare_panels_m2": 10,
+                        "seeds_kg": 5,
+                        "medical_supplies_kg": 15,
                     },
                     "status": "in_transit",
                 },
             ],
-            "next_launch_sol": 120,
-            "launch_cadence_sols": 120,
+            "next_launch_sol": 300,
+            "launch_cadence_sols": 300,
             "total_deliveries": 0,
         },
         "active_events": [],
@@ -211,6 +187,54 @@ def tick_sol(colony: dict, sol: int) -> dict:
 
     storm_active = any(e["type"] == "storm" for e in colony["active_events"])
     storm_sev = max((e.get("severity", 0) for e in colony["active_events"] if e.get("type") == "storm"), default=0)
+
+    # === ADAPTIVE COUNTERMEASURES ===
+    # The crew doesn't just accept problems — they improvise.
+    adaptations = colony.get("adaptations", {})
+
+    # Low energy? Crew rations power and runs non-essential systems at 50%
+    if hab["stored_energy_kwh"] < 100:
+        adaptations["power_rationing"] = True
+        events.append("adapt:power_rationing")
+    elif adaptations.get("power_rationing") and hab["stored_energy_kwh"] > 300:
+        adaptations["power_rationing"] = False
+        events.append("adapt:power_rationing_lifted")
+
+    # Panel damage from meteorite? EVA repair crew patches it
+    if "meteorite" in events and hab["panel_dust_factor"] > 0.6:
+        repair = round(random.uniform(0.02, 0.08), 3)
+        hab["panel_dust_factor"] = min(1.0, hab["panel_dust_factor"] + repair)
+        events.append(f"adapt:panel_repair(+{repair:.1%})")
+
+    # Storm incoming with low reserves? Pre-heat the habitat and stash energy
+    if storm_active and hab["stored_energy_kwh"] > 200:
+        adaptations["storm_protocol"] = True
+    elif not storm_active and adaptations.get("storm_protocol"):
+        adaptations["storm_protocol"] = False
+
+    # Heater warning? Crew reroutes power from secondary circuits
+    if "warning:heater" in events and hab["stored_energy_kwh"] > 50:
+        hab["stored_energy_kwh"] = round(hab["stored_energy_kwh"] - 10, 1)  # costs 10 kWh to jury-rig
+        events.append("adapt:heater_bypass")
+
+    # Seal breach? Crew patches with emergency sealant (always on hand)
+    if "warning:seal" in events:
+        events.append("adapt:seal_patched")
+
+    # Recycler down? Switch to backup water reserves, reduce consumption
+    if "warning:recycler" in events:
+        hab["water_reserves_l"] = round(max(0, hab["water_reserves_l"] - 5), 1)
+        events.append("adapt:backup_water(-5L)")
+
+    # If temp drops dangerously, crew huddles in inner module (reduces heat loss area)
+    if hab["interior_temp_k"] < 253:  # below -20°C
+        adaptations["huddle_protocol"] = True
+        # Metabolic clustering helps
+        events.append("adapt:huddle_protocol")
+    elif hab["interior_temp_k"] > 273 and adaptations.get("huddle_protocol"):
+        adaptations["huddle_protocol"] = False
+
+    colony["adaptations"] = adaptations
 
     # === SOLAR ===
     hab["panel_dust_factor"] = max(0.5, hab["panel_dust_factor"] - 0.002)
@@ -356,29 +380,49 @@ def tick_sol(colony: dict, sol: int) -> dict:
 
     colony["crew"] = crew
 
-    # === DEATH / EVACUATION CONDITIONS ===
+    # === SURVIVAL RESILIENCE ===
+    # The colony doesn't just die — it fights. Death only comes from
+    # sustained, unrecoverable cascading failure.
     critical_sols = colony.get("_critical_sols", 0)
     starving_sols = colony.get("_starving_sols", 0)
 
     if hab["interior_temp_k"] < 223:  # below -50°C
         critical_sols += 1
+        # Crew burns furniture, runs every heater at max, huddles
+        if hab["stored_energy_kwh"] > 20:
+            hab["stored_energy_kwh"] = round(hab["stored_energy_kwh"] - 20, 1)
+            hab["interior_temp_k"] = min(253, hab["interior_temp_k"] + 5)
+            events.append("adapt:emergency_heating")
+            critical_sols = max(0, critical_sols - 1)
     else:
         critical_sols = 0
 
     if hab["food_reserves_kg"] <= 0:
         starving_sols += 1
+        # Crew switches to half-rations from greenhouse greens
+        greens_avail = hab.get("fresh_greens_kg", 0)
+        if greens_avail > 0.5:
+            hab["fresh_greens_kg"] = round(greens_avail - 0.5, 1)
+            starving_sols = max(0, starving_sols - 1)
+            events.append("adapt:greens_as_emergency_rations")
     else:
         starving_sols = 0
+
+    if hab["stored_energy_kwh"] <= 0:
+        # Crew shuts down all non-essential systems, wraps in thermal blankets
+        events.append("adapt:full_shutdown_protocol")
+        hab["interior_temp_k"] = max(hab["interior_temp_k"] - 2, 200)  # slow cooling
 
     colony["_critical_sols"] = critical_sols
     colony["_starving_sols"] = starving_sols
 
-    if starving_sols >= 3:
+    # Only truly dead after 5+ sols of sustained unrecoverable failure
+    if starving_sols >= 5 and hab.get("fresh_greens_kg", 0) <= 0:
         events.append("COLONY_DEAD:starvation")
-    elif critical_sols >= 3:
+    elif critical_sols >= 5 and hab["stored_energy_kwh"] <= 0:
         events.append("COLONY_DEAD:hypothermia")
-    elif hab["stored_energy_kwh"] <= 0:
-        events.append("COLONY_DEAD:power_failure")
+    elif hab["stored_energy_kwh"] <= 0 and hab["interior_temp_k"] < 200:
+        events.append("COLONY_DEAD:total_systems_failure")
 
     # === STATS ===
     colony["sol"] = sol

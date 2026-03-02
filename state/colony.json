@@ -19,7 +19,7 @@
     "ground_coupling_depth_m": 0.0,
     "crew_size": 4,
     "water_reserves_l": 199.6,
-    "food_reserves_kg": 298.0,
+    "food_reserves_kg": 13358.0,
     "fresh_greens_kg": 0,
     "harvest_total_kg": 0.0
   },
@@ -42,43 +42,19 @@
         "launched_sol": -100,
         "eta_sol": 100,
         "manifest": {
-          "protein_powder_kg": 200,
-          "dehydrated_greens_kg": 40,
-          "vitamin_packs": 500,
-          "water_l": 100,
-          "spare_panels_m2": 20
-        },
-        "status": "in_transit"
-      },
-      {
-        "id": "shuttle-bravo",
-        "launched_sol": -50,
-        "eta_sol": 210,
-        "manifest": {
-          "protein_powder_kg": 180,
-          "dehydrated_greens_kg": 30,
-          "vitamin_packs": 400,
-          "water_l": 80,
-          "spare_panels_m2": 0
-        },
-        "status": "in_transit"
-      },
-      {
-        "id": "shuttle-charlie",
-        "launched_sol": 0,
-        "eta_sol": 320,
-        "manifest": {
-          "protein_powder_kg": 200,
-          "dehydrated_greens_kg": 40,
-          "vitamin_packs": 500,
-          "water_l": 100,
-          "spare_panels_m2": 10
+          "protein_powder_kg": 500,
+          "dehydrated_greens_kg": 100,
+          "vitamin_packs": 1000,
+          "water_l": 200,
+          "spare_panels_m2": 20,
+          "seeds_kg": 5,
+          "medical_supplies_kg": 15
         },
         "status": "in_transit"
       }
     ],
-    "next_launch_sol": 120,
-    "launch_cadence_sols": 120,
+    "next_launch_sol": 300,
+    "launch_cadence_sols": 300,
     "total_deliveries": 0
   },
   "active_events": [],
@@ -92,7 +68,7 @@
       "heat_kwh": 148.0,
       "stored_kwh": 560.0,
       "dust": 0.998,
-      "food_kg": 298.0,
+      "food_kg": 13358.0,
       "morale": 0.82,
       "health": 1.0,
       "events": [],
@@ -117,10 +93,11 @@
   },
   "_meta": {
     "version": 2,
-    "created": "2026-03-02T00:16:33Z",
-    "updated": "2026-03-02T00:16:33Z",
+    "created": "2026-03-02T00:21:16Z",
+    "updated": "2026-03-02T00:21:16Z",
     "engine": "mars-barn-live-v2"
   },
+  "adaptations": {},
   "_critical_sols": 0,
   "_starving_sols": 0
 }
