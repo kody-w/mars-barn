@@ -22,9 +22,16 @@ except ImportError as e:
     sys.exit(1)
 
 STATE_FILE = Path(__file__).parent.parent / "data" / "colonies.json"
-SOLAR_LONGITUDE_ADVANCE = 0.5  # degrees per sol roughly
+SOLAR_LONGITUDE_ADVANCE = 0.5  # degrees per sol (approximate)
+DUST_STORM_PROBABILITY = 0.15  # per sol
+SUPPLY_DROP_PROBABILITY = 0.10  # per sol
+BASE_LIFE_SUPPORT_KWH = 500.0  # kWh per sol
+PANEL_ARRAY_SCALE = 10  # multiplier vs 100 m² reference array
+DIGITAL_TWIN_THRESHOLD_SOLS = 365
+DIGITAL_TWIN_PROBABILITY = 0.05  # chance per sol after threshold
 
 def tick_colony(colony, current_ls):
+    """Simulate one sol of colony physics: solar, thermal, events."""
     if colony.get("status") != "ALIVE":
         return colony
 
@@ -34,9 +41,8 @@ def tick_colony(colony, current_ls):
     solar_eff = stats.get("solar_efficiency", 1.0)
     r_val = stats.get("thermal_insulation", 12.0)
     
-    # Random Events
-    dust_storm = random.random() < 0.15
-    supply_drop = random.random() < 0.10
+    dust_storm = random.random() < DUST_STORM_PROBABILITY
+    supply_drop = random.random() < SUPPLY_DROP_PROBABILITY
     
     event_str = "Weather nominal."
     if dust_storm:
@@ -45,29 +51,22 @@ def tick_colony(colony, current_ls):
         supplies += 50.0
         event_str = "Orbital tether payload successfully captured (+50t supplies)."
         
-    # Physics Simulation
-    # 1. Solar generation for this sol
     energy_res = daily_energy(
         solar_longitude=current_ls, 
         dust_storm=dust_storm, 
         solar_multiplier=solar_eff
     )
-    generated_kwh = energy_res["total_kwh"] * 10  # Assume 1000m^2 array vs 100
+    generated_kwh = energy_res["total_kwh"] * PANEL_ARRAY_SCALE
     
-    # 2. Thermal heating required
     thermal_res = simulate_sol(
         solar_longitude=current_ls, 
         r_value=r_val, 
         dust_storm=dust_storm,
-        rtg_power_w=0.0 # pure solar test
+        rtg_power_w=0.0
     )
     heating_kwh = thermal_res["heating_kwh"]
+    total_consumed = heating_kwh + BASE_LIFE_SUPPORT_KWH
     
-    # Also base life support load (say 500 kWh/sol)
-    base_load = 500.0
-    total_consumed = heating_kwh + base_load
-    
-    # Update state
     batt += generated_kwh - total_consumed
     
     if batt < 0:
@@ -75,8 +74,7 @@ def tick_colony(colony, current_ls):
         colony["last_event"] = f"CRITICAL FAILURE: Battery depleted fighting thermal deficit. Died on Sol {colony.get('age_sols',0)+1}. Post-Mortem: {event_str}"
         batt = 0.0
     else:
-        # Check Digital Twin pitch
-        if colony.get("age_sols", 0) > 365 and random.random() < 0.05:
+        if colony.get("age_sols", 0) > DIGITAL_TWIN_THRESHOLD_SOLS and random.random() < DIGITAL_TWIN_PROBABILITY:
             colony["status"] = "DIGITAL_TWIN"
             colony["last_event"] = "Surpassed 1-year baseline organically. Flagged for 1:1 physical deployment."
         else:
@@ -86,9 +84,6 @@ def tick_colony(colony, current_ls):
     stats["battery_reserves_kwh"] = round(batt, 2)
     stats["supply_reserves_tons"] = round(supplies, 2)
     colony["stats"] = stats
-    
-    # Print status to console for logging
-    print(f"[{colony['id']}] Status: {colony['status']} | Age: {colony.get('age_sols',0)} Sols | Gen: {generated_kwh:.1f} kWh | Con: {total_consumed:.1f} kWh | Batt: {batt:.1f} kWh | Event: {colony['last_event']}")
     
     return colony
 

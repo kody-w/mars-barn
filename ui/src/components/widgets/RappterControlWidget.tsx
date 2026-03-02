@@ -132,7 +132,7 @@ export default function RappterControlWidget() {
                     placeholder={isOnline ? "Admin command..." : "Engine Offline"}
                     disabled={!isOnline || loading}
                     onClick={(e) => e.stopPropagation()}
-                    onMouseEnter={() => { }}
+                    onMouseEnter={(e) => e.stopPropagation()}
                     className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-3 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors disabled:opacity-50 text-sm font-sans shadow-lg"
                 />
                 <button

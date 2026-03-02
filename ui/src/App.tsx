@@ -36,6 +36,7 @@ type Tab = 'simulations' | 'colonies' | 'dashboard';
 export default function App() {
   const [colonies, setColonies] = useState<Colony[]>([]);
   const [loading, setLoading] = useState(true);
+  const [syncError, setSyncError] = useState(false);
   const [tab, setTab] = useState<Tab>('dashboard');
   const [zoomedPlanet, setZoomedPlanet] = useState<string | null>(null);
 
@@ -43,14 +44,14 @@ export default function App() {
     const fetchColonies = async () => {
       try {
         const res = await fetch('/api/colonies');
+        if (!res.ok) { setSyncError(true); return; }
         const data = await res.json();
         if (Array.isArray(data)) {
           setColonies(data);
-        } else if (data.error) {
-          console.error("API Proxy Error:", data.error);
+          setSyncError(false);
         }
-      } catch (err) {
-        console.error("Failed to fetch colonies", err);
+      } catch {
+        setSyncError(true);
       } finally {
         setLoading(false);
       }
@@ -93,7 +94,9 @@ export default function App() {
             Marsbarn Telemetry
           </h1>
           <p className="text-zinc-500 mt-2 text-sm tracking-wide">
-            Live connection established to autonomous orbital database.
+            {syncError
+              ? <span className="text-amber-500">⚠ API offline — showing cached data.</span>
+              : 'Live connection established to autonomous orbital database.'}
           </p>
         </div>
 
@@ -132,7 +135,9 @@ export default function App() {
       {/* Dashboard Grid Tab */}
       {tab === 'dashboard' && (
         <main className="flex-1 w-full bg-background text-foreground overflow-hidden font-sans rounded-[2rem] border border-white/10 relative min-h-[600px] shadow-2xl">
-          <DashboardGrid />
+          <ErrorBoundary>
+            <DashboardGrid />
+          </ErrorBoundary>
         </main>
       )}
 
@@ -167,7 +172,9 @@ export default function App() {
           transition={{ duration: 0.4 }}
           className="flex-1 pb-8"
         >
-          <MarsViewer onBack={() => setZoomedPlanet(null)} />
+          <ErrorBoundary>
+            <MarsViewer onBack={() => setZoomedPlanet(null)} />
+          </ErrorBoundary>
         </motion.main>
       )}
 
