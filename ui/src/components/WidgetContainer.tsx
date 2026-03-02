@@ -8,6 +8,7 @@ import {
     CalendarClock,
     Flame,
     RadioReceiver,
+    Brain,
     X
 } from 'lucide-react';
 
@@ -23,6 +24,7 @@ const getIcon = (type: string) => {
         case 'TRENDING_TOPICS': return <Flame size={18} />;
         case 'CRON_MANAGER': return <CalendarClock size={18} />;
         case 'RAPPTER_CONTROL': return <RadioReceiver size={18} />;
+        case 'COLONY_GPT': return <Brain size={18} />;
         default: return <BarChart3 size={18} />;
     }
 };

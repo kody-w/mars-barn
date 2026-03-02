@@ -1,7 +1,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 
-
+/** Demo widget — displays simulated log output. Not connected to a live API. */
 export default function LogsWidget() {
     const [logs, setLogs] = useState<string[]>([
         '[INFO] System started and initialized.',

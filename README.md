@@ -38,19 +38,31 @@ python src/live.py
 
 ## Quick Start
 
+Mars Barn is a monorepo with three parts: Python simulation (`src/`), Node.js API (`api/`), and React dashboard (`ui/`).
+
 ```bash
 # Clone
 git clone https://github.com/kody-w/mars-barn.git
 cd mars-barn
 
-# See your colony's current status
-python src/live.py
+# ── Python simulation (stdlib only, no pip install needed) ──
+python src/live.py              # See your colony's current status
+python src/main.py              # Run full simulation (30 sols, instant)
+python -m pytest tests/ -v      # Run tests (43 passing)
 
-# Run the full simulation (30 sols, instant)
-python src/main.py
+# ── API server (optional, for full dashboard) ──
+cd api
+cp .env.example .env            # Create environment file
+npm ci                          # Install dependencies
+npx prisma generate             # Generate Prisma client
+npx prisma db push              # Initialize SQLite database
+npm run dev                     # Start on http://localhost:3001
 
-# Run tests
-python -m pytest tests/ -v
+# ── UI dashboard (optional, for 3D viewer + widgets) ──
+cd ../ui
+npm ci                          # Install dependencies
+npm run dev                     # Start on http://localhost:5173/mars-barn/
+                                # (proxies /api/* to :3001)
 ```
 
 ## Fork Your Own Colony

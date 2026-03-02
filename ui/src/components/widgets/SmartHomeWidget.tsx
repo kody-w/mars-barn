@@ -1,9 +1,8 @@
 
 import { useState } from 'react';
-
 import { Lightbulb, Thermometer } from 'lucide-react';
 
-
+/** Demo widget — displays mock smart home controls. Not connected to hardware. */
 export default function SmartHomeWidget() {
     const [lights, setLights] = useState(true);
     const [temp, setTemp] = useState(72);

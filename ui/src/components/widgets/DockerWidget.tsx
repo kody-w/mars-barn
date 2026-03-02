@@ -1,9 +1,8 @@
 
 import { useState } from 'react';
-
 import { Play, Square, RefreshCcw } from 'lucide-react';
 
-
+/** Demo widget — displays mock container services. Not connected to Docker. */
 export default function DockerWidget() {
     const [services, setServices] = useState([
         { name: 'traefik-proxy', status: 'running', mem: '45MB' },

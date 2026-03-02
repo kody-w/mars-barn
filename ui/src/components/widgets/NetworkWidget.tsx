@@ -1,6 +1,7 @@
 
 
 
+/** Demo widget — displays animated network visualization. Uses mock data. */
 export default function NetworkWidget() {
     return (
         <div className="flex flex-col h-full justify-between items-center relative overflow-hidden bg-gradient-to-br from-black to-slate-950 p-4 rounded-lg rounded-tl-none -m-4">

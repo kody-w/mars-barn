@@ -209,7 +209,7 @@ app.get('/api/network', (_req, res) => {
                     crew: data.crew ?? null,
                     location: data.location ?? null,
                 };
-            } catch { return null; }
+            } catch (e) { console.warn(`Failed to parse state/${f}:`, e); return null; }
         }).filter(Boolean);
 
         res.json({ count: colonies.length, colonies });
@@ -311,7 +311,15 @@ export { app, prisma };
 
 const PORT = process.env.PORT || 3001;
 if (require.main === module) {
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
         console.log(`Mars Barn Engine running on port ${PORT}`);
     });
+
+    const shutdown = async () => {
+        server.close();
+        await prisma.$disconnect();
+        process.exit(0);
+    };
+    process.on('SIGTERM', shutdown);
+    process.on('SIGINT', shutdown);
 }

@@ -66,6 +66,8 @@ model Event {
   startSol    Int
   endSol      Int
   description String
+
+  @@index([colonyId])
 }
 
 model Log {
@@ -83,4 +85,7 @@ model Log {
   foodKg      Float
   events      String // comma-separated or JSON
   storm       Boolean  @default(false)
+
+  @@index([colonyId])
+  @@index([sol])
 }
