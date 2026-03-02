@@ -9,8 +9,8 @@
     "name": "Jezero Crater"
   },
   "habitat": {
-    "interior_temp_k": 290.4,
-    "stored_energy_kwh": 559.6,
+    "interior_temp_k": 289.8,
+    "stored_energy_kwh": 550.2,
     "solar_panel_area_m2": 400.0,
     "panel_efficiency": 0.22,
     "panel_dust_factor": 0.998,
@@ -43,7 +43,7 @@
       "spare_parts": 5
     },
     "heater": {
-      "health": 0.9995,
+      "health": 0.9694,
       "decay_rate": 0.0005,
       "repair_cost_hrs": 3,
       "spare_parts": 3
@@ -101,17 +101,19 @@
     {
       "sol": 1,
       "ls": 37.6,
-      "int_c": 17.2,
+      "int_c": 16.7,
       "ext_c": -58.6,
       "solar_kwh": 215.0,
-      "heat_kwh": 147.9,
-      "stored_kwh": 560.0,
+      "heat_kwh": 147.3,
+      "stored_kwh": 550.0,
       "dust": 0.998,
       "food_kg": 13358.0,
       "morale": 0.82,
       "health": 1.0,
       "events": [
-        "dust_devil"
+        "dust_devil",
+        "warning:heater",
+        "adapt:heater_bypass"
       ],
       "storm": false
     }
@@ -119,11 +121,11 @@
   "stats": {
     "sols_survived": 1,
     "total_power_kwh": 215.0,
-    "total_heating_kwh": 147.9,
+    "total_heating_kwh": 147.3,
     "dust_devils": 1,
     "storms_survived": 0,
     "meteorites": 0,
-    "min_temp_k": 290.4,
+    "min_temp_k": 289.8,
     "max_temp_k": 293.0,
     "harvests": 0,
     "crew_illnesses": 0,
@@ -136,8 +138,8 @@
   },
   "_meta": {
     "version": 2,
-    "created": "2026-03-02T00:29:24Z",
-    "updated": "2026-03-02T00:29:24Z",
+    "created": "2026-03-02T01:00:50Z",
+    "updated": "2026-03-02T01:00:50Z",
     "engine": "mars-barn-live-v2"
   },
   "adaptations": {},

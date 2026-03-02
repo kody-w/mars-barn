@@ -176,7 +176,7 @@ def tick_sol(colony: dict, sol: int) -> dict:
     stats = colony["stats"]
     lat = colony["location"]["latitude"]
 
-    # === EVENTS ===
+    # === EVENTS (Mars doesn't pull punches) ===
     events = []
     colony["active_events"] = [e for e in colony["active_events"] if e.get("end_sol", 0) > sol]
 
@@ -186,20 +186,69 @@ def tick_sol(colony: dict, sol: int) -> dict:
         events.append("dust_devil")
         stats["dust_devils"] += 1
 
-    if random.random() < 0.03:
+    # Local dust storms — frequent, moderate
+    if random.random() < 0.04:
         sev = round(random.uniform(0.3, 0.7), 2)
         dur = random.randint(2, 8)
         colony["active_events"].append({"type": "storm", "severity": sev, "end_sol": sol + dur})
         events.append(f"dust_storm({sev:.0%})")
         stats["storms_survived"] += 1
 
+    # Global dust storms — rare, devastating, long-lasting
+    if random.random() < 0.0005:
+        sev = round(random.uniform(0.8, 0.98), 2)
+        dur = random.randint(30, 120)
+        colony["active_events"].append({"type": "storm", "severity": sev, "end_sol": sol + dur})
+        events.append(f"GLOBAL_STORM({sev:.0%},{dur}sols)")
+        stats["storms_survived"] += 1
+
+    # Meteorite impacts — can damage equipment
     if random.random() < 0.02:
         events.append("meteorite")
         stats["meteorites"] += 1
+        # Direct equipment damage
+        equip = colony.get("equipment", {})
+        if equip and random.random() < 0.3:
+            target = random.choice(list(equip.keys()))
+            damage = round(random.uniform(0.05, 0.20), 3)
+            equip[target]["health"] = max(0, round(equip[target]["health"] - damage, 4))
+            events.append(f"impact_damage:{target}(-{damage:.0%})")
 
-    if random.random() < 0.008:
+    # Equipment warnings — random failures
+    if random.random() < 0.012:
         system = random.choice(["panel", "recycler", "heater", "seal"])
         events.append(f"warning:{system}")
+        # Warnings cause minor health hits
+        equip = colony.get("equipment", {})
+        sys_map = {"panel": "solar_panels", "heater": "heater", "recycler": "water_recycler", "seal": "hab_seals"}
+        if sys_map.get(system) in equip:
+            equip[sys_map[system]]["health"] = max(0, round(equip[sys_map[system]]["health"] - random.uniform(0.02, 0.08), 4))
+
+    # Solar flare — radiation spike, crew health hit, electronics risk
+    if random.random() < 0.005:
+        flare_sev = round(random.uniform(0.3, 0.9), 2)
+        events.append(f"solar_flare({flare_sev:.0%})")
+        crew_data = colony.get("crew", {})
+        crew_data["health"] = max(0.2, crew_data.get("health", 1) - flare_sev * 0.1)
+        # Electronics damage
+        equip = colony.get("equipment", {})
+        if equip and random.random() < flare_sev:
+            target = random.choice(["comms", "water_recycler", "heater"])
+            if target in equip:
+                equip[target]["health"] = max(0, round(equip[target]["health"] - flare_sev * 0.1, 4))
+                events.append(f"flare_damage:{target}")
+
+    # Marsquake — structural stress on seals
+    if random.random() < 0.003:
+        quake_mag = round(random.uniform(2.0, 5.5), 1)
+        events.append(f"marsquake({quake_mag})")
+        equip = colony.get("equipment", {})
+        if "hab_seals" in equip:
+            seal_damage = (quake_mag - 2.0) * 0.03
+            equip["hab_seals"]["health"] = max(0, round(equip["hab_seals"]["health"] - seal_damage, 4))
+        if quake_mag > 4.0:
+            crew_data = colony.get("crew", {})
+            crew_data["morale"] = max(0, crew_data.get("morale", 0.8) - 0.05)
 
     storm_active = any(e["type"] == "storm" for e in colony["active_events"])
     storm_sev = max((e.get("severity", 0) for e in colony["active_events"] if e.get("type") == "storm"), default=0)
@@ -306,7 +355,8 @@ def tick_sol(colony: dict, sol: int) -> dict:
     heating_kwh = round(thermal_result["heating_kwh"], 1)
 
     net_energy = solar_kwh - heating_kwh - 7.5
-    hab["stored_energy_kwh"] = round(max(0, hab["stored_energy_kwh"] + net_energy), 1)
+    BATTERY_CAPACITY_KWH = 5000.0  # realistic battery bank limit
+    hab["stored_energy_kwh"] = round(max(0, min(BATTERY_CAPACITY_KWH, hab["stored_energy_kwh"] + net_energy)), 1)
 
     # === GREENHOUSE (fresh greens — garnish, morale booster) ===
     gh = colony.get("greenhouse", {"planted_area_m2": 20, "growth_stage": 0, "co2_ppm": 400, "water_daily_l": 5})
@@ -318,7 +368,7 @@ def tick_sol(colony: dict, sol: int) -> dict:
     growth_rate = 0.08 * light_factor * water_factor * co2_factor * (gh["planted_area_m2"] / 20) * botanist_bonus
     gh["growth_stage"] = min(1.0, gh["growth_stage"] + growth_rate)
     recycle_rate = 0.92 * recycler_health  # degraded recycler loses water
-    hab["water_reserves_l"] = round(hab["water_reserves_l"] - gh["water_daily_l"] + gh["water_daily_l"] * recycle_rate, 1)
+    hab["water_reserves_l"] = round(max(0, hab["water_reserves_l"] - gh["water_daily_l"] + gh["water_daily_l"] * recycle_rate), 1)
 
     harvest_kg = 0.0
     if gh["growth_stage"] >= 1.0:
