@@ -71,6 +71,7 @@ def default_colony() -> dict:
             "crew_size": int(os.environ.get("CREW_SIZE", "4")),
             "water_reserves_l": 200.0,
             "food_reserves_kg": 120.0,
+            "fresh_greens_kg": 0.0,
             "harvest_total_kg": 0.0,
         },
         "crew": {
@@ -84,6 +85,26 @@ def default_colony() -> dict:
             "growth_stage": 0.0,
             "co2_ppm": 400,
             "water_daily_l": 5.0,
+        },
+        "resupply": {
+            "shuttles": [
+                {
+                    "id": "shuttle-alpha",
+                    "launched_sol": -130,
+                    "eta_sol": 130,
+                    "manifest": {
+                        "protein_powder_kg": 200,
+                        "dehydrated_greens_kg": 40,
+                        "vitamin_packs": 500,
+                        "water_l": 100,
+                        "spare_panels_m2": 20,
+                    },
+                    "status": "in_transit",
+                },
+            ],
+            "next_launch_sol": 260,
+            "launch_cadence_sols": 260,
+            "total_deliveries": 0,
         },
         "active_events": [],
         "log": [],
@@ -100,6 +121,8 @@ def default_colony() -> dict:
             "crew_illnesses": 0,
             "evas_completed": 0,
             "discoveries": 0,
+            "resupply_deliveries": 0,
+            "resupply_kg_received": 0,
         },
         "_meta": {
             "version": 2,
@@ -187,14 +210,14 @@ def tick_sol(colony: dict, sol: int) -> dict:
     net_energy = solar_kwh - heating_kwh - 7.5
     hab["stored_energy_kwh"] = round(max(0, hab["stored_energy_kwh"] + net_energy), 1)
 
-    # === GREENHOUSE (light × water × CO₂ → yield) ===
+    # === GREENHOUSE (fresh greens — garnish, morale booster) ===
     gh = colony.get("greenhouse", {"planted_area_m2": 20, "growth_stage": 0, "co2_ppm": 400, "water_daily_l": 5})
-    light_factor = min(1.0, solar_kwh / 150)  # normalized to typical good sol
+    light_factor = min(1.0, solar_kwh / 150)
     water_factor = min(1.0, hab["water_reserves_l"] / (gh["water_daily_l"] * 10))
     co2_factor = min(1.0, gh["co2_ppm"] / 800)
     growth_rate = 0.08 * light_factor * water_factor * co2_factor * gh["planted_area_m2"] / 20
     gh["growth_stage"] = min(1.0, gh["growth_stage"] + growth_rate)
-    hab["water_reserves_l"] = round(hab["water_reserves_l"] - gh["water_daily_l"] + gh["water_daily_l"] * 0.92, 1)  # 92% recycled
+    hab["water_reserves_l"] = round(hab["water_reserves_l"] - gh["water_daily_l"] + gh["water_daily_l"] * 0.92, 1)
 
     harvest_kg = 0.0
     if gh["growth_stage"] >= 1.0:
@@ -204,10 +227,63 @@ def tick_sol(colony: dict, sol: int) -> dict:
         events.append(f"harvest({harvest_kg:.1f}kg)")
 
     hab["harvest_total_kg"] = round(hab["harvest_total_kg"] + harvest_kg, 2)
+    hab["fresh_greens_kg"] = round(hab.get("fresh_greens_kg", 0) + harvest_kg, 1)
     colony["greenhouse"] = gh
 
+    # === AUTONOMOUS RESUPPLY SHUTTLES ===
+    resupply = colony.get("resupply", {"shuttles": [], "next_launch_sol": 260, "launch_cadence_sols": 260, "total_deliveries": 0})
+
+    # Check for shuttle arrivals
+    for shuttle in resupply.get("shuttles", []):
+        if shuttle["status"] == "in_transit" and sol >= shuttle["eta_sol"]:
+            # Shuttle has arrived! Unload manifest
+            manifest = shuttle.get("manifest", {})
+            food_delivered = manifest.get("protein_powder_kg", 0) + manifest.get("dehydrated_greens_kg", 0)
+            hab["food_reserves_kg"] = round(hab["food_reserves_kg"] + food_delivered, 1)
+            hab["water_reserves_l"] = round(hab["water_reserves_l"] + manifest.get("water_l", 0), 1)
+            if manifest.get("spare_panels_m2", 0) > 0:
+                hab["solar_panel_area_m2"] = round(hab["solar_panel_area_m2"] + manifest["spare_panels_m2"], 1)
+            shuttle["status"] = "delivered"
+            resupply["total_deliveries"] = resupply.get("total_deliveries", 0) + 1
+            stats["resupply_deliveries"] = stats.get("resupply_deliveries", 0) + 1
+            stats["resupply_kg_received"] = stats.get("resupply_kg_received", 0) + food_delivered
+            events.append(f"resupply({food_delivered:.0f}kg)")
+
+    # Auto-launch new shuttle at cadence
+    if sol >= resupply.get("next_launch_sol", 260):
+        transfer_time = random.randint(240, 280)  # Hohmann variance
+        new_shuttle = {
+            "id": f"shuttle-{resupply.get('total_deliveries', 0) + len([s for s in resupply.get('shuttles', []) if s['status'] == 'in_transit']) + 1}",
+            "launched_sol": sol,
+            "eta_sol": sol + transfer_time,
+            "manifest": {
+                "protein_powder_kg": 180 + random.randint(0, 40),
+                "dehydrated_greens_kg": 30 + random.randint(0, 20),
+                "vitamin_packs": 400 + random.randint(0, 200),
+                "water_l": 80 + random.randint(0, 40),
+                "spare_panels_m2": random.choice([0, 0, 10, 20]),
+            },
+            "status": "in_transit",
+        }
+        resupply["shuttles"].append(new_shuttle)
+        resupply["next_launch_sol"] = sol + resupply.get("launch_cadence_sols", 260)
+        events.append(f"shuttle_launched(eta:sol{new_shuttle['eta_sol']})")
+
+    # Prune delivered shuttles older than 10 sols
+    resupply["shuttles"] = [s for s in resupply.get("shuttles", [])
+                            if s["status"] == "in_transit" or sol - s.get("eta_sol", 0) < 10]
+    colony["resupply"] = resupply
+
     # === FOOD/WATER ===
-    hab["food_reserves_kg"] = round(max(0, hab["food_reserves_kg"] - hab["crew_size"] * 0.6 + harvest_kg), 1)
+    # Crew eats: 0.5 kg/day from dehydrated stores (protein powder + vitamins)
+    #            0.1 kg/day fresh greens from greenhouse (if available)
+    crew_size = hab["crew_size"]
+    stores_consumed = crew_size * 0.5
+    greens_desired = crew_size * 0.1
+    greens_consumed = min(greens_desired, hab.get("fresh_greens_kg", 0))
+    hab["food_reserves_kg"] = round(max(0, hab["food_reserves_kg"] - stores_consumed), 1)
+    hab["fresh_greens_kg"] = round(max(0, hab.get("fresh_greens_kg", 0) - greens_consumed), 1)
+    has_fresh_greens = greens_consumed >= greens_desired * 0.5
 
     # === CREW EVENTS & MORALE ===
     crew = colony.get("crew", {"morale": 0.8, "health": 1.0, "evas": 0, "discoveries": 0})
@@ -222,6 +298,10 @@ def tick_sol(colony: dict, sol: int) -> dict:
         crew["morale"] = max(0.0, crew["morale"] - 0.04)
     elif int_c < 0 or hab["food_reserves_kg"] < 15:
         crew["morale"] = max(0.0, crew["morale"] - 0.01)
+
+    # Fresh greens are a morale multiplier — garnish makes protein powder bearable
+    if has_fresh_greens:
+        crew["morale"] = min(1.0, crew["morale"] + 0.01)
 
     if storm_active:
         crew["morale"] = max(0.0, crew["morale"] - 0.03)
@@ -309,11 +389,16 @@ def print_status(colony: dict) -> None:
     loc = colony["location"]
     crew = colony.get("crew", {"morale": 0.8, "health": 1.0, "evas": 0, "discoveries": 0})
     gh = colony.get("greenhouse", {"growth_stage": 0})
+    resupply = colony.get("resupply", {"shuttles": [], "total_deliveries": 0})
     int_c = round(hab["interior_temp_k"] - 273.15, 1)
 
     status = "🟢 HABITABLE" if int_c > 0 else "🟡 COLD" if int_c > -30 else "🔴 CRITICAL"
     storm = " 🌪️ STORM" if colony["active_events"] else ""
     morale_icon = "😊" if crew["morale"] > 0.6 else "😐" if crew["morale"] > 0.3 else "😰"
+
+    # Next shuttle info
+    in_transit = [s for s in resupply.get("shuttles", []) if s["status"] == "in_transit"]
+    shuttle_str = f"ETA Sol {in_transit[0]['eta_sol']}" if in_transit else "none en route"
 
     print(f"""
 ╔═══════════════════════════════════════════════════╗
@@ -326,12 +411,15 @@ def print_status(colony: dict) -> None:
 ║  Power:      {stats['total_power_kwh']:>8.0f} kWh generated (total)       ║
 ║  Reserves:   {hab['stored_energy_kwh']:>8.1f} kWh                         ║
 ║  Panels:     {hab['panel_dust_factor']*100:>6.1f}%  efficiency                  ║
-║  Food:       {hab['food_reserves_kg']:>8.1f} kg  ({hab['harvest_total_kg']:.1f} kg harvested)    ║
+║  Food:       {hab['food_reserves_kg']:>8.1f} kg  (stores)                  ║
+║  Greens:     {hab.get('fresh_greens_kg',0):>8.1f} kg  (fresh)                   ║
 ║  Greenhouse: {gh['growth_stage']*100:>5.1f}%  growth                       ║
 ║  Crew:       {hab['crew_size']:>4d}  {morale_icon} morale {crew['morale']:.0%}  ❤ {crew['health']:.0%}     ║
+║  🚀 Shuttle: {shuttle_str:<34s}  ║
 ╠═══════════════════════════════════════════════════╣
 ║  Dust devils: {stats['dust_devils']:<4d} │ Storms: {stats['storms_survived']:<3d} │ Hits: {stats['meteorites']:<3d}  ║
 ║  EVAs: {stats.get('evas_completed',0):<3d} │ Discoveries: {stats.get('discoveries',0):<3d} │ 🤒 {stats.get('crew_illnesses',0):<3d}   ║
+║  Resupply: {stats.get('resupply_deliveries',0)} deliveries ({stats.get('resupply_kg_received',0):.0f} kg total)     ║
 ║  Temp range:  {stats['min_temp_k']-273.15:>+.0f}°C to {stats['max_temp_k']-273.15:>+.0f}°C                   ║
 ║  Survived:    {stats['sols_survived']} sols                             ║
 ╚═══════════════════════════════════════════════════╝
