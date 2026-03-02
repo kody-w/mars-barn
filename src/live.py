@@ -79,6 +79,19 @@ def default_colony() -> dict:
             "health": 1.0,
             "evas": 0,
             "discoveries": 0,
+            "specializations": {
+                "engineer": 1,
+                "botanist": 1,
+                "geologist": 1,
+                "medic": 1,
+            },
+        },
+        "equipment": {
+            "solar_panels":    {"health": 1.0, "decay_rate": 0.0008, "repair_cost_hrs": 4, "spare_parts": 5},
+            "heater":          {"health": 1.0, "decay_rate": 0.0005, "repair_cost_hrs": 3, "spare_parts": 3},
+            "water_recycler":  {"health": 1.0, "decay_rate": 0.0006, "repair_cost_hrs": 5, "spare_parts": 3},
+            "hab_seals":       {"health": 1.0, "decay_rate": 0.0003, "repair_cost_hrs": 6, "spare_parts": 4},
+            "comms":           {"health": 1.0, "decay_rate": 0.0002, "repair_cost_hrs": 2, "spare_parts": 2},
         },
         "greenhouse": {
             "planted_area_m2": 20.0,
@@ -98,6 +111,7 @@ def default_colony() -> dict:
                         "vitamin_packs": 1000,
                         "water_l": 200,
                         "spare_panels_m2": 20,
+                        "spare_parts": 10,
                         "seeds_kg": 5,
                         "medical_supplies_kg": 15,
                     },
@@ -125,6 +139,8 @@ def default_colony() -> dict:
             "discoveries": 0,
             "resupply_deliveries": 0,
             "resupply_kg_received": 0,
+            "repairs_completed": 0,
+            "parts_used": 0,
         },
         "_meta": {
             "version": 2,
@@ -236,11 +252,43 @@ def tick_sol(colony: dict, sol: int) -> dict:
 
     colony["adaptations"] = adaptations
 
-    # === SOLAR ===
+    # === EQUIPMENT DEGRADATION + REPAIR ===
+    equip = colony.get("equipment", {})
+    specs = colony.get("crew", {}).get("specializations", {})
+    engineer_count = specs.get("engineer", 1)
+
+    for sys_name, sys_data in equip.items():
+        # Natural degradation each sol
+        decay = sys_data.get("decay_rate", 0.0005)
+        # Storms accelerate wear
+        if storm_active:
+            decay *= (1 + storm_sev)
+        sys_data["health"] = round(max(0, sys_data["health"] - decay), 4)
+
+        # Auto-repair if health drops below 0.7 and we have parts + crew
+        if sys_data["health"] < 0.7 and sys_data.get("spare_parts", 0) > 0:
+            repair_amount = 0.15 * engineer_count  # engineers repair 2x
+            sys_data["health"] = round(min(1.0, sys_data["health"] + repair_amount), 4)
+            sys_data["spare_parts"] = sys_data.get("spare_parts", 0) - 1
+            stats["repairs_completed"] = stats.get("repairs_completed", 0) + 1
+            stats["parts_used"] = stats.get("parts_used", 0) + 1
+            events.append(f"repair:{sys_name}({sys_data['health']:.0%})")
+
+    # Distribute shuttle spare parts across equipment when delivered
+    # (handled in resupply section above — parts go to lowest-health system)
+
+    colony["equipment"] = equip
+
+    # Apply equipment health to system performance
+    panel_health = equip.get("solar_panels", {}).get("health", 1.0)
+    heater_health = equip.get("heater", {}).get("health", 1.0)
+    recycler_health = equip.get("water_recycler", {}).get("health", 1.0)
+
+    # === SOLAR (degraded by panel health) ===
     hab["panel_dust_factor"] = max(0.5, hab["panel_dust_factor"] - 0.002)
     dist = 1.0 / ((1 - MARS_ECCENTRICITY**2) / (1 + MARS_ECCENTRICITY * math.cos(math.radians(ls - PERIHELION_LS)))) ** 2
     peak_irr = 590 * dist * (1 - storm_sev * 0.7 if storm_active else 1)
-    solar_kwh = round(peak_irr * 0.4 * 12 * hab["solar_panel_area_m2"] * hab["panel_efficiency"] * hab["panel_dust_factor"] / 1000, 1)
+    solar_kwh = round(peak_irr * 0.4 * 12 * hab["solar_panel_area_m2"] * hab["panel_efficiency"] * hab["panel_dust_factor"] * panel_health / 1000, 1)
 
     # === THERMAL (uses the real thermal model for accuracy) ===
     from thermal import simulate_sol
@@ -251,7 +299,7 @@ def tick_sol(colony: dict, sol: int) -> dict:
         latitude_deg=lat,
         solar_longitude=ls,
         r_value=hab["insulation_r_value"],
-        heater_power_w=hab["heater_power_w"],
+        heater_power_w=hab["heater_power_w"] * heater_health,
         dust_storm=storm_active,
     )
     hab["interior_temp_k"] = thermal_result["end_temp_k"]
@@ -262,12 +310,15 @@ def tick_sol(colony: dict, sol: int) -> dict:
 
     # === GREENHOUSE (fresh greens — garnish, morale booster) ===
     gh = colony.get("greenhouse", {"planted_area_m2": 20, "growth_stage": 0, "co2_ppm": 400, "water_daily_l": 5})
+    botanist_count = specs.get("botanist", 1)
     light_factor = min(1.0, solar_kwh / 150)
     water_factor = min(1.0, hab["water_reserves_l"] / (gh["water_daily_l"] * 10))
     co2_factor = min(1.0, gh["co2_ppm"] / 800)
-    growth_rate = 0.08 * light_factor * water_factor * co2_factor * gh["planted_area_m2"] / 20
+    botanist_bonus = 1.0 + (botanist_count - 1) * 0.5  # each extra botanist +50%
+    growth_rate = 0.08 * light_factor * water_factor * co2_factor * (gh["planted_area_m2"] / 20) * botanist_bonus
     gh["growth_stage"] = min(1.0, gh["growth_stage"] + growth_rate)
-    hab["water_reserves_l"] = round(hab["water_reserves_l"] - gh["water_daily_l"] + gh["water_daily_l"] * 0.92, 1)
+    recycle_rate = 0.92 * recycler_health  # degraded recycler loses water
+    hab["water_reserves_l"] = round(hab["water_reserves_l"] - gh["water_daily_l"] + gh["water_daily_l"] * recycle_rate, 1)
 
     harvest_kg = 0.0
     if gh["growth_stage"] >= 1.0:
@@ -293,6 +344,15 @@ def tick_sol(colony: dict, sol: int) -> dict:
             hab["water_reserves_l"] = round(hab["water_reserves_l"] + manifest.get("water_l", 0), 1)
             if manifest.get("spare_panels_m2", 0) > 0:
                 hab["solar_panel_area_m2"] = round(hab["solar_panel_area_m2"] + manifest["spare_panels_m2"], 1)
+            # Distribute spare parts to lowest-health equipment
+            parts = manifest.get("spare_parts", 0)
+            if parts > 0:
+                for sys_name in sorted(equip, key=lambda s: equip[s].get("health", 1)):
+                    if parts <= 0:
+                        break
+                    give = min(parts, 3)
+                    equip[sys_name]["spare_parts"] = equip[sys_name].get("spare_parts", 0) + give
+                    parts -= give
             shuttle["status"] = "delivered"
             resupply["total_deliveries"] = resupply.get("total_deliveries", 0) + 1
             stats["resupply_deliveries"] = stats.get("resupply_deliveries", 0) + 1
@@ -312,6 +372,7 @@ def tick_sol(colony: dict, sol: int) -> dict:
                 "vitamin_packs": 400 + random.randint(0, 200),
                 "water_l": 80 + random.randint(0, 40),
                 "spare_panels_m2": random.choice([0, 0, 10, 20]),
+                "spare_parts": random.randint(5, 15),
             },
             "status": "in_transit",
         }
@@ -356,22 +417,26 @@ def tick_sol(colony: dict, sol: int) -> dict:
     if storm_active:
         crew["morale"] = max(0.0, crew["morale"] - 0.03)
 
-    # Illness (higher chance at low morale/health)
+    # Illness (higher chance at low morale/health, medic speeds recovery)
+    medic_count = specs.get("medic", 1)
     illness_chance = 0.02 + (1 - crew["health"]) * 0.05
     if random.random() < illness_chance:
         crew["health"] = max(0.3, crew["health"] - random.uniform(0.05, 0.15))
         stats["crew_illnesses"] = stats.get("crew_illnesses", 0) + 1
         events.append("crew:illness")
     else:
-        crew["health"] = min(1.0, crew["health"] + 0.005)
+        recovery = 0.005 * medic_count  # medics double recovery rate
+        crew["health"] = min(1.0, crew["health"] + recovery)
 
     # EVA (only when morale > 0.5 and no storm)
+    geologist_count = specs.get("geologist", 1)
     if not storm_active and crew["morale"] > 0.5 and random.random() < 0.15:
         crew["evas"] += 1
         stats["evas_completed"] = stats.get("evas_completed", 0) + 1
         events.append("eva")
-        # EVAs can yield discoveries
-        if random.random() < 0.25:
+        # EVAs can yield discoveries — geologists find more
+        discovery_chance = 0.25 * (1.0 + (geologist_count - 1) * 0.5)
+        if random.random() < discovery_chance:
             crew["discoveries"] += 1
             crew["morale"] = min(1.0, crew["morale"] + 0.05)
             stats["discoveries"] = stats.get("discoveries", 0) + 1
