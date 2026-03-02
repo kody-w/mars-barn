@@ -1,7 +1,4 @@
-
 import { useEffect, useState } from 'react';
-
-
 export default function CpuWidget() {
     const [load, setLoad] = useState<number[]>(Array(20).fill(0));
 

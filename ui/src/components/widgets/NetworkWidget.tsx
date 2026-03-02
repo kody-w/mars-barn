@@ -1,6 +1,3 @@
-
-
-
 /** Demo widget — displays animated network visualization. Uses mock data. */
 export default function NetworkWidget() {
     return (

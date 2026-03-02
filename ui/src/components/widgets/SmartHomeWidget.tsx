@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Lightbulb, Thermometer } from 'lucide-react';
 

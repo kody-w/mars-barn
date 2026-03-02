@@ -1,8 +1,6 @@
 import useSWR from "swr";
 import { Clock, Play, Pause, Trash2, CalendarClock, Power, PowerOff, Activity } from 'lucide-react';
 import { useState } from 'react';
-
-
 const fetcher = (url: string) => fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

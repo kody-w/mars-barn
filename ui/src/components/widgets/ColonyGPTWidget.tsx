@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useEffect } from 'react';
 import { Brain, FastForward, BarChart3 } from 'lucide-react';
 
