@@ -1,1000 +1,1000 @@
 sol1 cool +14c 106kw 419r happy
-sol2 cool +14c 106kw 334r happy crew:illness
-sol3 cool +14c 106kw 249r happy
-sol4 cool +14c 106kw 163r happy warning:seal adapt:seal_patched
+sol2 cool +14c 106kw 334r happy
+sol3 cool +14c 106kw 248r happy
+sol4 cool +14c 106kw 163r happy
 sol5 cool +14c 106kw 78r happy
-sol6 cool +12c 106kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol7 cool +13c 105kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol8 cool +12c 105kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol6 cool +12c 105kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol7 cool +13c 105kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol8 cool +11c 105kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol9 cool +13c 105kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol10 cool +13c 105kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol11 cool +13c 105kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol12 cool +13c 105kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol13 cool +13c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol12 cool +13c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol13 cool +13c 104kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
 sol14 cool +13c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol15 cool +13c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol16 cool +12c 104kw 0r happy adapt:power_rationing crew:illness adapt:full_shutdown_protocol
-sol17 cool +12c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol15 cool +12c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol16 cool +12c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol17 cool +12c 104kw 0r happy meteorite adapt:power_rationing adapt:panel_repair(+2.8%) eva discovery:mineral_deposit adapt:full_shutdown_protocol
 sol18 cool +12c 103kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol19 cool +12c 103kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol20 cool +12c 103kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol19 cool +12c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol20 cool +12c 103kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
 sol21 cool +12c 103kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol22 cool +12c 103kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol23 cool +12c 103kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol24 cool +12c 103kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol25 cool +12c 102kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol26 cool +12c 102kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol25 cool +12c 103kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol26 cool +12c 102kw 0r happy meteorite adapt:power_rationing adapt:panel_repair(+2.7%) crew:illness adapt:full_shutdown_protocol
 sol27 cool +12c 102kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol28 cool +12c 102kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol29 cool +12c 102kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol30 cool +12c 102kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol31 cool +12c 102kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol32 cool +11c 102kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol33 cool +11c 102kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol34 cool +11c 101kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol35 cool +11c 102kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol36 cool +11c 101kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol37 cool +11c 101kw 0r happy adapt:power_rationing harvest(4.0kg) adapt:full_shutdown_protocol
-sol38 cool +11c 101kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol39 cool +11c 101kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol31 cool +11c 102kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol32 cool +11c 102kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol33 cool +11c 101kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol34 cool +11c 102kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol35 cool +11c 101kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol36 cool +11c 101kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol37 cool +11c 101kw 0r happy adapt:power_rationing harvest(3.8kg) adapt:full_shutdown_protocol
+sol38 cool +11c 101kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol39 cool +11c 101kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
 sol40 cool +11c 101kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol41 cool +11c 101kw 0r happy adapt:power_rationing crew:illness adapt:full_shutdown_protocol
-sol42 cool +11c 101kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol43 cool +11c 101kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol41 cool +11c 101kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol42 cool +11c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol43 cool +11c 101kw 0r happy solar_flare(45%) flare_damage:comms adapt:power_rationing adapt:full_shutdown_protocol
 sol44 cool +11c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol45 nominal +16c 58kw 0r happy dust_storm(61%) adapt:power_rationing adapt:full_shutdown_protocol
-sol46 cool +14c 57kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol47 nominal +16c 57kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol48 nominal +16c 57kw 0r happy meteorite adapt:power_rationing adapt:panel_repair(+2.7%) adapt:full_shutdown_protocol
-sol49 nominal +16c 57kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol50 nominal +16c 57kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol51 nominal +16c 57kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol52 nominal +16c 57kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol53 cool +11c 99kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol54 cool +12c 99kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol55 nominal +16c 59kw 0r happy dust_storm(58%) adapt:power_rationing adapt:full_shutdown_protocol
-sol56 nominal +16c 59kw 0r happy dust_storm(46%) adapt:power_rationing adapt:full_shutdown_protocol
-sol57 nominal +16c 59kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol58 nominal +16c 59kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol59 nominal +16c 58kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol60 nominal +16c 58kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol61 nominal +16c 58kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol62 nominal +16c 58kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol63 cool +12c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol64 cool +11c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol45 cool +12c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol46 cool +11c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol47 cool +12c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol48 cool +10c 100kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol49 cool +12c 100kw 0r happy adapt:power_rationing crew:illness eva adapt:full_shutdown_protocol
+sol50 cool +12c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol51 cool +12c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol52 cool +12c 100kw 0r happy adapt:power_rationing crew:illness adapt:full_shutdown_protocol
+sol53 cool +12c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol54 cool +12c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol55 cool +12c 99kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol56 nominal +16c 58kw 0r happy dust_storm(59%) adapt:power_rationing adapt:full_shutdown_protocol
+sol57 nominal +16c 58kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol58 nominal +16c 58kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol59 cool +10c 99kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol60 cool +11c 99kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol61 nominal +16c 75kw 0r happy dust_storm(34%) adapt:power_rationing adapt:full_shutdown_protocol
+sol62 nominal +16c 75kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol63 nominal +16c 75kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol64 cool +12c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol65 cool +11c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol66 cool +11c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol67 cool +11c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol68 cool +11c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol69 cool +11c 97kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol69 cool +11c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol70 cool +11c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol71 cool +11c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol72 cool +11c 97kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol73 cool +11c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol74 cool +11c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol75 cool +11c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol76 cool +15c 53kw 0r happy dust_storm(65%) adapt:power_rationing adapt:full_shutdown_protocol
-sol77 nominal +15c 53kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol78 nominal +15c 53kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol79 cool +11c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol80 cool +11c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol81 cool +11c 97kw 0r happy adapt:power_rationing crew:illness adapt:full_shutdown_protocol
-sol82 cool +11c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol83 cool +10c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol84 cool +10c 97kw 0r happy adapt:power_rationing harvest(4.0kg) eva adapt:full_shutdown_protocol
-sol85 cool +10c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol86 cool +10c 96kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol87 cool +10c 96kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol88 cool +10c 96kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol89 cool +10c 96kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol90 cool +10c 96kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol91 cool +10c 96kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol92 cool +10c 96kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol93 cool +10c 96kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol94 cool +10c 96kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol95 cool +10c 96kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol96 cool +10c 96kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol97 cool +10c 96kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol98 cool +10c 96kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol99 cool +10c 96kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol100 cool +10c 96kw 0r happy adapt:power_rationing resupply(600kg) adapt:full_shutdown_protocol
-sol1 nominal +18c 160kw 484r happy
-sol2 nominal +18c 159kw 464r happy
-sol3 nominal +18c 159kw 444r happy eva
-sol4 nominal +18c 159kw 424r happy
-sol5 nominal +18c 159kw 403r happy
-sol6 nominal +18c 158kw 382r happy
-sol7 nominal +18c 158kw 362r happy
-sol8 nominal +18c 158kw 341r happy
-sol9 nominal +17c 158kw 320r happy
-sol10 nominal +17c 157kw 298r happy
-sol11 nominal +17c 157kw 276r happy
-sol12 nominal +17c 157kw 255r happy
-sol13 nominal +17c 156kw 233r happy eva
-sol14 nominal +17c 156kw 211r happy
-sol15 nominal +19c 156kw 185r happy
-sol16 nominal +17c 156kw 163r happy warning:seal adapt:seal_patched
-sol17 nominal +19c 156kw 136r happy
-sol18 nominal +17c 156kw 114r happy
-sol19 nominal +18c 155kw 88r happy
-sol20 nominal +16c 155kw 65r happy adapt:power_rationing
-sol21 nominal +18c 155kw 38r happy adapt:power_rationing
-sol22 nominal +18c 155kw 11r happy adapt:power_rationing
-sol23 nominal +16c 154kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol71 cool +11c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol72 cool +11c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol73 cool +11c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol74 cool +11c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol75 cool +11c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol76 cool +11c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol77 cool +11c 98kw 0r happy adapt:power_rationing harvest(5.5kg) adapt:full_shutdown_protocol
+sol78 cool +11c 98kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol79 cool +11c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol80 cool +11c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol81 cool +11c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol82 cool +11c 97kw 0r happy adapt:power_rationing eva discovery:ice_lens adapt:full_shutdown_protocol
+sol83 cool +11c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol84 cool +11c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol85 cool +11c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol86 cool +11c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol87 cool +11c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol88 cool +11c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol89 cool +11c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol90 cool +11c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol91 cool +11c 97kw 0r happy adapt:power_rationing eva discovery:lava_tube adapt:full_shutdown_protocol
+sol92 cool +11c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol93 cool +11c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol94 cool +11c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol95 cool +11c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol96 cool +11c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol97 cool +11c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol98 cool +11c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol99 cool +11c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol100 cool +11c 97kw 0r happy adapt:power_rationing resupply(600kg) adapt:full_shutdown_protocol
+sol1 nominal +18c 159kw 484r happy eva
+sol2 nominal +18c 159kw 464r happy eva
+sol3 nominal +18c 159kw 443r happy
+sol4 nominal +18c 159kw 423r happy
+sol5 nominal +18c 158kw 402r happy
+sol6 nominal +18c 158kw 381r happy
+sol7 nominal +18c 158kw 360r happy
+sol8 nominal +18c 158kw 339r happy
+sol9 nominal +17c 157kw 317r happy
+sol10 nominal +17c 157kw 296r happy
+sol11 nominal +17c 157kw 274r happy
+sol12 nominal +17c 157kw 252r happy eva
+sol13 nominal +17c 156kw 231r happy eva
+sol14 nominal +19c 156kw 205r happy
+sol15 nominal +17c 156kw 182r happy eva
+sol16 nominal +19c 156kw 156r happy meteorite adapt:panel_repair(+3.1%)
+sol17 nominal +17c 155kw 134r happy crew:illness eva discovery:fossil_candidate
+sol18 nominal +18c 155kw 107r happy
+sol19 nominal +16c 155kw 84r happy eva
+sol20 nominal +18c 155kw 57r happy adapt:power_rationing crew:illness
+sol21 nominal +18c 108kw 0r happy dust_storm(43%) adapt:power_rationing adapt:full_shutdown_protocol
+sol22 nominal +17c 108kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol23 nominal +16c 154kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
 sol24 nominal +16c 154kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol25 nominal +16c 154kw 0r happy adapt:power_rationing harvest(5.3kg) adapt:full_shutdown_protocol
-sol26 nominal +16c 154kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol27 nominal +16c 154kw 0r happy meteorite impact_damage:hab_seals(-6%) adapt:power_rationing adapt:panel_repair(+7.5%) adapt:full_shutdown_protocol
-sol28 nominal +16c 154kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol25 nominal +16c 154kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol26 nominal +16c 154kw 0r happy adapt:power_rationing harvest(5.4kg) adapt:full_shutdown_protocol
+sol27 nominal +16c 154kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol28 nominal +15c 153kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol29 nominal +15c 153kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol30 nominal +15c 153kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol31 nominal +15c 153kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol32 nominal +15c 152kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol33 nominal +15c 152kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol34 cool +15c 152kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol35 nominal +18c 92kw 0r happy dust_storm(56%) adapt:power_rationing adapt:full_shutdown_protocol
-sol36 nominal +18c 92kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol37 nominal +18c 92kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol38 nominal +18c 92kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol39 nominal +15c 151kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol40 cool +14c 151kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol30 cool +14c 83kw 0r happy dust_storm(65%) adapt:power_rationing adapt:full_shutdown_protocol
+sol31 nominal +18c 83kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol32 cool +14c 83kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol33 nominal +17c 83kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol34 nominal +18c 82kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol35 nominal +18c 83kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol36 nominal +15c 151kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol37 cool +15c 151kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol38 cool +14c 151kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol39 cool +14c 151kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol40 nominal +16c 151kw 0r happy adapt:power_rationing crew:illness adapt:full_shutdown_protocol
 sol41 cool +14c 151kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol42 nominal +16c 151kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol43 cool +14c 151kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol42 nominal +16c 150kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol43 cool +14c 150kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol44 nominal +16c 150kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol45 cool +14c 150kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol45 cool +14c 150kw 0r happy adapt:power_rationing eva discovery:regolith_anomaly adapt:full_shutdown_protocol
 sol46 nominal +16c 150kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol47 cool +14c 150kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol47 nominal +16c 150kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol48 nominal +16c 150kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol49 nominal +16c 150kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol50 nominal +16c 149kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol49 nominal +16c 149kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol50 nominal +16c 149kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
 sol51 nominal +16c 149kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol52 nominal +16c 149kw 0r happy adapt:power_rationing harvest(3.6kg) adapt:full_shutdown_protocol
+sol52 nominal +16c 149kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol53 nominal +16c 149kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol54 nominal +16c 149kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol54 nominal +16c 149kw 0r happy adapt:power_rationing harvest(3.6kg) adapt:full_shutdown_protocol
 sol55 nominal +16c 149kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol56 nominal +16c 149kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol57 nominal +16c 148kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol56 nominal +16c 148kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol57 nominal +16c 148kw 0r happy adapt:power_rationing eva discovery:regolith_anomaly adapt:full_shutdown_protocol
 sol58 nominal +16c 148kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol59 nominal +16c 148kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol59 nominal +16c 148kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol60 nominal +16c 148kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol61 nominal +16c 148kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol62 nominal +16c 148kw 0r happy meteorite adapt:power_rationing adapt:panel_repair(+7.4%) adapt:full_shutdown_protocol
+sol61 nominal +15c 148kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol62 nominal +15c 148kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol63 nominal +15c 148kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol64 nominal +15c 148kw 0r happy meteorite adapt:power_rationing adapt:panel_repair(+7.8%) adapt:full_shutdown_protocol
-sol65 nominal +15c 148kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol66 nominal +15c 148kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol67 nominal +15c 148kw 0r happy adapt:power_rationing eva discovery:ice_lens adapt:full_shutdown_protocol
-sol68 nominal +15c 148kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol69 nominal +15c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol70 cool +15c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol71 cool +15c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol72 cool +15c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol73 cool +15c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol74 cool +15c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol75 cool +15c 147kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol76 cool +15c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol77 cool +15c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol78 cool +15c 147kw 0r happy adapt:power_rationing harvest(5.4kg) adapt:full_shutdown_protocol
-sol79 cool +15c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol80 cool +15c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol81 cool +15c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol82 cool +15c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol83 cool +15c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol84 cool +15c 146kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol85 cool +15c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol86 cool +15c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol87 cool +15c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol88 cool +15c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol89 cool +14c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol90 cool +14c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol91 cool +14c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol92 cool +14c 146kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol93 cool +14c 146kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol94 cool +14c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol95 cool +14c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol96 cool +14c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol97 cool +14c 145kw 0r happy solar_flare(67%) adapt:power_rationing adapt:full_shutdown_protocol
-sol98 nominal +17c 79kw 0r happy dust_storm(65%) adapt:power_rationing adapt:full_shutdown_protocol
-sol99 nominal +17c 79kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol100 nominal +17c 102kw 0r happy dust_storm(42%) adapt:power_rationing resupply(600kg) adapt:full_shutdown_protocol
-sol1 nominal +16c 213kw 570r happy
+sol64 nominal +15c 148kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol65 nominal +15c 148kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol66 nominal +15c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol67 nominal +15c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol68 cool +15c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol69 cool +14c 147kw 0r happy warning:heater adapt:power_rationing adapt:full_shutdown_protocol
+sol70 cool +14c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol71 cool +14c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol72 cool +14c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol73 cool +14c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol74 cool +14c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol75 cool +14c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol76 cool +14c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol77 cool +14c 146kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol78 cool +14c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol79 cool +13c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol80 cool +13c 146kw 0r happy adapt:power_rationing harvest(4.9kg) adapt:full_shutdown_protocol
+sol81 cool +13c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol82 cool +13c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol83 cool +13c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol84 cool +13c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol85 cool +13c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol86 cool +13c 146kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol87 cool +13c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol88 cool +13c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol89 cool +13c 146kw 0r happy meteorite adapt:power_rationing adapt:panel_repair(+6.6%) adapt:full_shutdown_protocol
+sol90 cool +13c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol91 cool +13c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol92 cool +13c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol93 cool +13c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol94 cool +13c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol95 cool +13c 145kw 0r happy adapt:power_rationing crew:illness adapt:full_shutdown_protocol
+sol96 cool +13c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol97 cool +13c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol98 cool +13c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol99 cool +13c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol100 cool +13c 145kw 0r happy adapt:power_rationing resupply(600kg) adapt:full_shutdown_protocol
+sol1 nominal +16c 212kw 570r happy solar_flare(45%)
 sol2 nominal +16c 212kw 637r happy
-sol3 nominal +16c 212kw 704r happy
-sol4 nominal +16c 212kw 771r happy crew:illness
-sol5 nominal +16c 211kw 837r happy
-sol6 nominal +16c 211kw 902r happy
-sol7 nominal +15c 211kw 968r happy eva
-sol8 nominal +15c 210kw 1033r happy
-sol9 nominal +15c 210kw 1099r happy
-sol10 nominal +15c 210kw 1164r happy
-sol11 nominal +15c 210kw 1228r happy
-sol12 cool +15c 209kw 1293r happy
-sol13 cool +15c 209kw 1357r happy
-sol14 cool +15c 208kw 1421r happy
-sol15 cool +15c 208kw 1485r happy
-sol16 cool +15c 208kw 1548r happy
-sol17 cool +14c 199kw 1603r happy warning:panel
-sol18 cool +14c 199kw 1658r happy
-sol19 cool +14c 198kw 1712r happy
-sol20 nominal +16c 198kw 1762r happy
-sol21 cool +14c 197kw 1815r happy
-sol22 nominal +16c 198kw 1866r happy
-sol23 cool +14c 198kw 1919r happy eva
-sol24 nominal +15c 197kw 1969r happy
-sol25 nominal +16c 197kw 2019r happy harvest(5.3kg)
-sol26 nominal +16c 197kw 2069r happy
-sol27 nominal +15c 196kw 2119r happy eva
-sol28 nominal +15c 196kw 2169r happy eva discovery:lava_tube
-sol29 nominal +15c 196kw 2218r happy
-sol30 nominal +15c 196kw 2267r happy
-sol31 nominal +15c 195kw 2316r happy
-sol32 nominal +15c 195kw 2365r happy
-sol33 nominal +15c 195kw 2414r happy
-sol34 nominal +18c 124kw 2383r happy dust_storm(52%)
-sol35 nominal +18c 123kw 2351r happy
-sol36 cool +14c 193kw 2402r happy
-sol37 cool +15c 194kw 2450r happy
-sol38 cool +15c 194kw 2498r happy
-sol39 cool +15c 193kw 2545r happy
-sol40 cool +15c 193kw 2593r happy
-sol41 cool +15c 193kw 2640r happy
-sol42 cool +15c 193kw 2688r happy
-sol43 cool +14c 193kw 2735r happy
-sol44 cool +14c 192kw 2782r happy
-sol45 cool +14c 192kw 2829r happy
-sol46 cool +14c 191kw 2875r happy
-sol47 cool +14c 192kw 2921r happy
-sol48 cool +14c 192kw 2968r happy meteorite adapt:panel_repair(+7.3%)
-sol49 cool +14c 191kw 3014r happy
-sol50 cool +14c 191kw 3060r happy
-sol51 cool +14c 191kw 3106r happy harvest(5.5kg)
-sol52 cool +14c 191kw 3152r happy
-sol53 cool +14c 191kw 3198r happy
-sol54 cool +14c 190kw 3244r happy
-sol55 cool +14c 190kw 3290r happy
-sol56 cool +14c 190kw 3336r happy
-sol57 cool +14c 190kw 3381r happy
-sol58 cool +14c 190kw 3427r happy
-sol59 cool +14c 190kw 3472r happy crew:illness
-sol60 cool +14c 190kw 3517r happy eva
-sol61 cool +14c 189kw 3563r happy
-sol62 cool +14c 189kw 3608r happy
-sol63 cool +14c 189kw 3652r happy
-sol64 cool +14c 189kw 3698r happy
-sol65 cool +14c 189kw 3742r happy
-sol66 cool +15c 189kw 3784r happy
-sol67 cool +14c 188kw 3829r happy
-sol68 cool +15c 188kw 3871r happy
-sol69 cool +14c 188kw 3916r happy eva
-sol70 cool +15c 188kw 3957r happy
-sol71 cool +14c 188kw 4002r happy
-sol72 cool +15c 188kw 4043r happy meteorite adapt:panel_repair(+4.6%)
-sol73 cool +13c 188kw 4088r happy marsquake(3.1)
-sol74 cool +15c 188kw 4129r happy
-sol75 cool +13c 188kw 4174r happy
-sol76 cool +14c 187kw 4215r happy harvest(5.5kg)
-sol77 cool +15c 186kw 4255r happy
-sol78 cool +15c 187kw 4297r happy
-sol79 cool +15c 187kw 4338r happy
-sol80 cool +15c 187kw 4380r happy eva
-sol81 cool +15c 187kw 4421r happy
-sol82 cool +14c 187kw 4462r happy
-sol83 cool +14c 187kw 4503r happy
-sol84 cool +14c 187kw 4545r happy eva
-sol85 cool +14c 186kw 4586r happy
-sol86 cool +14c 186kw 4627r happy
-sol87 cool +14c 186kw 4668r happy eva discovery:ice_lens
-sol88 cool +14c 186kw 4709r happy
-sol89 cool +14c 186kw 4750r happy warning:seal adapt:seal_patched
-sol90 cool +14c 186kw 4791r happy
-sol91 cool +14c 185kw 4832r happy
-sol92 cool +14c 186kw 4873r happy
-sol93 cool +14c 186kw 4914r happy eva discovery:fossil_candidate
-sol94 cool +14c 186kw 4955r happy
-sol95 cool +14c 185kw 4996r happy
-sol96 cool +14c 186kw 5000r happy
-sol97 cool +14c 186kw 5000r happy meteorite adapt:panel_repair(+5.4%)
-sol98 cool +14c 186kw 5000r happy
-sol99 cool +14c 186kw 5000r happy
-sol100 cool +14c 186kw 5000r happy resupply(600kg)
-sol1 nominal +18c 266kw 589r happy
-sol2 nominal +20c 266kw 672r happy
-sol3 nominal +20c 265kw 755r happy
-sol4 nominal +17c 265kw 842r happy
-sol5 nominal +18c 264kw 924r happy
-sol6 nominal +19c 264kw 1006r happy warning:seal adapt:seal_patched
-sol7 nominal +20c 263kw 1088r happy eva
-sol8 nominal +20c 263kw 1169r happy eva
-sol9 nominal +20c 262kw 1249r happy eva
-sol10 nominal +20c 262kw 1330r happy
-sol11 nominal +18c 262kw 1403r happy warning:heater adapt:heater_bypass
-sol12 nominal +20c 262kw 1481r happy meteorite adapt:panel_repair(+4.1%)
-sol13 nominal +18c 261kw 1563r happy
-sol14 nominal +19c 261kw 1641r happy
-sol15 nominal +17c 260kw 1722r happy
-sol16 nominal +19c 260kw 1799r happy
-sol17 nominal +17c 160kw 1776r happy dust_storm(55%)
-sol18 nominal +20c 159kw 1748r happy
-sol19 nominal +16c 259kw 1828r happy meteorite adapt:panel_repair(+4.8%)
-sol20 nominal +17c 258kw 1904r happy
-sol21 nominal +17c 257kw 1979r happy
-sol22 nominal +17c 257kw 2053r happy
-sol23 nominal +17c 257kw 2128r happy
-sol24 nominal +17c 256kw 2202r happy
-sol25 nominal +17c 256kw 2276r happy harvest(5.9kg)
-sol26 nominal +16c 256kw 2350r happy
-sol27 nominal +16c 256kw 2424r happy
-sol28 nominal +20c 256kw 2493r happy eva
-sol29 nominal +20c 255kw 2566r happy
-sol30 nominal +20c 255kw 2640r happy
-sol31 nominal +19c 255kw 2713r happy crew:illness
-sol32 nominal +18c 254kw 2786r happy
-sol33 nominal +16c 254kw 2858r happy
-sol34 nominal +20c 253kw 2926r happy
-sol35 nominal +18c 252kw 2997r happy
-sol36 nominal +16c 253kw 3069r happy meteorite impact_damage:water_recycler(-13%) adapt:panel_repair(+6.8%) eva
-sol37 nominal +18c 253kw 3136r happy
-sol38 nominal +16c 252kw 3208r happy
-sol39 nominal +18c 252kw 3274r happy
-sol40 nominal +20c 252kw 3341r happy eva
-sol41 nominal +18c 252kw 3412r happy
-sol42 nominal +20c 252kw 3479r happy
-sol43 nominal +17c 251kw 3550r happy
-sol44 nominal +19c 251kw 3616r happy
-sol45 nominal +16c 251kw 3686r happy
-sol46 nominal +18c 250kw 3752r happy
-sol47 nominal +19c 250kw 3817r happy
-sol48 nominal +20c 250kw 3883r happy
-sol49 nominal +19c 138kw 3836r happy dust_storm(64%)
-sol50 nominal +18c 138kw 3790r happy
-sol51 nominal +20c 137kw 3739r happy harvest(4.8kg)
-sol52 nominal +16c 249kw 3808r happy
-sol53 nominal +17c 248kw 3872r happy
-sol54 nominal +17c 248kw 3937r happy
-sol55 nominal +17c 248kw 4001r happy
-sol56 nominal +17c 248kw 4066r happy eva
-sol57 nominal +17c 247kw 4129r happy
-sol58 nominal +17c 247kw 4194r happy
-sol59 nominal +17c 247kw 4257r happy
-sol60 nominal +16c 247kw 4321r happy
-sol61 nominal +16c 247kw 4385r happy
-sol62 nominal +20c 247kw 4444r happy eva
-sol63 nominal +20c 246kw 4508r happy
-sol64 nominal +20c 246kw 4571r happy
-sol65 nominal +19c 246kw 4634r happy
-sol66 nominal +18c 246kw 4698r happy
-sol67 nominal +17c 246kw 4761r happy
-sol68 nominal +20c 246kw 4820r happy
-sol69 nominal +20c 245kw 4883r happy
-sol70 nominal +18c 245kw 4946r happy
-sol71 nominal +18c 245kw 5000r happy
-sol72 nominal +16c 245kw 5000r happy
-sol73 nominal +19c 244kw 5000r happy
-sol74 nominal +20c 173kw 4986r happy dust_storm(42%)
-sol75 nominal +20c 172kw 4973r happy
-sol76 nominal +17c 172kw 4964r happy harvest(5.2kg)
-sol77 nominal +17c 172kw 4950r happy
-sol78 nominal +20c 244kw 5000r happy
-sol79 nominal +18c 243kw 5000r happy
-sol80 nominal +20c 244kw 5000r happy
-sol81 nominal +18c 244kw 5000r happy
-sol82 nominal +20c 243kw 5000r happy eva
-sol83 nominal +18c 243kw 5000r happy
-sol84 nominal +20c 243kw 5000r happy
-sol85 nominal +19c 185kw 5000r happy dust_storm(34%)
-sol86 nominal +19c 185kw 5000r happy
-sol87 nominal +18c 185kw 5000r happy
-sol88 nominal +18c 185kw 5000r happy
-sol89 nominal +17c 185kw 5000r happy
-sol90 nominal +19c 242kw 5000r happy
-sol91 nominal +20c 242kw 5000r happy
-sol92 nominal +17c 242kw 5000r happy
-sol93 nominal +19c 242kw 5000r happy
-sol94 nominal +20c 242kw 5000r happy
-sol95 nominal +17c 241kw 5000r happy
-sol96 nominal +19c 242kw 5000r happy
-sol97 nominal +20c 241kw 5000r happy
-sol98 nominal +17c 242kw 5000r happy
-sol99 nominal +18c 242kw 5000r happy
-sol100 nominal +19c 242kw 5000r happy resupply(600kg)
-sol1 nominal +16c 106kw 464r happy eva
+sol3 nominal +16c 211kw 703r happy
+sol4 nominal +16c 212kw 769r happy eva
+sol5 nominal +16c 211kw 835r happy
+sol6 nominal +15c 211kw 901r happy
+sol7 cool +13c 210kw 971r happy meteorite impact_damage:heater(-6%) adapt:panel_repair(+2.9%)
+sol8 cool +14c 210kw 1039r happy
+sol9 cool +14c 210kw 1106r happy
+sol10 cool +14c 209kw 1173r happy
+sol11 cool +14c 208kw 1238r happy
+sol12 cool +14c 209kw 1305r happy
+sol13 cool +14c 208kw 1371r happy
+sol14 cool +14c 208kw 1437r happy eva
+sol15 cool +14c 208kw 1503r happy
+sol16 cool +14c 208kw 1569r happy
+sol17 cool +14c 208kw 1634r happy
+sol18 cool +14c 207kw 1699r happy
+sol19 cool +14c 207kw 1764r happy
+sol20 cool +13c 207kw 1829r happy
+sol21 cool +13c 206kw 1894r happy
+sol22 cool +13c 206kw 1958r happy
+sol23 cool +13c 206kw 2022r happy
+sol24 cool +13c 206kw 2086r happy
+sol25 cool +13c 205kw 2150r happy harvest(5.8kg)
+sol26 cool +13c 205kw 2213r happy
+sol27 cool +13c 205kw 2277r happy
+sol28 cool +13c 204kw 2340r happy eva
+sol29 cool +13c 204kw 2403r happy
+sol30 cool +13c 204kw 2466r happy
+sol31 cool +13c 204kw 2529r happy eva
+sol32 cool +13c 204kw 2591r happy
+sol33 cool +12c 203kw 2653r happy
+sol34 cool +12c 203kw 2716r happy
+sol35 cool +12c 203kw 2778r happy
+sol36 cool +12c 202kw 2839r happy
+sol37 cool +12c 202kw 2901r happy eva
+sol38 cool +12c 202kw 2962r happy
+sol39 cool +12c 202kw 3024r happy
+sol40 cool +13c 202kw 3082r happy
+sol41 cool +12c 202kw 3144r happy
+sol42 cool +13c 201kw 3202r happy
+sol43 cool +12c 201kw 3263r happy
+sol44 cool +13c 201kw 3321r happy
+sol45 cool +12c 200kw 3381r happy
+sol46 cool +13c 200kw 3439r happy
+sol47 cool +14c 122kw 3415r happy dust_storm(56%)
+sol48 cool +14c 122kw 3391r happy
+sol49 cool +14c 121kw 3367r happy
+sol50 cool +14c 121kw 3343r happy
+sol51 cool +14c 121kw 3319r happy harvest(5.3kg)
+sol52 cool +10c 121kw 3297r happy warning:heater adapt:heater_bypass
+sol53 cool +9c 121kw 3285r happy
+sol54 cool +9c 121kw 3272r happy
+sol55 cool +9c 137kw 3276r happy dust_storm(44%)
+sol56 cool +9c 137kw 3280r happy
+sol57 cool +9c 137kw 3284r happy
+sol58 cool +9c 137kw 3288r happy
+sol59 cool +9c 136kw 3292r happy
+sol60 cool +9c 197kw 3357r happy
+sol61 cool +9c 196kw 3421r happy
+sol62 cool +9c 197kw 3485r happy
+sol63 cool +9c 197kw 3550r happy
+sol64 cool +9c 196kw 3613r happy
+sol65 cool +9c 196kw 3678r happy
+sol66 cool +9c 196kw 3741r happy eva discovery:mineral_deposit
+sol67 cool +9c 196kw 3806r happy
+sol68 cool +9c 196kw 3870r happy
+sol69 cool +8c 105kw 3843r happy dust_storm(66%)
+sol70 cool +8c 105kw 3817r happy
+sol71 cool +8c 105kw 3790r happy
+sol72 cool +8c 105kw 3764r happy
+sol73 cool +8c 105kw 3737r happy
+sol74 cool +8c 105kw 3711r ok
+sol75 cool +8c 104kw 3684r ok
+sol76 cool +8c 104kw 3658r ok
+sol77 cool +8c 194kw 3721r ok
+sol78 cool +8c 194kw 3784r ok
+sol79 cool +8c 194kw 3847r ok
+sol80 cool +8c 194kw 3910r happy harvest(3.1kg) eva discovery:fossil_candidate
+sol81 cool +8c 194kw 3974r happy
+sol82 cool +8c 193kw 4036r happy
+sol83 cool +8c 194kw 4100r happy
+sol84 cool +8c 193kw 4163r happy
+sol85 cool +8c 193kw 4226r happy
+sol86 cool +8c 193kw 4289r happy eva discovery:mineral_deposit
+sol87 cool +8c 177kw 4336r happy warning:panel eva discovery:lava_tube
+sol88 cool +8c 177kw 4383r happy
+sol89 cool +8c 177kw 4430r happy
+sol90 cool +8c 177kw 4477r happy eva
+sol91 cool +8c 177kw 4524r happy
+sol92 cool +8c 176kw 4571r happy eva
+sol93 cool +8c 177kw 4618r happy
+sol94 cool +8c 177kw 4665r happy
+sol95 cool +8c 177kw 4712r happy eva
+sol96 cool +8c 163kw 4745r happy meteorite impact_damage:solar_panels(-7%) adapt:panel_repair(+6.7%)
+sol97 cool +8c 162kw 4778r happy
+sol98 cool +8c 162kw 4812r happy
+sol99 cool +8c 162kw 4845r happy
+sol100 cool +8c 162kw 4878r happy resupply(600kg)
+sol1 nominal +17c 266kw 588r happy
+sol2 nominal +18c 265kw 671r happy
+sol3 nominal +20c 265kw 754r happy
+sol4 nominal +20c 264kw 836r happy
+sol5 nominal +16c 264kw 922r happy
+sol6 nominal +17c 264kw 1004r happy
+sol7 nominal +18c 263kw 1085r happy
+sol8 nominal +18c 263kw 1166r happy solar_flare(55%)
+sol9 nominal +18c 262kw 1247r happy
+sol10 nominal +18c 262kw 1327r happy
+sol11 nominal +18c 261kw 1407r happy
+sol12 nominal +18c 261kw 1487r happy
+sol13 nominal +18c 261kw 1566r happy
+sol14 nominal +17c 260kw 1645r happy
+sol15 nominal +16c 260kw 1724r happy crew:illness
+sol16 nominal +20c 260kw 1798r happy
+sol17 nominal +20c 259kw 1876r happy
+sol18 nominal +19c 258kw 1954r happy
+sol19 nominal +17c 259kw 2032r happy crew:illness
+sol20 nominal +20c 258kw 2104r happy
+sol21 nominal +19c 258kw 2182r happy crew:illness
+sol22 nominal +17c 258kw 2259r happy eva discovery:ice_lens
+sol23 nominal +20c 257kw 2331r happy
+sol24 nominal +17c 257kw 2407r happy
+sol25 nominal +20c 256kw 2478r happy harvest(3.3kg)
+sol26 nominal +17c 255kw 2553r happy
+sol27 nominal +20c 256kw 2624r happy
+sol28 nominal +17c 256kw 2699r happy
+sol29 nominal +19c 255kw 2769r happy
+sol30 nominal +16c 254kw 2843r happy
+sol31 nominal +18c 255kw 2913r happy
+sol32 nominal +19c 254kw 2983r happy
+sol33 nominal +16c 254kw 3058r happy
+sol34 nominal +17c 254kw 3127r happy sick crew:illness
+sol35 nominal +19c 254kw 3196r happy sick crew:illness
+sol36 nominal +19c 253kw 3265r happy sick
+sol37 nominal +16c 253kw 3339r happy sick
+sol38 nominal +16c 253kw 3408r happy sick
+sol39 nominal +16c 252kw 3476r happy sick
+sol40 nominal +16c 252kw 3544r happy sick
+sol41 nominal +16c 252kw 3612r happy sick
+sol42 nominal +16c 252kw 3680r happy sick
+sol43 nominal +16c 251kw 3748r happy sick eva discovery:regolith_anomaly
+sol44 nominal +16c 251kw 3815r happy sick
+sol45 nominal +16c 251kw 3883r happy sick
+sol46 nominal +16c 251kw 3950r happy sick eva discovery:fossil_candidate
+sol47 nominal +16c 250kw 4017r happy sick
+sol48 nominal +20c 250kw 4079r happy sick
+sol49 nominal +18c 161kw 4057r happy sick dust_storm(51%)
+sol50 nominal +19c 160kw 4029r happy sick harvest(5.8kg)
+sol51 nominal +20c 160kw 4002r happy sick
+sol52 nominal +17c 160kw 3979r happy sick
+sol53 nominal +19c 160kw 3952r happy sick
+sol54 nominal +20c 159kw 3924r happy sick
+sol55 nominal +16c 159kw 3901r happy sick
+sol56 nominal +17c 159kw 3873r happy sick
+sol57 nominal +20c 247kw 3934r happy sick
+sol58 nominal +18c 247kw 3999r happy sick
+sol59 nominal +20c 247kw 4060r happy sick
+sol60 nominal +20c 155kw 4028r happy sick dust_storm(53%)
+sol61 nominal +21c 155kw 3997r happy sick
+sol62 nominal +16c 155kw 3970r happy sick
+sol63 nominal +16c 146kw 3930r happy sick dust_storm(58%)
+sol64 nominal +16c 146kw 3890r happy sick
+sol65 nominal +16c 146kw 3850r happy sick
+sol66 nominal +21c 146kw 3805r happy sick
+sol67 nominal +21c 145kw 3765r happy sick
+sol68 nominal +20c 145kw 3725r happy sick
+sol69 nominal +17c 244kw 3789r happy sick
+sol70 nominal +18c 244kw 3847r happy sick
+sol71 nominal +19c 243kw 3905r happy sick
+sol72 nominal +16c 244kw 3968r happy
+sol73 nominal +17c 244kw 4027r happy sick crew:illness
+sol74 nominal +19c 243kw 4086r happy sick
+sol75 nominal +20c 243kw 4145r happy sick
+sol76 nominal +16c 243kw 4208r happy sick harvest(5.8kg)
+sol77 nominal +17c 243kw 4267r happy sick
+sol78 nominal +17c 243kw 4325r happy sick
+sol79 nominal +18c 243kw 4384r happy sick
+sol80 nominal +19c 243kw 4442r happy sick
+sol81 nominal +19c 243kw 4501r happy sick
+sol82 nominal +20c 242kw 4559r happy sick
+sol83 nominal +20c 242kw 4617r happy sick
+sol84 nominal +16c 241kw 4680r happy sick
+sol85 nominal +17c 242kw 4738r happy sick
+sol86 nominal +17c 242kw 4797r happy
+sol87 nominal +17c 242kw 4855r happy
+sol88 nominal +17c 241kw 4912r happy
+sol89 nominal +17c 242kw 4971r happy
+sol90 nominal +17c 242kw 5000r happy
+sol91 nominal +20c 170kw 4983r happy dust_storm(42%)
+sol92 nominal +18c 170kw 4970r happy
+sol93 nominal +20c 170kw 4952r happy
+sol94 nominal +18c 170kw 4940r happy
+sol95 nominal +20c 170kw 4923r happy
+sol96 nominal +18c 170kw 4910r happy
+sol97 nominal +20c 170kw 4893r happy
+sol98 nominal +19c 241kw 4951r happy
+sol99 nominal +19c 241kw 5000r happy
+sol100 nominal +19c 240kw 5000r happy resupply(600kg)
+sol1 nominal +16c 106kw 464r happy
 sol2 nominal +16c 106kw 425r happy
-sol3 nominal +16c 106kw 385r happy
-sol4 nominal +16c 106kw 346r happy
-sol5 nominal +16c 106kw 306r happy
-sol6 nominal +16c 106kw 267r happy
-sol7 nominal +15c 105kw 227r happy
-sol8 nominal +15c 105kw 187r happy
-sol9 nominal +15c 105kw 148r happy
-sol10 nominal +15c 105kw 108r happy
-sol11 nominal +15c 105kw 68r happy
-sol12 cool +15c 104kw 27r happy adapt:power_rationing
-sol13 cool +13c 104kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol14 cool +12c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol15 cool +14c 104kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol16 cool +12c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol17 cool +14c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol18 cool +14c 104kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol19 cool +14c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol20 nominal +16c 56kw 0r happy dust_storm(66%) adapt:power_rationing adapt:full_shutdown_protocol
-sol21 nominal +16c 56kw 0r happy adapt:power_rationing crew:illness adapt:full_shutdown_protocol
-sol22 nominal +16c 55kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol23 nominal +16c 55kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol24 cool +12c 103kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol25 cool +13c 102kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol26 cool +13c 102kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol27 cool +13c 102kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol28 cool +13c 102kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol29 cool +13c 102kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol30 cool +13c 102kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol3 nominal +18c 77kw 347r happy dust_storm(39%)
+sol4 nominal +18c 77kw 270r happy
+sol5 nominal +18c 77kw 193r happy
+sol6 nominal +18c 77kw 115r happy
+sol7 nominal +18c 76kw 38r happy
+sol8 nominal +16c 76kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol9 cool +13c 105kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol10 cool +12c 105kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol11 cool +14c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol12 cool +12c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol13 cool +14c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol14 cool +12c 104kw 0r happy meteorite impact_damage:hab_seals(-5%) adapt:power_rationing adapt:panel_repair(+7.1%) adapt:full_shutdown_protocol
+sol15 cool +14c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol16 cool +14c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol17 cool +14c 104kw 0r happy warning:recycler adapt:power_rationing adapt:backup_water(-5L) adapt:full_shutdown_protocol
+sol18 cool +14c 103kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol19 cool +14c 103kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol20 cool +14c 103kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol21 cool +13c 103kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol22 cool +13c 103kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol23 cool +13c 103kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol24 nominal +16c 72kw 0r happy dust_storm(42%) adapt:power_rationing adapt:full_shutdown_protocol
+sol25 nominal +16c 72kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol26 nominal +16c 72kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol27 nominal +16c 72kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol28 nominal +16c 72kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol29 nominal +16c 72kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol30 nominal +16c 72kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol31 cool +13c 102kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol32 cool +13c 101kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol33 cool +13c 101kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol34 cool +13c 101kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol35 cool +13c 101kw 0r happy adapt:power_rationing crew:illness adapt:full_shutdown_protocol
-sol36 cool +12c 101kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol37 cool +12c 101kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol34 cool +12c 101kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol35 cool +12c 101kw 0r happy adapt:power_rationing eva discovery:fossil_candidate adapt:full_shutdown_protocol
+sol36 cool +12c 101kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol37 cool +12c 101kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol38 cool +12c 101kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol39 cool +12c 101kw 0r happy adapt:power_rationing harvest(3.4kg) adapt:full_shutdown_protocol
-sol40 cool +12c 101kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol41 cool +12c 101kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol39 cool +12c 101kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol40 cool +12c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol41 cool +12c 100kw 0r happy adapt:power_rationing harvest(5.7kg) adapt:full_shutdown_protocol
 sol42 cool +12c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol43 cool +12c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol44 cool +12c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol45 cool +12c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol46 cool +12c 100kw 0r happy solar_flare(43%) adapt:power_rationing adapt:full_shutdown_protocol
-sol47 cool +12c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol48 cool +12c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol49 cool +12c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol50 cool +12c 100kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol51 cool +13c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol52 cool +12c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol53 cool +13c 99kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol46 cool +15c 69kw 0r happy dust_storm(44%) adapt:power_rationing adapt:full_shutdown_protocol
+sol47 nominal +15c 52kw 0r happy dust_storm(68%) meteorite adapt:power_rationing adapt:panel_repair(+4.1%) adapt:full_shutdown_protocol
+sol48 nominal +15c 52kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol49 nominal +15c 52kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol50 cool +15c 52kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol51 cool +15c 52kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol52 cool +15c 52kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol53 cool +15c 52kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol54 cool +12c 99kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol55 cool +13c 99kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol56 cool +12c 99kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol57 cool +13c 99kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol58 cool +12c 99kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol59 cool +13c 99kw 0r happy adapt:power_rationing eva discovery:ice_lens adapt:full_shutdown_protocol
-sol60 cool +13c 99kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol61 cool +13c 99kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol62 cool +13c 99kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol63 cool +13c 99kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol64 cool +13c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol65 cool +13c 98kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol66 cool +13c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol67 cool +12c 98kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol55 cool +13c 99kw 0r happy adapt:power_rationing eva discovery:fossil_candidate adapt:full_shutdown_protocol
+sol56 cool +13c 99kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol57 cool +13c 98kw 0r happy solar_flare(33%) flare_damage:comms adapt:power_rationing adapt:full_shutdown_protocol
+sol58 cool +13c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol59 cool +13c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol60 cool +13c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol61 cool +12c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol62 cool +12c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol63 cool +12c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol64 cool +12c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol65 cool +12c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol66 cool +12c 98kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol67 cool +12c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol68 cool +12c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol69 cool +12c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol70 cool +12c 98kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol71 cool +12c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol72 cool +12c 98kw 0r happy meteorite impact_damage:comms(-17%) marsquake(3.5) adapt:power_rationing adapt:panel_repair(+3.3%) eva adapt:full_shutdown_protocol
-sol73 cool +12c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol74 cool +12c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol75 cool +14c 57kw 0r happy dust_storm(60%) adapt:power_rationing adapt:full_shutdown_protocol
-sol76 cool +14c 57kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol77 cool +14c 57kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol78 cool +14c 56kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol79 cool +12c 97kw 0r happy adapt:power_rationing harvest(5.3kg) adapt:full_shutdown_protocol
-sol80 cool +12c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol81 cool +12c 97kw 0r happy warning:recycler adapt:power_rationing adapt:backup_water(-5L) eva adapt:full_shutdown_protocol
-sol82 cool +12c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol70 cool +12c 98kw 0r happy meteorite adapt:power_rationing adapt:panel_repair(+7.0%) adapt:full_shutdown_protocol
+sol71 cool +12c 98kw 0r happy adapt:power_rationing crew:illness adapt:full_shutdown_protocol
+sol72 cool +12c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol73 cool +12c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol74 cool +12c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol75 cool +12c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol76 cool +12c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol77 cool +12c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol78 cool +12c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol79 cool +12c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol80 cool +14c 53kw 0r happy dust_storm(65%) adapt:power_rationing adapt:full_shutdown_protocol
+sol81 cool +14c 53kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol82 cool +14c 53kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol83 cool +12c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol84 cool +12c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol85 cool +12c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol85 cool +12c 96kw 0r happy adapt:power_rationing harvest(4.0kg) eva discovery:regolith_anomaly adapt:full_shutdown_protocol
 sol86 cool +12c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol87 cool +12c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol88 cool +12c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol89 cool +12c 97kw 0r happy meteorite adapt:power_rationing adapt:panel_repair(+7.3%) adapt:full_shutdown_protocol
-sol90 cool +12c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol91 cool +14c 74kw 0r happy dust_storm(33%) adapt:power_rationing adapt:full_shutdown_protocol
-sol92 cool +14c 74kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol93 cool +14c 74kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol94 cool +14c 74kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol95 cool +12c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol96 cool +12c 96kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol97 cool +12c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol98 cool +12c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol99 cool +12c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol100 cool +12c 97kw 0r happy adapt:power_rationing resupply(600kg) adapt:full_shutdown_protocol
-sol1 cool +1c 160kw 554r happy
-sol2 cold -0c 159kw 606r happy
-sol3 cold -1c 159kw 658r happy
-sol4 cold -1c 159kw 709r happy
-sol5 cold -1c 159kw 761r happy
-sol6 cold -1c 158kw 812r happy
-sol7 cold -1c 158kw 863r happy
-sol8 cold -1c 158kw 913r happy
-sol9 cold -1c 157kw 964r happy
-sol10 cold -1c 157kw 1014r happy
-sol11 cold -1c 157kw 1064r ok
-sol12 cold -1c 157kw 1114r ok meteorite adapt:panel_repair(+2.8%)
-sol13 cold -1c 157kw 1164r ok
-sol14 cold -1c 156kw 1213r ok
-sol15 cold -2c 156kw 1263r ok
-sol16 cold -2c 156kw 1312r ok
-sol17 cold -2c 143kw 1349r ok meteorite impact_damage:solar_panels(-8%) adapt:panel_repair(+7.6%)
-sol18 cold -2c 143kw 1385r ok eva discovery:regolith_anomaly
-sol19 cold -2c 143kw 1421r ok
-sol20 cold -2c 142kw 1457r ok eva
-sol21 cold -2c 142kw 1493r ok
-sol22 cold -2c 142kw 1528r ok
-sol23 cold -2c 142kw 1564r ok
-sol24 cold -2c 142kw 1599r ok
-sol25 cold -2c 142kw 1634r ok
-sol26 cold -2c 141kw 1669r ok harvest(5.1kg)
-sol27 cold -2c 141kw 1704r ok eva
-sol28 cold -2c 141kw 1739r ok
-sol29 cold -2c 141kw 1774r ok eva
-sol30 cold -2c 141kw 1808r ok eva discovery:lava_tube
-sol31 cold -2c 140kw 1843r ok eva
-sol32 cold -2c 140kw 1877r ok
-sol33 cold -2c 140kw 1911r ok
-sol34 cold -2c 140kw 1945r ok
-sol35 cold -2c 140kw 1979r happy eva discovery:mineral_deposit
-sol36 cold -2c 139kw 2012r happy
-sol37 cold -2c 139kw 2046r happy
-sol38 cold -3c 97kw 2037r ok dust_storm(43%)
-sol39 cold -3c 97kw 2029r ok
-sol40 cold -3c 97kw 2020r ok
-sol41 cold -3c 138kw 2053r ok
-sol42 cold -3c 138kw 2086r ok
-sol43 cold -3c 138kw 2119r ok
-sol44 cold -3c 138kw 2152r ok
-sol45 cold -3c 138kw 2185r ok
-sol46 cold -3c 138kw 2217r ok
-sol47 cold -3c 138kw 2250r ok eva
-sol48 cold -3c 138kw 2282r ok
-sol49 cold -3c 137kw 2315r ok
-sol50 cold -3c 137kw 2347r ok
-sol51 cold -3c 137kw 2379r ok
-sol52 cold -3c 137kw 2411r ok
-sol53 cold -3c 137kw 2443r ok
-sol54 cold -3c 137kw 2475r ok harvest(5.0kg)
-sol55 cold -3c 136kw 2507r ok
-sol56 cold -3c 136kw 2539r ok eva
-sol57 cold -3c 136kw 2570r ok
-sol58 cold -3c 136kw 2602r ok
-sol59 cold -3c 136kw 2634r ok eva
-sol60 cold -3c 136kw 2665r ok eva
-sol61 cold -3c 136kw 2696r ok
-sol62 cold -3c 136kw 2728r ok
-sol63 cold -7c 136kw 2767r ok solar_flare(83%) flare_damage:heater
-sol64 cold -7c 136kw 2807r ok
-sol65 cold -7c 135kw 2846r ok
-sol66 cold -7c 135kw 2886r ok
-sol67 cold -7c 135kw 2925r ok
-sol68 cold -7c 135kw 2965r ok
-sol69 cold -7c 135kw 3004r ok
-sol70 cold -7c 135kw 3043r ok
-sol71 cold -7c 135kw 3083r ok
-sol72 cold -7c 135kw 3122r ok
-sol73 cold -7c 135kw 3161r ok
-sol74 cold -7c 134kw 3200r ok
-sol75 cold -7c 134kw 3239r ok
-sol76 cold -7c 134kw 3278r ok eva
-sol77 cold -7c 134kw 3317r ok
-sol78 cold -8c 134kw 3356r ok
-sol79 cold -8c 134kw 3395r ok
-sol80 cold -8c 134kw 3434r ok
-sol81 cold -8c 134kw 3472r ok
-sol82 cold -8c 134kw 3511r ok harvest(4.9kg) eva
-sol83 cold -8c 134kw 3550r ok
-sol84 cold -8c 134kw 3589r ok
-sol85 cold -8c 133kw 3627r ok
-sol86 cold -8c 85kw 3617r ok dust_storm(52%)
-sol87 cold -8c 85kw 3608r ok
-sol88 cold -8c 85kw 3598r ok
-sol89 cold -8c 85kw 3588r ok
-sol90 cold -8c 85kw 3578r ok
-sol91 cold -8c 84kw 3568r stressed
-sol92 cold -8c 133kw 3606r stressed
-sol93 cold -8c 133kw 3645r stressed
-sol94 cold -8c 133kw 3683r stressed
-sol95 cold -8c 133kw 3722r stressed
-sol96 cold -8c 133kw 3760r stressed
-sol97 cold -8c 133kw 3799r stressed
-sol98 cold -8c 133kw 3837r stressed
-sol99 cold -8c 132kw 3876r stressed warning:recycler adapt:backup_water(-5L)
-sol100 cold -8c 132kw 3914r stressed resupply(600kg)
-sol1 nominal +17c 160kw 462r happy
+sol89 cool +12c 96kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol90 cool +12c 96kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol91 cool +12c 96kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol92 cool +12c 96kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol93 cool +14c 50kw 0r happy dust_storm(69%) adapt:power_rationing adapt:full_shutdown_protocol
+sol94 cool +14c 50kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol95 cool +14c 48kw 0r happy warning:panel adapt:power_rationing adapt:full_shutdown_protocol
+sol96 cool +12c 93kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol97 cool +12c 93kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol98 cool +12c 93kw 0r happy meteorite marsquake(5.4) adapt:power_rationing adapt:panel_repair(+4.0%) adapt:full_shutdown_protocol
+sol99 cool +12c 93kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol100 cool +12c 93kw 0r happy adapt:power_rationing resupply(600kg) adapt:full_shutdown_protocol
+sol1 cool +1c 159kw 554r happy
+sol2 cold -1c 159kw 606r happy
+sol3 cold -1c 159kw 657r happy eva
+sol4 cold -1c 159kw 708r happy
+sol5 cold -1c 158kw 759r happy
+sol6 cold -1c 158kw 810r happy
+sol7 cold -1c 158kw 861r happy
+sol8 cold -1c 158kw 912r happy
+sol9 cold -1c 157kw 962r happy eva
+sol10 cold -1c 157kw 1012r happy
+sol11 cold -1c 157kw 1062r ok
+sol12 cold -1c 157kw 1112r ok
+sol13 cold -1c 156kw 1161r ok
+sol14 cold -2c 156kw 1211r ok
+sol15 cold -2c 156kw 1260r ok
+sol16 cold -2c 156kw 1309r ok eva
+sol17 cold -2c 156kw 1358r ok
+sol18 cold -2c 155kw 1407r ok eva discovery:lava_tube
+sol19 cold -2c 155kw 1455r ok
+sol20 cold -2c 154kw 1503r ok
+sol21 cold -2c 155kw 1552r ok
+sol22 cold -2c 155kw 1600r ok
+sol23 cold -2c 154kw 1648r ok
+sol24 cold -2c 154kw 1696r ok
+sol25 cold -2c 154kw 1744r ok harvest(3.7kg)
+sol26 cold -2c 154kw 1791r ok eva
+sol27 cold -2c 154kw 1838r ok
+sol28 cold -2c 153kw 1886r ok
+sol29 cold -2c 153kw 1933r ok eva
+sol30 cold -2c 153kw 1980r ok eva discovery:fossil_candidate
+sol31 cold -2c 153kw 2026r ok
+sol32 cold -2c 153kw 2073r ok
+sol33 cold -2c 152kw 2120r ok
+sol34 cold -2c 152kw 2166r ok eva
+sol35 cold -2c 152kw 2213r ok
+sol36 cold -2c 152kw 2259r ok
+sol37 cold -2c 152kw 2305r ok
+sol38 cold -3c 151kw 2351r ok
+sol39 cold -3c 152kw 2397r ok eva
+sol40 cold -3c 151kw 2443r ok
+sol41 cold -3c 151kw 2488r ok
+sol42 cold -3c 151kw 2534r ok eva
+sol43 cold -3c 151kw 2579r ok eva
+sol44 cold -3c 151kw 2625r ok
+sol45 cold -3c 102kw 2621r ok dust_storm(46%)
+sol46 cold -3c 102kw 2618r ok
+sol47 cold -3c 98kw 2611r ok warning:panel
+sol48 cold -3c 97kw 2603r ok
+sol49 cold -3c 144kw 2642r ok
+sol50 cold -3c 143kw 2680r ok
+sol51 cold -3c 143kw 2718r ok
+sol52 cold -3c 143kw 2757r ok harvest(5.2kg)
+sol53 cold -3c 143kw 2795r ok
+sol54 cold -3c 143kw 2833r ok
+sol55 cold -3c 143kw 2871r ok
+sol56 cold -4c 86kw 2852r ok dust_storm(57%)
+sol57 cold -4c 86kw 2834r ok
+sol58 cold -4c 86kw 2815r stressed
+sol59 cold -4c 85kw 2796r stressed
+sol60 cold -4c 85kw 2776r stressed
+sol61 cold -4c 85kw 2757r stressed
+sol62 cold -4c 85kw 2738r stressed
+sol63 cold -4c 85kw 2719r stressed
+sol64 cold -4c 141kw 2756r stressed
+sol65 cold -4c 141kw 2793r stressed
+sol66 cold -4c 141kw 2830r stressed
+sol67 cold -4c 141kw 2867r stressed
+sol68 cold -4c 141kw 2904r stressed
+sol69 cold -4c 141kw 2941r stressed
+sol70 cold -4c 140kw 2978r stressed
+sol71 cold -4c 140kw 3015r stressed
+sol72 cold -4c 140kw 3051r stressed
+sol73 cold -4c 140kw 3087r stressed
+sol74 cold -4c 140kw 3124r stressed
+sol75 cold -4c 140kw 3161r stressed
+sol76 cold -4c 140kw 3197r stressed
+sol77 cold -4c 140kw 3234r stressed
+sol78 cold -4c 140kw 3271r stressed
+sol79 cold -4c 140kw 3307r stressed
+sol80 cold -4c 140kw 3344r stressed
+sol81 cold -4c 139kw 3380r stressed
+sol82 cold -4c 139kw 3416r stressed harvest(3.5kg)
+sol83 cold -4c 140kw 3452r stressed
+sol84 cold -4c 140kw 3489r stressed
+sol85 cold -4c 139kw 3525r stressed
+sol86 cold -4c 139kw 3562r stressed
+sol87 cold -4c 139kw 3598r stressed
+sol88 cold -4c 139kw 3635r stressed
+sol89 cold -4c 139kw 3671r stressed
+sol90 cold -4c 139kw 3708r stressed
+sol91 cold -4c 81kw 3686r stressed dust_storm(60%)
+sol92 cold -4c 80kw 3664r stressed
+sol93 cold -4c 80kw 3642r stressed dust_storm(53%)
+sol94 cold -4c 87kw 3626r stressed
+sol95 cold -4c 87kw 3611r stressed
+sol96 cold -4c 87kw 3596r stressed
+sol97 cold -4c 138kw 3632r stressed
+sol98 cold -4c 138kw 3668r stressed
+sol99 cold -4c 138kw 3704r stressed
+sol100 cold -4c 138kw 3740r stressed resupply(600kg)
+sol1 nominal +17c 159kw 462r happy eva
 sol2 nominal +19c 159kw 419r happy
 sol3 nominal +20c 159kw 376r happy
-sol4 nominal +16c 159kw 338r happy
-sol5 nominal +17c 159kw 294r happy
+sol4 nominal +16c 159kw 337r happy
+sol5 nominal +17c 158kw 293r happy eva
 sol6 nominal +18c 158kw 250r happy
-sol7 nominal +18c 157kw 206r happy
-sol8 nominal +19c 158kw 162r happy
-sol9 nominal +19c 158kw 118r happy
-sol10 nominal +19c 157kw 74r happy
-sol11 nominal +18c 157kw 30r happy adapt:power_rationing
-sol12 nominal +16c 157kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol13 cool +13c 157kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol14 nominal +16c 156kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol15 nominal +18c 156kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol16 cool +14c 156kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol17 nominal +15c 100kw 0r happy dust_storm(51%) adapt:power_rationing adapt:full_shutdown_protocol
-sol18 nominal +15c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol19 nominal +15c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol20 cool +15c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol21 cool +14c 99kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol22 nominal +18c 99kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol23 nominal +18c 154kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol7 nominal +18c 158kw 206r happy meteorite adapt:panel_repair(+3.9%)
+sol8 nominal +16c 95kw 99r happy dust_storm(57%)
+sol9 nominal +17c 94kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol10 nominal +18c 94kw 0r happy adapt:power_rationing crew:illness adapt:full_shutdown_protocol
+sol11 cool +14c 94kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol12 nominal +15c 94kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol13 nominal +17c 156kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol14 nominal +18c 156kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol15 cool +14c 155kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol16 nominal +16c 155kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol17 nominal +18c 155kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol18 nominal +18c 155kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol19 nominal +18c 155kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol20 nominal +18c 154kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol21 nominal +18c 154kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol22 nominal +17c 154kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol23 nominal +17c 154kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
 sol24 nominal +17c 154kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol25 nominal +17c 154kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol26 nominal +16c 154kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol27 nominal +16c 153kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol28 nominal +16c 153kw 0r happy adapt:power_rationing harvest(5.1kg) adapt:full_shutdown_protocol
+sol26 nominal +16c 153kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol27 nominal +16c 153kw 0r happy adapt:power_rationing harvest(5.2kg) adapt:full_shutdown_protocol
+sol28 nominal +16c 153kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol29 nominal +16c 153kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol30 cool +15c 153kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol31 cool +14c 152kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol32 nominal +18c 152kw 0r happy meteorite adapt:power_rationing adapt:panel_repair(+3.3%) adapt:full_shutdown_protocol
-sol33 nominal +16c 152kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol34 cool +15c 152kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol35 nominal +18c 152kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol36 nominal +16c 152kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol37 cool +14c 152kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol38 nominal +17c 151kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol39 cool +14c 151kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol40 nominal +17c 151kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol41 cool +14c 151kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol42 nominal +17c 150kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol30 cool +15c 153kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol31 cool +14c 152kw 0r happy adapt:power_rationing crew:illness adapt:full_shutdown_protocol
+sol32 nominal +18c 152kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol33 cool +15c 105kw 0r happy dust_storm(44%) adapt:power_rationing adapt:full_shutdown_protocol
+sol34 nominal +17c 105kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol35 cool +14c 105kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol36 nominal +17c 151kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol37 cool +14c 115kw 0r happy dust_storm(34%) adapt:power_rationing adapt:full_shutdown_protocol
+sol38 nominal +16c 115kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol39 nominal +18c 150kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol40 cool +15c 151kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol41 nominal +17c 150kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol42 nominal +18c 150kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol43 nominal +18c 150kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol44 cool +14c 150kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol45 nominal +17c 150kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol44 nominal +18c 150kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol45 nominal +18c 150kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol46 nominal +18c 150kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol47 nominal +18c 150kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol48 nominal +18c 149kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol49 nominal +17c 78kw 0r happy dust_storm(68%) adapt:power_rationing adapt:full_shutdown_protocol
-sol50 nominal +17c 78kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol51 nominal +17c 78kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol52 nominal +16c 78kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol53 nominal +16c 78kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol54 nominal +16c 78kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol55 cool +14c 78kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol56 nominal +16c 148kw 0r happy adapt:power_rationing eva discovery:fossil_candidate adapt:full_shutdown_protocol
-sol57 nominal +16c 148kw 0r happy adapt:power_rationing harvest(5.4kg) eva adapt:full_shutdown_protocol
-sol58 nominal +16c 147kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol59 nominal +16c 148kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol49 nominal +18c 149kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol50 nominal +18c 149kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol51 nominal +18c 149kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol52 nominal +17c 149kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol53 nominal +17c 148kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol54 nominal +17c 149kw 0r happy adapt:power_rationing harvest(5.1kg) adapt:full_shutdown_protocol
+sol55 nominal +17c 148kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol56 nominal +17c 148kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol57 nominal +17c 148kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol58 nominal +16c 148kw 0r happy adapt:power_rationing eva discovery:regolith_anomaly adapt:full_shutdown_protocol
+sol59 nominal +16c 148kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
 sol60 nominal +16c 148kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
 sol61 nominal +16c 148kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol62 cool +14c 88kw 0r happy dust_storm(58%) adapt:power_rationing adapt:full_shutdown_protocol
-sol63 nominal +17c 87kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol64 nominal +15c 87kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol65 nominal +18c 87kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol66 nominal +16c 87kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol67 nominal +18c 87kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol68 nominal +16c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol69 cool +14c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol70 nominal +18c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol71 nominal +15c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol72 cool +14c 146kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol73 nominal +18c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol74 nominal +15c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol75 nominal +18c 146kw 0r happy meteorite adapt:power_rationing adapt:panel_repair(+5.1%) adapt:full_shutdown_protocol
-sol76 nominal +15c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol77 nominal +18c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol78 cool +15c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol79 nominal +18c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol80 cool +15c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol81 nominal +18c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol82 cool +14c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol83 nominal +17c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol84 cool +14c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol85 nominal +17c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol86 cool +14c 145kw 0r happy adapt:power_rationing harvest(4.9kg) adapt:full_shutdown_protocol
-sol87 nominal +17c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol88 cool +14c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol89 nominal +17c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol90 nominal +18c 86kw 0r happy dust_storm(58%) warning:recycler adapt:power_rationing adapt:backup_water(-5L) adapt:full_shutdown_protocol
-sol91 nominal +18c 86kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol92 nominal +18c 86kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol93 nominal +18c 144kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol94 nominal +18c 144kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol95 nominal +18c 144kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol96 nominal +18c 144kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol97 nominal +18c 144kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol98 nominal +18c 144kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol99 nominal +18c 144kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol100 nominal +18c 144kw 0r happy adapt:power_rationing resupply(600kg) adapt:full_shutdown_protocol
+sol62 nominal +16c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol63 nominal +16c 148kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol64 nominal +16c 148kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol65 nominal +16c 147kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol66 nominal +16c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol67 nominal +16c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol68 nominal +16c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol69 nominal +16c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol70 nominal +15c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol71 cool +15c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol72 cool +15c 146kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol73 cool +14c 147kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol74 cool +14c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol75 nominal +18c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol76 nominal +16c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol77 cool +15c 146kw 0r happy warning:seal adapt:power_rationing adapt:seal_patched eva adapt:full_shutdown_protocol
+sol78 cool +13c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol79 nominal +18c 146kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol80 nominal +15c 146kw 0r happy adapt:power_rationing harvest(3.4kg) adapt:full_shutdown_protocol
+sol81 nominal +17c 108kw 0r happy dust_storm(37%) adapt:power_rationing adapt:full_shutdown_protocol
+sol82 cool +14c 108kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol83 nominal +16c 108kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol84 nominal +18c 108kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol85 cool +15c 108kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol86 nominal +16c 108kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol87 nominal +17c 108kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol88 cool +14c 145kw 0r happy adapt:power_rationing crew:illness adapt:full_shutdown_protocol
+sol89 nominal +17c 145kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol90 cool +14c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol91 nominal +17c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol92 cool +14c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol93 nominal +17c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol94 cool +14c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol95 nominal +17c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol96 cool +14c 145kw 0r happy adapt:power_rationing eva discovery:regolith_anomaly adapt:full_shutdown_protocol
+sol97 nominal +17c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol98 cool +14c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol99 nominal +17c 145kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol100 cool +14c 145kw 0r happy adapt:power_rationing resupply(600kg) adapt:full_shutdown_protocol
 sol1 cool +12c 106kw 458r happy
 sol2 cool +12c 106kw 410r happy
 sol3 cool +12c 106kw 361r happy
-sol4 cool +12c 106kw 313r happy
-sol5 cool +12c 106kw 265r happy
-sol6 cool +12c 106kw 216r happy
-sol7 cool +12c 105kw 168r happy eva
-sol8 cool +12c 105kw 119r happy crew:illness eva
-sol9 cool +12c 105kw 70r happy eva discovery:ice_lens
-sol10 cool +12c 105kw 21r happy meteorite adapt:power_rationing adapt:panel_repair(+6.7%)
-sol11 cool +10c 105kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol12 cool +6c 104kw 0r happy solar_flare(82%) flare_damage:heater adapt:power_rationing eva adapt:full_shutdown_protocol
-sol13 cool +6c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol14 cool +6c 100kw 0r happy warning:panel adapt:power_rationing adapt:full_shutdown_protocol
-sol15 cool +6c 66kw 0r happy dust_storm(49%) adapt:power_rationing adapt:full_shutdown_protocol
-sol16 cool +6c 66kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol17 cool +6c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol18 cool +6c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol19 cool +6c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol20 cool +5c 99kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol21 cool +5c 99kw 0r happy adapt:power_rationing eva discovery:fossil_candidate adapt:full_shutdown_protocol
-sol22 cool +5c 99kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol23 cool +5c 99kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol24 cool +5c 99kw 0r happy adapt:power_rationing eva discovery:mineral_deposit adapt:full_shutdown_protocol
-sol25 cool +5c 99kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol26 cool +5c 99kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol27 cool +5c 99kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol28 cool +5c 98kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol29 cool +5c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol30 cool +5c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol31 cool +5c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol32 cool +5c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol33 cool +5c 98kw 0r happy adapt:power_rationing eva discovery:lava_tube adapt:full_shutdown_protocol
-sol34 cool +5c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol35 cool +5c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol36 cool +5c 98kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol37 cool +5c 97kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol38 cool +4c 97kw 0r happy adapt:power_rationing harvest(5.5kg) adapt:full_shutdown_protocol
-sol39 cool +5c 53kw 0r happy dust_storm(65%) adapt:power_rationing adapt:full_shutdown_protocol
-sol40 cool +5c 53kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol41 cool +5c 53kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol42 cool +5c 53kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol43 cool +5c 53kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol44 cool +5c 52kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol45 cool +5c 52kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol46 cool +5c 52kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol47 cool +4c 96kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol48 cool +4c 96kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol49 cool +4c 96kw 0r happy meteorite impact_damage:water_recycler(-10%) adapt:power_rationing adapt:panel_repair(+7.8%) crew:illness adapt:full_shutdown_protocol
-sol50 cool +4c 96kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol51 cool +4c 96kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol52 cool +4c 96kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol53 cool +4c 95kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol54 cool +4c 95kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol55 cool +4c 95kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol56 cool +4c 95kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol57 cool +4c 95kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol58 cool +4c 95kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol59 cool +4c 95kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol60 cool +4c 95kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol61 cool +4c 95kw 0r happy adapt:power_rationing eva discovery:mineral_deposit adapt:full_shutdown_protocol
-sol62 cool +4c 95kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol63 cool +3c 95kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol64 cool +3c 94kw 0r happy adapt:power_rationing eva discovery:lava_tube adapt:full_shutdown_protocol
-sol65 cool +3c 94kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol66 cool +3c 94kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol67 cool +3c 94kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol68 cool +4c 55kw 0r happy dust_storm(60%) adapt:power_rationing adapt:full_shutdown_protocol
-sol69 cool +4c 55kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol70 cool +4c 54kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol71 cool +4c 54kw 0r happy marsquake(5.4) adapt:power_rationing adapt:full_shutdown_protocol
-sol72 cool +4c 54kw 0r happy adapt:power_rationing crew:illness adapt:full_shutdown_protocol
-sol73 cool +3c 94kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol74 cool +3c 94kw 0r happy adapt:power_rationing eva discovery:mineral_deposit adapt:full_shutdown_protocol
-sol75 cool +3c 94kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol76 cool +3c 94kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol77 cool +3c 93kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol78 cool +3c 93kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol79 cool +3c 93kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol80 cool +3c 93kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol81 cool +3c 93kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol82 cool +3c 93kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol83 cool +3c 93kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol84 cool +3c 93kw 0r happy adapt:power_rationing harvest(4.9kg) adapt:full_shutdown_protocol
-sol85 cool +3c 93kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol86 cool +3c 93kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol87 cool +3c 93kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol88 cool +3c 93kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol89 cool +3c 93kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol90 cool +3c 93kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol91 cool +3c 93kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol92 cool +3c 93kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol93 cool +3c 93kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol94 cool +3c 93kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol95 cool +3c 93kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol96 cool +3c 93kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol97 cool +3c 93kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol98 cool +3c 93kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
-sol99 cool +3c 93kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
-sol100 cool +3c 93kw 0r happy adapt:power_rationing resupply(600kg) adapt:full_shutdown_protocol
-sol1 cool +14c 213kw 567r happy
+sol4 cool +12c 106kw 312r happy
+sol5 cool +12c 106kw 264r happy
+sol6 cool +12c 105kw 215r happy
+sol7 cool +12c 105kw 166r happy
+sol8 cool +12c 105kw 118r happy
+sol9 cool +12c 105kw 69r happy
+sol10 cool +12c 105kw 20r happy adapt:power_rationing
+sol11 cool +10c 105kw 0r happy meteorite adapt:power_rationing adapt:panel_repair(+2.2%) adapt:full_shutdown_protocol
+sol12 cool +10c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol13 cool +9c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol14 cool +9c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol15 cool +9c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol16 cool +9c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol17 cool +9c 104kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol18 cool +9c 104kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol19 cool +9c 103kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol20 cool +9c 103kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol21 cool +9c 103kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol22 cool +9c 103kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol23 cool +9c 103kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol24 cool +9c 103kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol25 cool +9c 103kw 0r happy solar_flare(38%) adapt:power_rationing adapt:full_shutdown_protocol
+sol26 cool +9c 102kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol27 cool +8c 102kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol28 cool +8c 102kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol29 cool +10c 102kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol30 cool +8c 102kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol31 cool +10c 102kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol32 cool +8c 102kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol33 cool +9c 102kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol34 cool +10c 101kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol35 cool +10c 101kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol36 cool +9c 101kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol37 cool +9c 101kw 0r happy adapt:power_rationing harvest(5.5kg) adapt:full_shutdown_protocol
+sol38 cool +9c 101kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol39 cool +9c 101kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol40 cool +9c 101kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol41 cool +10c 67kw 0r happy dust_storm(48%) adapt:power_rationing adapt:full_shutdown_protocol
+sol42 cool +10c 53kw 0r happy dust_storm(68%) adapt:power_rationing adapt:full_shutdown_protocol
+sol43 cool +10c 52kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol44 cool +10c 52kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol45 cool +9c 100kw 0r happy adapt:power_rationing eva discovery:fossil_candidate adapt:full_shutdown_protocol
+sol46 cool +9c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol47 cool +9c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol48 cool +9c 100kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol49 cool +9c 100kw 0r happy adapt:power_rationing crew:illness adapt:full_shutdown_protocol
+sol50 cool +9c 92kw 0r happy warning:panel adapt:power_rationing adapt:full_shutdown_protocol
+sol51 cool +9c 91kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol52 cool +9c 62kw 0r happy dust_storm(46%) adapt:power_rationing adapt:full_shutdown_protocol
+sol53 cool +9c 62kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol54 cool +9c 91kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol55 cool +9c 91kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol56 cool +9c 91kw 0r happy adapt:power_rationing eva discovery:lava_tube adapt:full_shutdown_protocol
+sol57 cool +8c 91kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol58 cool +8c 91kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol59 cool +8c 91kw 0r happy adapt:power_rationing eva discovery:regolith_anomaly adapt:full_shutdown_protocol
+sol60 cool +8c 91kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol61 cool +8c 90kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol62 cool +8c 90kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol63 cool +8c 90kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol64 cool +8c 90kw 0r happy meteorite adapt:power_rationing adapt:panel_repair(+7.7%) adapt:full_shutdown_protocol
+sol65 cool +8c 90kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol66 cool +9c 57kw 0r happy dust_storm(52%) adapt:power_rationing adapt:full_shutdown_protocol
+sol67 cool +9c 57kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol68 cool +9c 57kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol69 cool +9c 57kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol70 cool +9c 57kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol71 cool +9c 57kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol72 cool +9c 57kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol73 cool +8c 57kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol74 cool +8c 89kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol75 cool +4c 89kw 0r happy solar_flare(72%) flare_damage:heater adapt:power_rationing adapt:full_shutdown_protocol
+sol76 cool +4c 89kw 0r happy adapt:power_rationing crew:illness adapt:full_shutdown_protocol
+sol77 cool +4c 89kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol78 cool +4c 89kw 0r happy adapt:power_rationing crew:illness adapt:full_shutdown_protocol
+sol79 cool +4c 89kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol80 cool +4c 89kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol81 cool +4c 89kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol82 cool +4c 89kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol83 cool +4c 89kw 0r happy adapt:power_rationing harvest(4.2kg) adapt:full_shutdown_protocol
+sol84 cool +4c 89kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol85 cool +4c 89kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol86 cool +4c 89kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol87 cool +4c 89kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol88 cool +4c 89kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol89 cool +3c 88kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol90 cool +3c 89kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol91 cool +3c 88kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol92 cool +3c 88kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol93 cool +3c 88kw 0r happy adapt:power_rationing eva adapt:full_shutdown_protocol
+sol94 cool +3c 88kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol95 cool +3c 88kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol96 cool +3c 88kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol97 cool +3c 88kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol98 cool +3c 88kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol99 cool +3c 88kw 0r happy adapt:power_rationing adapt:full_shutdown_protocol
+sol100 cool +3c 88kw 0r happy adapt:power_rationing resupply(600kg) adapt:full_shutdown_protocol
+sol1 cool +14c 212kw 567r happy
 sol2 cool +13c 212kw 631r happy
-sol3 cool +13c 212kw 695r happy
-sol4 cool +13c 212kw 759r happy marsquake(4.7)
-sol5 cool +13c 211kw 822r happy
-sol6 cool +13c 211kw 885r happy
-sol7 cool +14c 211kw 945r happy
-sol8 cool +13c 210kw 1007r happy
-sol9 cool +14c 210kw 1066r happy eva
-sol10 cool +13c 210kw 1128r happy
-sol11 cool +14c 209kw 1186r happy
-sol12 cool +14c 209kw 1245r happy eva discovery:mineral_deposit
-sol13 cool +14c 209kw 1303r happy
-sol14 cool +14c 209kw 1362r happy
-sol15 cool +14c 208kw 1419r happy
-sol16 cool +14c 207kw 1476r happy
-sol17 cool +14c 208kw 1533r happy eva discovery:ice_lens
-sol18 cool +14c 207kw 1590r happy
-sol19 cool +14c 207kw 1647r happy
-sol20 cool +13c 207kw 1704r happy
-sol21 cool +13c 206kw 1760r happy
-sol22 nominal +16c 115kw 1719r happy dust_storm(63%)
-sol23 nominal +16c 115kw 1679r happy meteorite adapt:panel_repair(+5.9%)
-sol24 nominal +16c 115kw 1638r happy
-sol25 nominal +16c 115kw 1597r happy
-sol26 cool +13c 205kw 1652r happy harvest(5.3kg)
-sol27 cool +13c 204kw 1707r happy
-sol28 cool +13c 204kw 1762r happy
-sol29 cool +13c 204kw 1817r happy
-sol30 cool +13c 204kw 1871r happy eva
-sol31 cool +13c 204kw 1926r happy eva
-sol32 cool +13c 203kw 1980r happy
-sol33 cool +13c 203kw 2034r happy
-sol34 cool +12c 203kw 2087r happy
-sol35 cool +12c 202kw 2141r happy
-sol36 cool +12c 202kw 2195r happy
-sol37 cool +12c 202kw 2248r happy eva
-sol38 cool +12c 202kw 2301r happy
-sol39 cool +12c 202kw 2354r happy
-sol40 cool +12c 201kw 2407r happy eva
-sol41 cool +12c 201kw 2460r happy eva
-sol42 cool +12c 201kw 2513r happy
-sol43 cool +12c 201kw 2565r happy
-sol44 cool +13c 200kw 2615r happy eva
-sol45 cool +12c 200kw 2666r happy
-sol46 cool +13c 200kw 2716r happy crew:illness eva discovery:ice_lens
-sol47 cool +12c 200kw 2768r happy warning:seal adapt:seal_patched
-sol48 cool +13c 200kw 2816r happy
-sol49 cool +13c 200kw 2865r happy eva discovery:mineral_deposit
-sol50 cool +12c 199kw 2917r happy
-sol51 cool +13c 199kw 2965r happy harvest(3.7kg)
-sol52 cool +13c 199kw 3014r happy eva
-sol53 cool +13c 199kw 3062r happy
-sol54 cool +13c 199kw 3110r happy
-sol55 cool +14c 143kw 3100r happy dust_storm(40%)
-sol56 cool +14c 143kw 3090r happy
-sol57 cool +14c 142kw 3079r happy
-sol58 cool +14c 142kw 3069r happy
-sol59 cool +14c 142kw 3058r happy crew:illness
-sol60 cool +13c 197kw 3106r happy eva
-sol61 cool +13c 197kw 3153r happy
-sol62 cool +13c 197kw 3200r happy
-sol63 cool +13c 197kw 3248r happy
-sol64 cool +12c 197kw 3295r happy
-sol65 cool +12c 197kw 3342r happy
-sol66 cool +12c 196kw 3390r happy
-sol67 cool +12c 196kw 3436r happy crew:illness
-sol68 cool +12c 196kw 3484r happy eva discovery:ice_lens
-sol69 cool +12c 196kw 3530r happy
-sol70 cool +12c 196kw 3577r happy
-sol71 cool +12c 196kw 3624r happy
-sol72 cool +12c 196kw 3671r happy
-sol73 cool +12c 195kw 3717r happy eva
-sol74 cool +12c 196kw 3764r happy
-sol75 cool +12c 195kw 3811r happy eva
-sol76 cool +12c 195kw 3857r happy eva
-sol77 cool +12c 195kw 3904r happy harvest(3.7kg)
-sol78 cool +12c 195kw 3950r happy
-sol79 cool +12c 195kw 3996r happy
-sol80 cool +12c 195kw 4043r happy
-sol81 cool +12c 195kw 4090r happy
-sol82 cool +12c 194kw 4136r happy
-sol83 cool +12c 195kw 4182r happy
-sol84 cool +13c 125kw 4156r happy dust_storm(51%) crew:illness
-sol85 cool +13c 125kw 4130r happy
-sol86 cool +13c 125kw 4105r happy
-sol87 cool +13c 125kw 4079r happy
-sol88 cool +13c 125kw 4053r happy
-sol89 cool +12c 194kw 4100r happy eva
-sol90 cool +12c 194kw 4146r happy
-sol91 cool +12c 194kw 4192r happy
-sol92 cool +12c 194kw 4238r happy
-sol93 cool +12c 193kw 4285r happy
-sol94 cool +12c 193kw 4331r happy
-sol95 cool +12c 193kw 4377r happy
-sol96 cool +12c 193kw 4424r happy
-sol97 cool +12c 193kw 4470r happy
-sol98 cool +12c 193kw 4517r happy crew:illness eva
-sol99 cool +12c 193kw 4563r happy
-sol100 cool +12c 193kw 4610r happy resupply(600kg)
-sol1 nominal +16c 213kw 549r happy eva
+sol3 cool +13c 212kw 694r happy eva
+sol4 cool +13c 212kw 758r happy
+sol5 cool +13c 211kw 821r happy
+sol6 cool +13c 211kw 884r happy
+sol7 cool +14c 210kw 943r happy
+sol8 cool +13c 210kw 1005r happy
+sol9 cool +14c 210kw 1064r happy
+sol10 cool +13c 210kw 1126r happy
+sol11 cool +14c 209kw 1185r happy
+sol12 cool +14c 209kw 1243r happy
+sol13 cool +14c 208kw 1301r happy
+sol14 cool +14c 208kw 1359r happy
+sol15 cool +14c 208kw 1417r happy
+sol16 cool +14c 208kw 1474r happy
+sol17 cool +14c 208kw 1531r happy
+sol18 cool +14c 207kw 1588r happy
+sol19 cool +13c 207kw 1645r happy
+sol20 cool +13c 206kw 1701r happy
+sol21 cool +13c 206kw 1757r happy
+sol22 cool +13c 206kw 1813r happy crew:illness eva
+sol23 cool +13c 205kw 1868r happy eva
+sol24 cool +13c 206kw 1924r happy
+sol25 cool +13c 205kw 1980r happy harvest(3.5kg)
+sol26 cool +13c 205kw 2035r happy
+sol27 cool +13c 205kw 2090r happy
+sol28 cool +13c 204kw 2145r happy
+sol29 cool +13c 204kw 2200r happy
+sol30 cool +13c 204kw 2255r happy
+sol31 cool +13c 204kw 2309r happy
+sol32 cool +13c 203kw 2363r happy eva
+sol33 cool +13c 203kw 2417r happy eva
+sol34 cool +12c 203kw 2471r happy
+sol35 cool +12c 203kw 2525r happy eva
+sol36 cool +12c 203kw 2579r happy
+sol37 cool +12c 202kw 2632r happy
+sol38 cool +12c 202kw 2686r happy
+sol39 cool +12c 202kw 2739r happy
+sol40 cool +12c 202kw 2792r happy
+sol41 cool +12c 201kw 2845r happy
+sol42 cool +12c 201kw 2897r happy
+sol43 cool +12c 201kw 2950r happy
+sol44 cool +12c 201kw 3003r happy
+sol45 cool +13c 201kw 3052r happy eva
+sol46 cool +12c 200kw 3104r happy
+sol47 cool +13c 200kw 3154r happy eva
+sol48 cool +12c 200kw 3206r happy
+sol49 cool +13c 200kw 3255r happy
+sol50 cool +12c 200kw 3307r happy harvest(5.4kg) crew:illness eva
+sol51 cool +13c 200kw 3356r happy
+sol52 cool +13c 199kw 3404r happy
+sol53 cool +13c 199kw 3453r happy
+sol54 cool +13c 199kw 3502r happy
+sol55 cool +13c 199kw 3550r happy
+sol56 cool +13c 199kw 3598r happy
+sol57 cool +13c 199kw 3646r happy crew:illness
+sol58 cool +13c 198kw 3694r happy
+sol59 cool +13c 198kw 3742r happy meteorite adapt:panel_repair(+7.4%)
+sol60 cool +13c 198kw 3790r happy crew:illness
+sol61 cool +13c 198kw 3838r happy
+sol62 cool +13c 198kw 3886r happy
+sol63 cool +13c 198kw 3934r happy eva discovery:ice_lens
+sol64 cool +13c 198kw 3982r happy
+sol65 cool +13c 197kw 4029r happy
+sol66 cool +13c 197kw 4077r happy
+sol67 cool +13c 197kw 4124r happy
+sol68 cool +13c 197kw 4172r happy
+sol69 cool +12c 197kw 4219r happy eva
+sol70 cool +12c 197kw 4266r happy
+sol71 cool +12c 197kw 4314r happy
+sol72 cool +12c 196kw 4361r happy eva
+sol73 cool +12c 196kw 4408r happy
+sol74 cool +12c 196kw 4456r happy
+sol75 cool +12c 196kw 4503r happy harvest(5.5kg)
+sol76 cool +12c 196kw 4550r happy
+sol77 cool +12c 196kw 4597r happy eva
+sol78 cool +12c 196kw 4644r happy
+sol79 cool +12c 196kw 4691r happy
+sol80 cool +12c 196kw 4738r happy
+sol81 cool +12c 196kw 4785r happy warning:recycler adapt:backup_water(-5L)
+sol82 cool +12c 196kw 4832r happy
+sol83 cool +12c 195kw 4879r happy
+sol84 cool +12c 195kw 4926r happy
+sol85 cool +12c 195kw 4973r happy
+sol86 cool +12c 195kw 5000r happy
+sol87 cool +12c 195kw 5000r happy
+sol88 cool +12c 195kw 5000r happy
+sol89 cool +12c 195kw 5000r happy
+sol90 cool +12c 195kw 5000r happy meteorite adapt:panel_repair(+2.4%)
+sol91 cool +12c 195kw 5000r happy
+sol92 cool +12c 195kw 5000r happy
+sol93 cool +12c 195kw 5000r happy
+sol94 cool +12c 194kw 5000r happy
+sol95 cool +12c 195kw 5000r happy
+sol96 cool +12c 195kw 5000r happy
+sol97 cool +12c 195kw 5000r happy
+sol98 cool +12c 194kw 5000r happy
+sol99 cool +12c 194kw 5000r happy
+sol100 cool +12c 194kw 5000r happy meteorite adapt:panel_repair(+6.2%) harvest(3.8kg) resupply(600kg)
+sol1 nominal +16c 212kw 549r happy
 sol2 nominal +16c 212kw 594r happy
-sol3 nominal +16c 212kw 639r happy
-sol4 nominal +20c 211kw 679r happy eva
-sol5 nominal +20c 210kw 722r happy eva
-sol6 nominal +19c 211kw 766r happy
-sol7 nominal +17c 210kw 809r happy eva discovery:regolith_anomaly
-sol8 nominal +20c 210kw 848r happy
-sol9 nominal +18c 210kw 891r happy
-sol10 nominal +20c 210kw 930r happy
-sol11 nominal +18c 210kw 973r happy eva
-sol12 nominal +20c 209kw 1012r happy
-sol13 nominal +20c 208kw 1050r happy
-sol14 nominal +18c 209kw 1092r happy
-sol15 nominal +19c 208kw 1130r happy eva
-sol16 nominal +20c 207kw 1166r happy
-sol17 nominal +19c 208kw 1204r happy
-sol18 nominal +19c 207kw 1242r happy
-sol19 nominal +19c 207kw 1279r happy
-sol20 nominal +19c 207kw 1316r happy eva
-sol21 nominal +19c 206kw 1352r happy
-sol22 nominal +19c 206kw 1389r happy crew:illness
-sol23 nominal +19c 206kw 1425r happy
-sol24 nominal +20c 141kw 1392r happy dust_storm(45%)
-sol25 nominal +20c 140kw 1359r happy
-sol26 nominal +17c 140kw 1330r happy harvest(5.7kg)
-sol27 nominal +17c 140kw 1297r happy
-sol28 nominal +16c 204kw 1332r happy
-sol29 nominal +20c 204kw 1364r happy
-sol30 nominal +19c 204kw 1398r happy
-sol31 nominal +17c 204kw 1433r happy
-sol32 nominal +20c 203kw 1464r happy
-sol33 nominal +18c 203kw 1498r happy
-sol34 nominal +20c 203kw 1529r happy
-sol35 nominal +18c 203kw 1563r happy
-sol36 nominal +20c 202kw 1593r happy
-sol37 nominal +18c 202kw 1627r happy meteorite adapt:panel_repair(+3.2%)
-sol38 nominal +20c 202kw 1656r happy eva
-sol39 nominal +17c 202kw 1690r happy
-sol40 nominal +19c 202kw 1719r happy
-sol41 nominal +20c 201kw 1749r happy
-sol42 nominal +20c 201kw 1778r happy
-sol43 nominal +20c 201kw 1807r happy
-sol44 nominal +20c 201kw 1836r happy
-sol45 nominal +19c 200kw 1865r happy eva
-sol46 nominal +19c 200kw 1893r happy
-sol47 nominal +19c 200kw 1922r happy
-sol48 nominal +19c 199kw 1950r happy
-sol49 nominal +19c 200kw 1978r happy
-sol50 nominal +19c 199kw 2006r happy
-sol51 nominal +19c 188kw 2023r happy warning:panel
-sol52 nominal +16c 143kw 1995r happy dust_storm(34%) harvest(3.7kg)
-sol53 nominal +18c 143kw 1963r happy
-sol54 nominal +19c 143kw 1931r happy
-sol55 nominal +20c 142kw 1899r happy
-sol56 nominal +20c 142kw 1867r happy
-sol57 nominal +18c 142kw 1838r happy
-sol58 nominal +18c 142kw 1806r happy
-sol59 nominal +18c 142kw 1774r happy
-sol60 nominal +18c 186kw 1789r happy
-sol61 nominal +18c 186kw 1805r happy
-sol62 nominal +18c 186kw 1821r happy
-sol63 nominal +17c 185kw 1836r happy
-sol64 nominal +17c 185kw 1852r happy
-sol65 nominal +17c 185kw 1867r happy
-sol66 nominal +17c 185kw 1883r happy
-sol67 nominal +17c 184kw 1898r happy
-sol68 nominal +17c 185kw 1913r happy warning:recycler adapt:backup_water(-5L) eva
-sol69 nominal +20c 184kw 1924r happy
-sol70 nominal +18c 184kw 1940r happy
-sol71 nominal +17c 184kw 1955r happy
-sol72 nominal +20c 184kw 1966r happy
-sol73 nominal +18c 184kw 1981r happy
-sol74 nominal +20c 184kw 1992r happy
-sol75 nominal +18c 184kw 2008r happy
-sol76 nominal +19c 184kw 2019r happy
-sol77 nominal +18c 184kw 2034r happy
-sol78 nominal +19c 184kw 2045r happy harvest(3.8kg)
-sol79 nominal +17c 183kw 2060r happy
-sol80 nominal +19c 183kw 2070r happy
-sol81 nominal +18c 109kw 2007r happy dust_storm(57%)
-sol82 nominal +20c 110kw 1942r happy
-sol83 nominal +19c 110kw 1880r happy
-sol84 nominal +18c 110kw 1818r happy
-sol85 nominal +19c 182kw 1828r happy
-sol86 nominal +19c 182kw 1839r happy
-sol87 nominal +19c 182kw 1850r happy
-sol88 nominal +19c 182kw 1861r happy
-sol89 nominal +19c 182kw 1872r happy
-sol90 nominal +19c 182kw 1883r happy
-sol91 nominal +19c 182kw 1893r happy
-sol92 nominal +19c 182kw 1904r happy
-sol93 nominal +19c 182kw 1915r happy
-sol94 nominal +19c 182kw 1926r happy
-sol95 nominal +19c 182kw 1937r happy
-sol96 nominal +19c 182kw 1948r happy
-sol97 nominal +19c 181kw 1959r happy
-sol98 nominal +19c 182kw 1970r happy
-sol99 nominal +19c 182kw 1982r happy
-sol100 nominal +19c 182kw 1993r happy resupply(600kg)
+sol3 nominal +20c 212kw 635r happy
+sol4 nominal +20c 211kw 678r happy
+sol5 nominal +19c 210kw 722r happy
+sol6 nominal +17c 211kw 766r happy
+sol7 nominal +20c 210kw 805r happy
+sol8 nominal +18c 210kw 848r happy eva
+sol9 nominal +20c 210kw 888r happy
+sol10 nominal +18c 210kw 930r happy
+sol11 nominal +20c 209kw 969r happy eva
+sol12 nominal +18c 209kw 1011r happy
+sol13 nominal +19c 209kw 1050r happy
+sol14 nominal +20c 208kw 1087r happy
+sol15 nominal +20c 207kw 1124r happy
+sol16 nominal +17c 206kw 1164r happy eva discovery:mineral_deposit
+sol17 nominal +19c 208kw 1202r happy
+sol18 nominal +19c 207kw 1239r happy eva
+sol19 nominal +19c 207kw 1276r happy
+sol20 nominal +19c 207kw 1312r happy
+sol21 nominal +19c 206kw 1349r happy
+sol22 nominal +19c 206kw 1385r happy
+sol23 nominal +19c 206kw 1422r happy
+sol24 nominal +18c 206kw 1458r happy
+sol25 nominal +18c 205kw 1494r happy harvest(5.5kg) eva
+sol26 nominal +18c 205kw 1529r happy
+sol27 nominal +18c 204kw 1564r happy
+sol28 nominal +17c 204kw 1600r happy
+sol29 nominal +17c 204kw 1635r happy
+sol30 nominal +20c 204kw 1666r happy meteorite adapt:panel_repair(+2.4%)
+sol31 nominal +18c 204kw 1701r happy
+sol32 nominal +17c 204kw 1735r happy meteorite adapt:panel_repair(+3.0%)
+sol33 nominal +20c 203kw 1766r happy
+sol34 nominal +18c 203kw 1800r happy
+sol35 nominal +20c 203kw 1830r happy
+sol36 nominal +18c 203kw 1864r happy eva discovery:fossil_candidate
+sol37 nominal +20c 202kw 1894r happy
+sol38 nominal +17c 202kw 1928r happy
+sol39 nominal +19c 202kw 1958r happy
+sol40 nominal +17c 202kw 1991r happy
+sol41 nominal +19c 201kw 2020r happy
+sol42 nominal +20c 201kw 2050r happy
+sol43 nominal +20c 201kw 2079r happy
+sol44 nominal +20c 201kw 2108r happy meteorite adapt:panel_repair(+7.7%)
+sol45 nominal +19c 201kw 2137r happy
+sol46 nominal +19c 200kw 2166r happy
+sol47 nominal +19c 200kw 2195r happy
+sol48 nominal +19c 200kw 2223r happy
+sol49 nominal +17c 141kw 2193r happy dust_storm(42%) warning:recycler adapt:backup_water(-5L)
+sol50 nominal +19c 141kw 2159r happy
+sol51 nominal +20c 141kw 2125r happy harvest(5.2kg)
+sol52 nominal +18c 141kw 2094r happy crew:illness
+sol53 nominal +18c 199kw 2122r happy
+sol54 nominal +19c 199kw 2150r happy
+sol55 nominal +19c 198kw 2178r happy eva
+sol56 nominal +19c 105kw 2109r happy dust_storm(67%)
+sol57 nominal +20c 105kw 2039r happy
+sol58 nominal +18c 105kw 1974r happy
+sol59 nominal +18c 105kw 1905r happy
+sol60 nominal +18c 105kw 1836r happy
+sol61 nominal +18c 105kw 1766r happy
+sol62 nominal +18c 104kw 1697r happy
+sol63 nominal +18c 104kw 1628r happy
+sol64 nominal +18c 196kw 1655r happy
+sol65 nominal +17c 196kw 1682r happy
+sol66 nominal +17c 196kw 1709r happy
+sol67 nominal +17c 196kw 1735r happy
+sol68 nominal +20c 196kw 1758r happy eva discovery:lava_tube
+sol69 nominal +18c 196kw 1784r happy eva discovery:mineral_deposit
+sol70 nominal +17c 196kw 1811r happy
+sol71 nominal +16c 153kw 1791r happy dust_storm(31%) crew:illness
+sol72 nominal +20c 153kw 1767r happy
+sol73 nominal +19c 153kw 1748r happy
+sol74 nominal +18c 153kw 1728r happy
+sol75 nominal +16c 153kw 1708r happy
+sol76 nominal +20c 152kw 1685r happy
+sol77 nominal +19c 152kw 1665r happy
+sol78 nominal +17c 152kw 1645r happy
+sol79 nominal +19c 194kw 1668r happy harvest(5.9kg) eva
+sol80 nominal +19c 194kw 1690r happy
+sol81 nominal +19c 194kw 1713r happy
+sol82 nominal +19c 194kw 1735r happy eva discovery:mineral_deposit
+sol83 nominal +19c 194kw 1758r happy
+sol84 nominal +19c 194kw 1780r happy eva
+sol85 nominal +19c 194kw 1803r happy eva
+sol86 nominal +19c 194kw 1825r happy
+sol87 nominal +19c 194kw 1848r happy
+sol88 nominal +19c 194kw 1870r happy meteorite adapt:panel_repair(+2.5%) eva discovery:ice_lens
+sol89 nominal +19c 193kw 1892r happy
+sol90 nominal +19c 194kw 1915r happy
+sol91 nominal +17c 126kw 1870r happy dust_storm(50%) solar_flare(31%)
+sol92 nominal +19c 126kw 1821r happy
+sol93 nominal +20c 125kw 1772r happy dust_storm(34%)
+sol94 nominal +18c 147kw 1749r happy
+sol95 nominal +20c 147kw 1721r happy
+sol96 nominal +17c 147kw 1698r happy
+sol97 nominal +19c 147kw 1671r happy
+sol98 nominal +19c 192kw 1693r happy
+sol99 nominal +19c 192kw 1716r happy
+sol100 nominal +19c 192kw 1739r happy resupply(600kg)
