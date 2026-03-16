@@ -53,4 +53,3 @@ if __name__ == "__main__":
     validate_solar()
     validate_thermal()
     print("All subsystems passed validation.")
-
