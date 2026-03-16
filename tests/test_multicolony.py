@@ -19,7 +19,7 @@ import sys
 import os
 import unittest
 
-sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 
 def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
