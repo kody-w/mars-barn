@@ -46,6 +46,48 @@ def validate_thermal():
     assert heat_day < heat_night, "Day heating should be less than night heating"
     print("  ✓ Thermal heating bounds match expected dynamics.")
 
+
+def run_all_validations(terrain_grid=None, atm_profile=None, solar_energy=None) -> dict:
+    """Run all validation checks and return results dict."""
+    results = []
+
+    # Terrain
+    try:
+        if terrain_grid:
+            stats = elevation_stats(terrain_grid)
+            ok = -8200 <= stats["min_m"] and stats["max_m"] <= 21229
+            results.append({"check": "terrain_bounds", "passed": ok, "detail": f"[{stats['min_m']}m, {stats['max_m']}m]"})
+        else:
+            validate_terrain()
+            results.append({"check": "terrain_bounds", "passed": True, "detail": "OK"})
+    except Exception as e:
+        results.append({"check": "terrain_bounds", "passed": False, "detail": str(e)})
+
+    # Atmosphere
+    try:
+        validate_atmosphere()
+        results.append({"check": "atmosphere", "passed": True, "detail": "OK"})
+    except Exception as e:
+        results.append({"check": "atmosphere", "passed": False, "detail": str(e)})
+
+    # Solar
+    try:
+        validate_solar()
+        results.append({"check": "solar", "passed": True, "detail": "OK"})
+    except Exception as e:
+        results.append({"check": "solar", "passed": False, "detail": str(e)})
+
+    # Thermal
+    try:
+        validate_thermal()
+        results.append({"check": "thermal", "passed": True, "detail": "OK"})
+    except Exception as e:
+        results.append({"check": "thermal", "passed": False, "detail": str(e)})
+
+    passed = sum(1 for r in results if r["passed"])
+    return {"passed": passed, "total": len(results), "results": results}
+
+
 if __name__ == "__main__":
     print("=== Mars Barn Validation Suite ===")
     validate_terrain()

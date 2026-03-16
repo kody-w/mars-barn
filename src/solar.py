@@ -33,10 +33,11 @@ def distance_factor(solar_longitude_deg: float) -> float:
 
 def surface_irradiance(
     latitude_deg: float = 0.0,
-    solar_longitude_deg: float = 0.0,
+    solar_longitude: float = 0.0,
     hour: float = 12.0,
     atmospheric_pressure_pa: float = 610.0,
     dust_storm: bool = False,
+    solar_multiplier: float = 1.0,
 ) -> float:
     """Calculate direct solar irradiance at the surface in W/m².
     
@@ -47,7 +48,7 @@ def surface_irradiance(
     """
     # Incident angle
     lat_rad = math.radians(latitude_deg)
-    declination = math.asin(math.sin(AXIAL_TILT_RAD) * math.sin(math.radians(solar_longitude_deg)))
+    declination = math.asin(math.sin(AXIAL_TILT_RAD) * math.sin(math.radians(solar_longitude)))
     
     hour_angle = math.radians((hour - 12) * 15)
     
@@ -58,7 +59,7 @@ def surface_irradiance(
         return 0.0  # Nighttime
         
     # Top of atmosphere irradiance
-    toa_irradiance = SOLAR_CONSTANT_MARS_W_M2 * distance_factor(solar_longitude_deg)
+    toa_irradiance = SOLAR_CONSTANT_MARS_W_M2 * distance_factor(solar_longitude)
     
     # Atmospheric transmission
     optical_depth = 0.5 * (atmospheric_pressure_pa / 610.0)
@@ -68,7 +69,44 @@ def surface_irradiance(
     # Beer-Lambert law for transmission
     transmission = math.exp(-optical_depth / cos_zenith)
     
-    return toa_irradiance * cos_zenith * transmission
+    return toa_irradiance * cos_zenith * transmission * solar_multiplier
+
+
+def daily_energy(
+    latitude_deg: float = 0.0,
+    solar_longitude: float = 0.0,
+    panel_area_m2: float = 400.0,
+    panel_efficiency: float = 0.22,
+    dust_storm: bool = False,
+) -> dict:
+    """Calculate total daily energy and daylight hours.
+
+    Integrates surface_irradiance over a full sol (24.6 hours) in 0.5-hour steps.
+    """
+    from constants import MARS_SOL_HOURS
+    step_hours = 0.5
+    num_steps = int(MARS_SOL_HOURS / step_hours)
+    total_energy_kwh = 0.0
+    daylight_hours = 0.0
+    peak_irradiance = 0.0
+
+    for i in range(num_steps):
+        hour = i * step_hours
+        irr = surface_irradiance(latitude_deg, solar_longitude, hour, dust_storm=dust_storm)
+        if irr > 0:
+            daylight_hours += step_hours
+            total_energy_kwh += irr * panel_area_m2 * panel_efficiency * step_hours / 1000
+            peak_irradiance = max(peak_irradiance, irr)
+
+    return {
+        "total_kwh": round(total_energy_kwh, 2),
+        "daylight_hours": round(daylight_hours, 1),
+        "peak_irradiance_wm2": round(peak_irradiance, 1),
+    }
+
+
+# Alias for backward compatibility
+solar_distance_factor = distance_factor
 
 
 if __name__ == "__main__":
