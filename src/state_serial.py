@@ -122,4 +122,3 @@ if __name__ == "__main__":
     print(f"\nChanges after 10 sols:")
     for path, (old, new) in diff.items():
         print(f"  {path}: {old} → {new}")
-
