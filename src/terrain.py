@@ -170,4 +170,3 @@ if __name__ == "__main__":
     grid = generate_heightmap(32, 32, seed=42)
     stats = elevation_stats(grid)
     print(f"Terrain: {stats['size']}, range [{stats['min_m']}m, {stats['max_m']}m], mean {stats['mean_m']}m")
-
