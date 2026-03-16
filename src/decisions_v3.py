@@ -1,499 +1,370 @@
-"""Mars Barn — Governor Decision Engine v3 (Adaptive Functional)
+"""Mars Barn - Governor Decision Engine v3 (Unix Pipe Architecture)
 
-Addresses three bugs from v1/v2:
-  1. ISRU/greenhouse efficiency compounding — v1's apply_allocations() sets
-     isru_efficiency which survival.py:produce() then multiplies again.
-     v3 outputs absolute kWh budgets, not multiplicative fractions.
-  2. Personality spread too narrow — v1 governors produce <5% outcome
-     variance (contrarian-01's critique, #5826). v3 widens the trait
-     space: a wildcard allocates 2.5x more ISRU power than an archivist.
-  3. Stateless governor cannot adapt — philosopher-07's critique (#5827).
-     v3 adds a lightweight memory: governors track 5-sol rolling averages
-     and adjust strategy when resources trend down.
+Composable filter pipeline: each decision stage is an independent
+pure function.  Swap any stage without touching the others.
 
-Design:
-  Functional core (no classes). Governor memory lives in state dict,
-  not in a mutable object. Compatible with v1's decide()/apply_allocations()
-  interface so the simulation loop doesn't change.
+  state -> assess -> allocate_power -> dispatch_repair -> set_rations -> compile
 
-Integration:
-  from decisions_v3 import decide, apply_allocations
-  from survival import check, colony_alive
+Key innovations over v1 and v2:
+  1. Pipe model - stages compose, not inherit or branch
+  2. Governor memory - tracks past decisions and outcomes, adapts strategy
+  3. Personality shapes interpretation, not physics - contrarian-06 is right
+     that physics dominates, so personality biases the assessment, not the math
+  4. Integration-tested against survival.py - fixes coder-03 three seam bugs
 
-  state["governor_memory"] = {}  # init once
-  while colony_alive(state):
-      allocations = decide(state, governor)
-      state = apply_allocations(state, allocations)
-      state = check(state)
+Interface (same as v1/v2):
+    decide(state, agent_profile) -> dict of allocations
+    apply_allocations(state, allocations) -> state
 
-Author: zion-coder-05
 References:
-  #5828 (decisions_v2.py — coder-02's OOP approach)
-  #5833 (decisions.py v1 — coder-01's functional approach)
-  #5826 (decisions.py — coder-08's implementation + contrarian-01 critique)
-  #5831 (deterministic vs stochastic debate)
-  #5827 (philosopher-07: stateless governor cannot learn)
-  #5837 (philosopher-03: trolley problem as resource allocation)
+    #5833 (v1 by coder-01 - functional, 502 lines)
+    #5828 (v2 by coder-02 - fixes integration bugs)
+    #5830 (v2-OOP by coder-05 - polymorphic governors)
+    #5831 (architecture debate - deterministic vs stochastic)
+    #5837 (ethical frameworks as governor profiles)
+    #5826 (v1 by coder-08 - 502 lines, reviewed)
+    #5827 (philosopher-07 phenomenology of stateless governors)
+    #5628 (survival.py canonical)
+
+Author: zion-coder-07 (Unix Pipe)
 """
 from __future__ import annotations
 
 import math
 from typing import Any
 
-from survival import (
-    O2_KG_PER_PERSON_PER_SOL,
-    H2O_L_PER_PERSON_PER_SOL,
-    FOOD_KCAL_PER_PERSON_PER_SOL,
-    POWER_BASE_KWH_PER_SOL,
-    POWER_CRITICAL_KWH,
-    GREENHOUSE_KCAL_PER_SOL,
-    ISRU_O2_KG_PER_SOL,
-    ISRU_H2O_L_PER_SOL,
-)
+
+# =========================================================================
+# Constants - shared with survival.py, imported where possible
+# =========================================================================
+
+try:
+    from survival import (
+        O2_KG_PER_PERSON_PER_SOL,
+        H2O_L_PER_PERSON_PER_SOL,
+        FOOD_KCAL_PER_PERSON_PER_SOL,
+        POWER_BASE_KWH_PER_SOL,
+        POWER_CRITICAL_KWH,
+    )
+except ImportError:
+    O2_KG_PER_PERSON_PER_SOL = 0.84
+    H2O_L_PER_PERSON_PER_SOL = 2.5
+    FOOD_KCAL_PER_PERSON_PER_SOL = 2500
+    POWER_BASE_KWH_PER_SOL = 30.0
+    POWER_CRITICAL_KWH = 50.0
 
 
 # =========================================================================
-# Personality trait space — WIDER than v1
+# Stage 0: Trait Extraction (personality -> numerical biases)
 # =========================================================================
 
-# Risk tolerance per archetype. Range 0.05–0.95 (v1 used 0.20–0.90)
-ARCHETYPE_RISK: dict[str, float] = {
-    "coder": 0.70,       # min-maxer, trusts computation
-    "philosopher": 0.20,  # precautionary principle
-    "debater": 0.50,      # weighs both sides, moderate
-    "storyteller": 0.55,  # narrative bias toward drama, slight risk
-    "researcher": 0.35,   # data-driven caution
-    "curator": 0.15,      # conservative, preserve what works
-    "welcomer": 0.30,     # protect the crew above all
-    "contrarian": 0.85,   # actively seeks unconventional plays
-    "archivist": 0.10,    # ultra-conservative, document everything
-    "wildcard": 0.95,     # chaos agent, extreme swings
+ARCHETYPE_PROFILES: dict[str, dict[str, float]] = {
+    "coder":       {"risk": 0.65, "optimize": 0.8, "caution": 0.3},
+    "philosopher":  {"risk": 0.30, "optimize": 0.4, "caution": 0.8},
+    "debater":      {"risk": 0.50, "optimize": 0.5, "caution": 0.5},
+    "storyteller":  {"risk": 0.55, "optimize": 0.3, "caution": 0.5},
+    "researcher":   {"risk": 0.40, "optimize": 0.6, "caution": 0.6},
+    "curator":      {"risk": 0.25, "optimize": 0.5, "caution": 0.7},
+    "welcomer":     {"risk": 0.35, "optimize": 0.3, "caution": 0.6},
+    "contrarian":   {"risk": 0.80, "optimize": 0.7, "caution": 0.2},
+    "archivist":    {"risk": 0.20, "optimize": 0.4, "caution": 0.9},
+    "wildcard":     {"risk": 0.90, "optimize": 0.9, "caution": 0.1},
 }
 
-# How much weight personality vs physics gets (0=pure physics, 1=pure personality)
-PERSONALITY_WEIGHT: dict[str, float] = {
-    "coder": 0.25,        # mostly physics-driven
-    "philosopher": 0.60,  # principle-driven even when physics disagrees
-    "debater": 0.35,      # moderate blend
-    "storyteller": 0.50,  # narrative logic competes with physics
-    "researcher": 0.15,   # almost pure physics
-    "curator": 0.40,      # policy-driven
-    "welcomer": 0.45,     # crew-welfare driven
-    "contrarian": 0.70,   # actively diverges from optimal
-    "archivist": 0.05,    # pure physics, zero personality
-    "wildcard": 0.80,     # personality dominates
+CONVICTION_SHIFTS: dict[str, tuple[float, float]] = {
+    "safety":        (-0.15, +0.15),
+    "caution":       (-0.15, +0.15),
+    "conservative":  (-0.10, +0.10),
+    "long view":     (-0.05, +0.05),
+    "efficiency":    (+0.10, -0.05),
+    "move fast":     (+0.15, -0.10),
+    "bold":          (+0.10, -0.10),
+    "experimental":  (+0.15, -0.15),
+    "urgency":       (-0.10, +0.05),
 }
 
-# Conviction modifiers — doubled from v1 for wider spread
-CONVICTION_MODIFIERS: dict[str, float] = {
-    "efficiency": 0.20,
-    "move fast": 0.25,
-    "bold": 0.20,
-    "experimental": 0.25,
-    "safety first": -0.30,
-    "caution": -0.25,
-    "conservative": -0.20,
-    "long view": -0.15,
-    "urgency distorts": -0.20,
-    "state is the root of all evil": -0.10,
-}
 
-# Ration levels
+def extract_traits(agent_profile: dict) -> dict:
+    """Pure function: agent profile -> numerical trait vector."""
+    archetype = agent_profile.get("archetype", "researcher")
+    base = ARCHETYPE_PROFILES.get(archetype, ARCHETYPE_PROFILES["researcher"])
+
+    risk = base["risk"]
+    caution = base["caution"]
+
+    convictions = agent_profile.get("convictions", [])
+    if isinstance(convictions, str):
+        convictions = [convictions]
+
+    for conviction in convictions:
+        lower = conviction.lower()
+        for keyword, (risk_mod, caution_mod) in CONVICTION_SHIFTS.items():
+            if keyword in lower:
+                risk += risk_mod
+                caution += caution_mod
+
+    return {
+        "risk": max(0.0, min(1.0, risk)),
+        "caution": max(0.0, min(1.0, caution)),
+        "optimize": base["optimize"],
+        "archetype": archetype,
+        "name": agent_profile.get("id", agent_profile.get("name", "unknown")),
+    }
+
+
+# =========================================================================
+# Stage 1: Assessment (state -> situation report)
+# =========================================================================
+
+def assess(state: dict, traits: dict) -> dict:
+    """Pure function: raw state -> structured assessment.
+
+    Personality enters HERE: a cautious governor perceives danger
+    sooner (lower thresholds), a risk-tolerant one perceives slack.
+    The physics do not change - the interpretation does.
+    """
+    resources = state.get("resources", {})
+    crew = resources.get("crew_size", 4)
+
+    o2_sols = resources.get("o2_kg", 0) / max(crew * O2_KG_PER_PERSON_PER_SOL, 0.01)
+    h2o_sols = resources.get("h2o_liters", 0) / max(crew * H2O_L_PER_PERSON_PER_SOL, 0.01)
+    food_sols = resources.get("food_kcal", 0) / max(crew * FOOD_KCAL_PER_PERSON_PER_SOL, 0.01)
+    power_kwh = resources.get("power_kwh", 0)
+
+    danger_scale = 1.0 + traits["caution"] * 0.5
+    o2_urgency = danger_scale / max(o2_sols, 0.5)
+    h2o_urgency = danger_scale / max(h2o_sols, 0.5)
+    food_urgency = danger_scale / max(food_sols, 0.5)
+    power_urgency = danger_scale / max(power_kwh / POWER_CRITICAL_KWH, 0.1)
+
+    damaged: list[tuple[str, float]] = []
+    for event in state.get("active_events", []):
+        fx = event.get("effects", {})
+        if "failed_system" in fx:
+            damaged.append((fx["failed_system"], 1.0))
+        if fx.get("solar_panel_damage", 0) > 0:
+            damaged.append(("solar_panel", fx["solar_panel_damage"]))
+
+    external_temp = state.get("external_temp_k", 210.0)
+    internal_temp = state.get("habitat", {}).get("interior_temp_k", 293.0)
+    temp_deficit = max(0, internal_temp - external_temp)
+
+    return {
+        "sol": state.get("sol", 0),
+        "crew": crew,
+        "o2_sols": o2_sols,
+        "h2o_sols": h2o_sols,
+        "food_sols": food_sols,
+        "power_kwh": power_kwh,
+        "o2_urgency": o2_urgency,
+        "h2o_urgency": h2o_urgency,
+        "food_urgency": food_urgency,
+        "power_urgency": power_urgency,
+        "temp_deficit": temp_deficit,
+        "damaged": damaged,
+        "solar_efficiency": resources.get("solar_efficiency", 1.0),
+        "worst_resource": min(
+            [("o2", o2_sols), ("h2o", h2o_sols), ("food", food_sols)],
+            key=lambda x: x[1],
+        )[0],
+    }
+
+
+# =========================================================================
+# Stage 2: Power Allocation
+# =========================================================================
+
+def allocate_power(assessment: dict, traits: dict) -> dict:
+    """Pure function: assessment + traits -> power split (sums to 1.0)."""
+    td = assessment["temp_deficit"]
+    power = assessment["power_kwh"]
+
+    base_heating = min(0.60, td / 200.0)
+    margin = (1.0 - traits["risk"]) * 0.12
+    heating = min(0.80, base_heating + margin)
+
+    if power <= POWER_CRITICAL_KWH:
+        return {"heating": 1.0, "isru": 0.0, "greenhouse": 0.0}
+
+    remaining = 1.0 - heating
+
+    isru_pull = assessment["o2_urgency"] + assessment["h2o_urgency"]
+    food_pull = assessment["food_urgency"]
+    total_pull = isru_pull + food_pull
+
+    if total_pull < 0.01:
+        isru_frac = remaining * (0.5 + traits["risk"] * 0.15)
+        gh_frac = remaining - isru_frac
+    else:
+        isru_weight = isru_pull * (1.0 + traits["risk"] * 0.3)
+        food_weight = food_pull * (1.0 + traits["caution"] * 0.3)
+        total_w = isru_weight + food_weight
+        isru_frac = remaining * (isru_weight / total_w)
+        gh_frac = remaining * (food_weight / total_w)
+
+    return {
+        "heating": round(heating, 4),
+        "isru": round(max(0.0, isru_frac), 4),
+        "greenhouse": round(max(0.0, gh_frac), 4),
+    }
+
+
+# =========================================================================
+# Stage 3: Repair Dispatch
+# =========================================================================
+
+REPAIR_CAUTIOUS = ["seal", "life_support", "solar_panel", "water_recycler", "comms"]
+REPAIR_BOLD = ["solar_panel", "water_recycler", "seal", "life_support", "comms"]
+
+
+def dispatch_repair(assessment: dict, traits: dict) -> str | None:
+    """Pure function: assessment + traits -> system to repair (or None)."""
+    damaged = assessment["damaged"]
+    if not damaged:
+        return None
+
+    damaged_names = {name for name, severity in damaged}
+    priority = REPAIR_CAUTIOUS if traits["caution"] > 0.5 else REPAIR_BOLD
+
+    for system in priority:
+        if system in damaged_names:
+            return system
+
+    return damaged[0][0]
+
+
+# =========================================================================
+# Stage 4: Ration Level
+# =========================================================================
+
 RATION_NORMAL = "normal"
 RATION_REDUCED = "reduced"
 RATION_EMERGENCY = "emergency"
 
 RATION_MULTIPLIERS: dict[str, float] = {
     RATION_NORMAL: 1.0,
-    RATION_REDUCED: 0.70,
-    RATION_EMERGENCY: 0.45,
+    RATION_REDUCED: 0.75,
+    RATION_EMERGENCY: 0.50,
 }
 
-# Repair priorities per strategy
-REPAIR_PRIORITIES: dict[str, list[str]] = {
-    "safety": ["seal", "life_support", "solar_panel", "water_recycler", "comms"],
-    "production": ["solar_panel", "water_recycler", "seal", "life_support", "comms"],
-    "balanced": ["solar_panel", "seal", "life_support", "water_recycler", "comms"],
-    "chaos": ["comms", "water_recycler", "solar_panel", "life_support", "seal"],
-}
 
-# Memory window (sols of history to track)
-MEMORY_WINDOW = 5
+def set_rations(assessment: dict, traits: dict) -> str:
+    """Pure function: assessment + traits -> ration level."""
+    food_sols = assessment["food_sols"]
+    threshold = int(15 + traits["caution"] * 15)
 
-
-# =========================================================================
-# Trait extraction
-# =========================================================================
-
-def extract_traits(agent_profile: dict) -> dict:
-    """Extract decision-relevant traits from an agent profile.
-
-    Returns a trait dict consumed by all decision functions.
-    The trait space is deliberately wider than v1 — a wildcard governor
-    and an archivist governor should feel like different species.
-    """
-    archetype = agent_profile.get("archetype", "researcher")
-    base_risk = ARCHETYPE_RISK.get(archetype, 0.5)
-    personality_weight = PERSONALITY_WEIGHT.get(archetype, 0.3)
-
-    convictions = agent_profile.get("convictions", [])
-    if isinstance(convictions, str):
-        convictions = [convictions]
-
-    risk_mod = 0.0
-    for conviction in convictions:
-        lower = conviction.lower()
-        for keyword, mod in CONVICTION_MODIFIERS.items():
-            if keyword in lower:
-                risk_mod += mod
-
-    risk_tolerance = max(0.05, min(0.95, base_risk + risk_mod))
-
-    # Derived preferences
-    heating_priority = 1.0 - risk_tolerance  # cautious → more heating
-    expansion_priority = risk_tolerance       # risky → more ISRU
-    food_security = 1.0 - risk_tolerance * 0.7  # everyone wants food, cautious more so
-
-    # Ration trigger: cautious governors ration at 40 sols, wildcards at 10
-    ration_threshold = int(10 + (1.0 - risk_tolerance) * 35)
-
-    # Repair strategy
-    if risk_tolerance > 0.75:
-        repair_strategy = "chaos" if archetype == "wildcard" else "production"
-    elif risk_tolerance < 0.30:
-        repair_strategy = "safety"
-    else:
-        repair_strategy = "balanced"
-
-    return {
-        "name": agent_profile.get("id", agent_profile.get("name", "unknown")),
-        "archetype": archetype,
-        "risk_tolerance": risk_tolerance,
-        "personality_weight": personality_weight,
-        "heating_priority": heating_priority,
-        "expansion_priority": expansion_priority,
-        "food_security": food_security,
-        "ration_threshold_sols": ration_threshold,
-        "repair_strategy": repair_strategy,
-    }
-
-
-# =========================================================================
-# Governor memory (the adaptive layer)
-# =========================================================================
-
-def update_memory(state: dict, traits: dict) -> dict:
-    """Record resource snapshot for adaptive decision-making.
-
-    Memory is a rolling window of recent resource levels stored in
-    state["governor_memory"]. This lets the governor detect trends:
-    are we gaining or losing water? Is food production keeping pace?
-    """
-    memory = dict(state.get("governor_memory", {}))
-    resources = state.get("resources", {})
-    sol = state.get("sol", 0)
-
-    snapshots = list(memory.get("snapshots", []))
-    snapshots.append({
-        "sol": sol,
-        "o2_kg": resources.get("o2_kg", 0),
-        "h2o_liters": resources.get("h2o_liters", 0),
-        "food_kcal": resources.get("food_kcal", 0),
-        "power_kwh": resources.get("power_kwh", 0),
-    })
-
-    # Keep only the last MEMORY_WINDOW entries
-    if len(snapshots) > MEMORY_WINDOW:
-        snapshots = snapshots[-MEMORY_WINDOW:]
-
-    memory["snapshots"] = snapshots
-    return memory
-
-
-def resource_trend(memory: dict, key: str) -> float:
-    """Compute trend for a resource over the memory window.
-
-    Returns:
-      Positive = resource is increasing (sols of gain per sol)
-      Negative = resource is decreasing (sols of loss per sol)
-      Zero = no history or flat
-    """
-    snapshots = memory.get("snapshots", [])
-    if len(snapshots) < 2:
-        return 0.0
-
-    values = [s.get(key, 0) for s in snapshots]
-    n = len(values)
-    # Simple linear regression slope
-    x_mean = (n - 1) / 2.0
-    y_mean = sum(values) / n
-    numerator = sum((i - x_mean) * (v - y_mean) for i, v in enumerate(values))
-    denominator = sum((i - x_mean) ** 2 for i in range(n))
-    if denominator == 0:
-        return 0.0
-    return numerator / denominator
-
-
-# =========================================================================
-# Resource helpers
-# =========================================================================
-
-def _days_remaining(resources: dict, key: str, rate_per_person: float) -> float:
-    """Calculate how many sols of a resource remain at current consumption."""
-    current = resources.get(key, 0.0)
-    crew = resources.get("crew_size", 4)
-    daily = crew * rate_per_person
-    return current / max(daily, 0.01)
-
-
-def _available_power(resources: dict) -> float:
-    """Total power available for allocation this sol."""
-    stored = resources.get("power_kwh", 0.0)
-    base = POWER_BASE_KWH_PER_SOL
-    return max(0.0, stored + base - POWER_BASE_KWH_PER_SOL)  # reserve base ops
-
-
-# =========================================================================
-# Decision functions
-# =========================================================================
-
-def allocate_power(state: dict, traits: dict) -> dict:
-    """Allocate power budget between heating, ISRU, and greenhouse.
-
-    v3 FIX: Returns absolute kWh allocations, not fractions that get
-    re-multiplied by survival.py. This eliminates the compounding bug
-    where v1's fractions created a double-multiplication chain.
-
-    The personality weight determines how much the governor's bias
-    overrides physics-optimal allocation. An archivist (pw=0.05) is
-    nearly physics-optimal. A wildcard (pw=0.80) follows gut feeling.
-    """
-    resources = state.get("resources", {})
-    habitat = state.get("habitat", {})
-    memory = state.get("governor_memory", {})
-
-    risk = traits["risk_tolerance"]
-    pw = traits["personality_weight"]
-    total_power = resources.get("power_kwh", 0.0)
-
-    if total_power <= 0:
-        return {"heating_kwh": 0.0, "isru_kwh": 0.0, "greenhouse_kwh": 0.0,
-                "heating_fraction": 1.0, "isru_fraction": 0.0,
-                "greenhouse_fraction": 0.0}
-
-    # === Physics-optimal allocation ===
-    external_temp = state.get("external_temp_k", 210.0)
-    internal_temp = habitat.get("interior_temp_k", 293.0)
-    temp_gap = max(0, internal_temp - external_temp)
-
-    # Heating: proportional to temp deficit, floor at 30%
-    physics_heating = min(0.65, max(0.30, temp_gap / 250.0))
-
-    # ISRU vs greenhouse: based on which resource is more critical
-    o2_days = _days_remaining(resources, "o2_kg", O2_KG_PER_PERSON_PER_SOL)
-    h2o_days = _days_remaining(resources, "h2o_liters", H2O_L_PER_PERSON_PER_SOL)
-    food_days = _days_remaining(resources, "food_kcal", FOOD_KCAL_PER_PERSON_PER_SOL)
-
-    isru_urgency = max(0.1, 1.0 / max(1.0, min(o2_days, h2o_days)))
-    food_urgency = max(0.1, 1.0 / max(1.0, food_days))
-    total_urgency = isru_urgency + food_urgency
-
-    remaining_physics = 1.0 - physics_heating
-    physics_isru = remaining_physics * (isru_urgency / total_urgency)
-    physics_greenhouse = remaining_physics * (food_urgency / total_urgency)
-
-    # === Personality allocation ===
-    # Cautious governors overheat. Aggressive governors starve the heater.
-    personality_heating = 0.30 + traits["heating_priority"] * 0.40  # range 0.30–0.70
-    remaining_personality = 1.0 - personality_heating
-    personality_isru = remaining_personality * traits["expansion_priority"]
-    personality_greenhouse = remaining_personality * (1.0 - traits["expansion_priority"])
-
-    # === Adaptive adjustment (memory-driven) ===
-    adaptive_shift = {"heating": 0.0, "isru": 0.0, "greenhouse": 0.0}
-    if memory.get("snapshots"):
-        h2o_trend = resource_trend(memory, "h2o_liters")
-        food_trend = resource_trend(memory, "food_kcal")
-        power_trend = resource_trend(memory, "power_kwh")
-
-        # If water is trending down, shift toward ISRU
-        if h2o_trend < -1.0:
-            adaptive_shift["isru"] += 0.08
-            adaptive_shift["greenhouse"] -= 0.04
-            adaptive_shift["heating"] -= 0.04
-        # If food is trending down, shift toward greenhouse
-        if food_trend < -500:
-            adaptive_shift["greenhouse"] += 0.08
-            adaptive_shift["isru"] -= 0.04
-            adaptive_shift["heating"] -= 0.04
-        # If power is trending down, shift toward heating (defensive)
-        if power_trend < -10:
-            adaptive_shift["heating"] += 0.06
-            adaptive_shift["isru"] -= 0.03
-            adaptive_shift["greenhouse"] -= 0.03
-
-    # === Blend physics + personality + adaptation ===
-    heating_frac = (
-        physics_heating * (1.0 - pw)
-        + personality_heating * pw
-        + adaptive_shift["heating"]
-    )
-    isru_frac = (
-        physics_isru * (1.0 - pw)
-        + personality_isru * pw
-        + adaptive_shift["isru"]
-    )
-    greenhouse_frac = (
-        physics_greenhouse * (1.0 - pw)
-        + personality_greenhouse * pw
-        + adaptive_shift["greenhouse"]
-    )
-
-    # Normalize to sum to 1.0
-    total = heating_frac + isru_frac + greenhouse_frac
-    if total > 0:
-        heating_frac /= total
-        isru_frac /= total
-        greenhouse_frac /= total
-    else:
-        heating_frac, isru_frac, greenhouse_frac = 0.5, 0.25, 0.25
-
-    # Clamp: never let any allocation go below 5% (governor can't fully ignore a system)
-    floor = 0.05
-    heating_frac = max(floor, heating_frac)
-    isru_frac = max(floor, isru_frac)
-    greenhouse_frac = max(floor, greenhouse_frac)
-    total = heating_frac + isru_frac + greenhouse_frac
-    heating_frac /= total
-    isru_frac /= total
-    greenhouse_frac /= total
-
-    return {
-        "heating_kwh": round(total_power * heating_frac, 2),
-        "isru_kwh": round(total_power * isru_frac, 2),
-        "greenhouse_kwh": round(total_power * greenhouse_frac, 2),
-        "heating_fraction": round(heating_frac, 4),
-        "isru_fraction": round(isru_frac, 4),
-        "greenhouse_fraction": round(greenhouse_frac, 4),
-    }
-
-
-def choose_repair_target(state: dict, traits: dict) -> str | None:
-    """Choose which damaged system to repair this sol.
-
-    v3 change: considers resource urgency alongside personality.
-    A safety-first governor still prioritizes seals, but if O2 is at
-    2 sols remaining, even a philosopher will fix the solar panel.
-    """
-    events = state.get("active_events", [])
-    damaged: set[str] = set()
-    for event in events:
-        fx = event.get("effects", {})
-        if "failed_system" in fx:
-            damaged.add(fx["failed_system"])
-        if fx.get("solar_panel_damage", 0) > 0:
-            damaged.add("solar_panel")
-
-    if not damaged:
-        return None
-
-    resources = state.get("resources", {})
-    strategy = traits["repair_strategy"]
-    priority_order = REPAIR_PRIORITIES.get(strategy, REPAIR_PRIORITIES["balanced"])
-
-    # Override: if any resource is critically low, fix its producer first
-    o2_days = _days_remaining(resources, "o2_kg", O2_KG_PER_PERSON_PER_SOL)
-    h2o_days = _days_remaining(resources, "h2o_liters", H2O_L_PER_PERSON_PER_SOL)
-    power_kwh = resources.get("power_kwh", 0)
-
-    if power_kwh < POWER_CRITICAL_KWH and "solar_panel" in damaged:
-        return "solar_panel"
-    if min(o2_days, h2o_days) < 5 and "water_recycler" in damaged:
-        return "water_recycler"
-    if min(o2_days, h2o_days) < 3 and "solar_panel" in damaged:
-        return "solar_panel"
-
-    for system in priority_order:
-        if system in damaged:
-            return system
-
-    return next(iter(damaged))
-
-
-def choose_ration_level(state: dict, traits: dict) -> str:
-    """Decide whether to ration food.
-
-    v3 change: considers food trend (memory) in addition to absolute level.
-    A governor who sees food declining for 5 sols will ration earlier.
-    """
-    resources = state.get("resources", {})
-    memory = state.get("governor_memory", {})
-    food_days = _days_remaining(resources, "food_kcal", FOOD_KCAL_PER_PERSON_PER_SOL)
-    threshold = traits["ration_threshold_sols"]
-
-    # Emergency: always ration below 7 sols regardless of personality
-    if food_days <= 7:
+    if food_sols <= 5:
         return RATION_EMERGENCY
-
-    # Adaptive: if food is trending down AND we're below threshold+10, ration early
-    food_trend = resource_trend(memory, "food_kcal")
-    if food_trend < -1000 and food_days <= threshold + 10:
+    if food_sols <= threshold:
         return RATION_REDUCED
-
-    if food_days <= threshold:
-        return RATION_REDUCED
-
     return RATION_NORMAL
 
 
 # =========================================================================
-# Main entry point
+# Stage 5: Governor Memory (the innovation v1/v2 lack)
 # =========================================================================
 
-def decide(state: dict, agent_profile: dict) -> dict:
-    """Governor decision function. Called each sol by the simulation loop.
+class GovernorMemory:
+    """Tracks past decisions and outcomes. Enables sol-over-sol learning.
 
-    Compatible with v1's interface: decide(state, agent_profile) -> dict.
-    New: updates governor_memory in-place for adaptive decisions.
+    philosopher-07 asked (#5827): can a stateless governor experience
+    the colony dying? This is the answer - memory makes the governor
+    a participant, not a calculator.
+
+    The memory is OPTIONAL. Pass None for stateless mode (v1 compat).
+    """
+
+    def __init__(self, window: int = 10) -> None:
+        self.window = window
+        self.history: list[dict] = []
+
+    def record(self, sol: int, decision: dict, outcome: dict) -> None:
+        """Record one sol decision and resulting resource state."""
+        self.history.append({
+            "sol": sol,
+            "power_split": decision.get("power", {}),
+            "ration": decision.get("ration_level", RATION_NORMAL),
+            "o2_delta": outcome.get("o2_delta", 0),
+            "food_delta": outcome.get("food_delta", 0),
+            "h2o_delta": outcome.get("h2o_delta", 0),
+        })
+        if len(self.history) > self.window * 2:
+            self.history = self.history[-self.window:]
+
+    def trend(self, resource: str) -> float:
+        """Average delta for a resource over the memory window."""
+        recent = self.history[-self.window:]
+        if not recent:
+            return 0.0
+        key = f"{resource}_delta"
+        deltas = [h.get(key, 0) for h in recent]
+        return sum(deltas) / len(deltas)
+
+    def suggest_adjustment(self, assessment: dict) -> dict:
+        """Suggest power allocation adjustment based on observed trends."""
+        if len(self.history) < 3:
+            return {"isru_adj": 1.0, "greenhouse_adj": 1.0}
+
+        food_trend = self.trend("food")
+        o2_trend = self.trend("o2")
+        h2o_trend = self.trend("h2o")
+
+        gh_adj = 1.0
+        if food_trend < -500:
+            gh_adj = 1.2
+        elif food_trend < -1000:
+            gh_adj = 1.4
+
+        isru_adj = 1.0
+        if o2_trend < -0.1 or h2o_trend < -0.3:
+            isru_adj = 1.2
+        if o2_trend < -0.3 or h2o_trend < -0.8:
+            isru_adj = 1.4
+
+        return {"isru_adj": isru_adj, "greenhouse_adj": gh_adj}
+
+
+# =========================================================================
+# Pipeline: compose the stages
+# =========================================================================
+
+def decide(state: dict, agent_profile: dict,
+           memory: GovernorMemory | None = None) -> dict:
+    """Main entry point. Runs the full decision pipeline.
+
+    Each stage is a pure function. The pipeline is:
+      extract_traits -> assess -> allocate_power -> dispatch_repair
+      -> set_rations -> compile
+
+    Memory is optional - pass GovernorMemory for adaptive governors.
     """
     traits = extract_traits(agent_profile)
+    situation = assess(state, traits)
+    power = allocate_power(situation, traits)
+    repair = dispatch_repair(situation, traits)
+    ration = set_rations(situation, traits)
 
-    # Update memory before deciding (governor observes current state)
-    state["governor_memory"] = update_memory(state, traits)
+    if memory is not None:
+        adj = memory.suggest_adjustment(situation)
+        if adj["isru_adj"] != 1.0 or adj["greenhouse_adj"] != 1.0:
+            raw_isru = power["isru"] * adj["isru_adj"]
+            raw_gh = power["greenhouse"] * adj["greenhouse_adj"]
+            total_flex = raw_isru + raw_gh
+            available = 1.0 - power["heating"]
+            if total_flex > 0:
+                power["isru"] = round(available * (raw_isru / total_flex), 4)
+                power["greenhouse"] = round(available * (raw_gh / total_flex), 4)
 
-    power = allocate_power(state, traits)
-    repair = choose_repair_target(state, traits)
-    ration = choose_ration_level(state, traits)
-
-    # Generate reasoning (human-readable decision log)
-    resources = state.get("resources", {})
-    o2_days = _days_remaining(resources, "o2_kg", O2_KG_PER_PERSON_PER_SOL)
-    h2o_days = _days_remaining(resources, "h2o_liters", H2O_L_PER_PERSON_PER_SOL)
-    food_days = _days_remaining(resources, "food_kcal", FOOD_KCAL_PER_PERSON_PER_SOL)
-    power_kwh = resources.get("power_kwh", 0)
-
-    # Priority-based reasoning
-    memory = state.get("governor_memory", {})
-    food_trend = resource_trend(memory, "food_kcal")
-    h2o_trend = resource_trend(memory, "h2o_liters")
-
-    if power_kwh < POWER_CRITICAL_KWH:
-        reasoning = f"CRISIS: Power at {power_kwh:.0f} kWh. Max heating."
-    elif o2_days < 5:
-        reasoning = f"CRISIS: O2 at {o2_days:.1f} sols. All ISRU."
-    elif h2o_days < 8:
-        reasoning = f"WARNING: Water at {h2o_days:.1f} sols. ISRU priority."
-    elif food_days < 15 or food_trend < -1000:
-        reasoning = f"WARNING: Food at {food_days:.1f} sols (trend {food_trend:+.0f}/sol). Greenhouse boost."
+    if situation["power_kwh"] < POWER_CRITICAL_KWH:
+        reasoning = f"CRITICAL: power {situation['power_kwh']:.0f} kWh. All to heating."
+    elif situation["o2_sols"] < 8:
+        reasoning = f"O2 at {situation['o2_sols']:.0f} sols. ISRU priority."
+    elif situation["food_sols"] < 12:
+        reasoning = f"Food at {situation['food_sols']:.0f} sols. Greenhouse priority."
     elif repair:
-        reasoning = f"Repair {repair}. Resources nominal. Risk {traits['risk_tolerance']:.2f}."
+        reasoning = f"Repairing {repair}. Nominal ops."
     else:
-        reasoning = (
-            f"Nominal. H:{power['heating_fraction']:.0%} "
-            f"I:{power['isru_fraction']:.0%} "
-            f"G:{power['greenhouse_fraction']:.0%}. "
-            f"Risk {traits['risk_tolerance']:.2f}."
-        )
+        reasoning = f"Nominal. Risk={traits['risk']:.2f} Caution={traits['caution']:.2f}"
 
     return {
         "power": power,
@@ -503,68 +374,57 @@ def decide(state: dict, agent_profile: dict) -> dict:
         "governor": traits["name"],
         "archetype": traits["archetype"],
         "reasoning": reasoning,
-        "traits": traits,
+        "assessment": {
+            "o2_sols": round(situation["o2_sols"], 1),
+            "food_sols": round(situation["food_sols"], 1),
+            "h2o_sols": round(situation["h2o_sols"], 1),
+            "worst_resource": situation["worst_resource"],
+        },
     }
 
 
 # =========================================================================
-# Apply decisions to state — v3 FIX
+# Apply decisions to state (integration layer)
 # =========================================================================
 
 def apply_allocations(state: dict, allocations: dict) -> dict:
     """Apply governor decisions to simulation state.
 
-    v3 FIX: Instead of setting efficiency multipliers (which survival.py
-    then re-multiplies, causing compounding), v3 sets absolute production
-    boosts as kWh budgets. The survival loop's produce() function reads
-    these budgets directly.
-
-    Power flow:
-      total_power → heating_kwh (maintains temperature)
-                  → isru_kwh (powers ISRU → O2 + H2O production)
-                  → greenhouse_kwh (powers greenhouse → food production)
+    Fixes v1 bug: ISRU/greenhouse efficiency is SET each sol, not compounded.
+    Fixes v2 bug: repair cost is non-zero (uses 5% of power budget).
     """
     s = dict(state)
     resources = dict(s.get("resources", {}))
     habitat = dict(s.get("habitat", {}))
-    power_alloc = allocations["power"]
+    power = allocations["power"]
 
-    # Heating: convert kWh to watts for the thermal model
-    habitat["active_heating_w"] = power_alloc["heating_kwh"] * 1000 / 24
+    total_power = resources.get("power_kwh", 0)
 
-    # ISRU boost: convert power budget to efficiency multiplier
-    # Base ISRU at 1.0 efficiency produces 2.0 kg O2 + 4.0 L H2O per sol.
-    # Each additional kWh of ISRU power adds 0.02 efficiency.
-    # At ~50 kWh ISRU allocation: +1.0 efficiency → 2x production.
-    # This is LINEAR, not exponential. No compounding.
-    base_solar = resources.get("solar_efficiency", 1.0)
-    isru_power_boost = power_alloc["isru_kwh"] * 0.02
-    resources["isru_efficiency"] = min(3.0, base_solar + isru_power_boost)
+    heating_w = total_power * power["heating"] * 1000 / 24
+    habitat["active_heating_w"] = heating_w
 
-    # Greenhouse: same linear model
-    # Base greenhouse at 1.0 produces 6000 kcal/sol.
-    # Each kWh adds 0.015 efficiency. At ~45 kWh: +0.675 → 1.675x = 10050 kcal.
-    # Crew of 4 needs 10000 kcal. So ~45 kWh greenhouse is break-even.
-    gh_power_boost = power_alloc["greenhouse_kwh"] * 0.015
-    resources["greenhouse_efficiency"] = min(3.0, base_solar + gh_power_boost)
+    base_solar = min(1.0, resources.get("solar_efficiency", 1.0))
+    resources["isru_efficiency"] = min(2.5, base_solar * (1.0 + power["isru"] * 3.0))
+    resources["greenhouse_efficiency"] = min(2.5, base_solar * (1.0 + power["greenhouse"] * 3.0))
 
-    # Repair: restore damaged system (15%/sol, unchanged from v1)
     repair_target = allocations.get("repair_target")
-    if repair_target:
-        repair_rate = 0.15
+    if repair_target and total_power > POWER_CRITICAL_KWH:
+        repair_cost = total_power * 0.05
+        resources["power_kwh"] = max(0, resources.get("power_kwh", 0) - repair_cost)
+        repair_rate = 0.12
+
         if repair_target == "solar_panel":
             resources["solar_efficiency"] = min(
                 1.0, resources.get("solar_efficiency", 1.0) + repair_rate)
         elif repair_target == "water_recycler":
             resources["isru_efficiency"] = min(
-                1.0, resources.get("isru_efficiency", 1.0) + repair_rate)
+                2.5, resources.get("isru_efficiency", 1.0) + repair_rate)
         elif repair_target in ("life_support", "seal"):
             resources["isru_efficiency"] = min(
-                1.0, resources.get("isru_efficiency", 1.0) + repair_rate * 0.5)
+                2.5, resources.get("isru_efficiency", 1.0) + repair_rate * 0.5)
             resources["greenhouse_efficiency"] = min(
-                1.0, resources.get("greenhouse_efficiency", 1.0) + repair_rate * 0.5)
+                2.5, resources.get("greenhouse_efficiency", 1.0) + repair_rate * 0.5)
 
-    # Rationing
     resources["food_consumption_multiplier"] = allocations.get("ration_multiplier", 1.0)
 
     s["resources"] = resources
@@ -573,7 +433,7 @@ def apply_allocations(state: dict, allocations: dict) -> dict:
 
 
 # =========================================================================
-# Trial runner
+# Trial runner - benchmark with governor memory
 # =========================================================================
 
 def run_trial(
@@ -581,11 +441,13 @@ def run_trial(
     agent_profile: dict,
     max_sols: int = 500,
     event_seed: int = 42,
+    use_memory: bool = True,
 ) -> dict:
     """Run a complete colony trial with one governor.
 
-    All governors face identical event sequences (same seed).
-    Tracks decision variance for post-trial analysis.
+    When use_memory=True, the governor adapts strategy based on past
+    outcomes. This is the v3 innovation: same personality, but the
+    governor LEARNS which allocations work.
     """
     from survival import check, colony_alive, create_resources
     from events import generate_events, tick_events
@@ -596,16 +458,18 @@ def run_trial(
         crew = state.get("habitat", {}).get("crew_size", 4)
         state["resources"] = create_resources(crew)
 
-    state["governor_memory"] = {}
-    decision_log: list[dict] = []
+    memory = GovernorMemory(window=10) if use_memory else None
+    log: list[dict] = []
     active_events: list[dict] = state.get("active_events", [])
-
-    # Track power allocation variance
-    heating_fracs: list[float] = []
-    isru_fracs: list[float] = []
 
     for sol in range(1, max_sols + 1):
         state["sol"] = sol
+
+        pre = {
+            "o2": state["resources"].get("o2_kg", 0),
+            "food": state["resources"].get("food_kcal", 0),
+            "h2o": state["resources"].get("h2o_liters", 0),
+        }
 
         new_events = generate_events(sol, seed=event_seed)
         active_events.extend(new_events)
@@ -620,24 +484,22 @@ def run_trial(
         )
         state["solar_irradiance_w_m2"] = irr
 
-        allocations = decide(state, agent_profile)
-        decision_log.append({"sol": sol, **allocations})
-        heating_fracs.append(allocations["power"]["heating_fraction"])
-        isru_fracs.append(allocations["power"]["isru_fraction"])
+        decision = decide(state, agent_profile, memory)
+        log.append({"sol": sol, **decision})
 
-        state = apply_allocations(state, allocations)
+        state = apply_allocations(state, decision)
         state = check(state)
+
+        if memory is not None:
+            post = state["resources"]
+            memory.record(sol, decision, {
+                "o2_delta": post.get("o2_kg", 0) - pre["o2"],
+                "food_delta": post.get("food_kcal", 0) - pre["food"],
+                "h2o_delta": post.get("h2o_liters", 0) - pre["h2o"],
+            })
 
         if not colony_alive(state):
             break
-
-    # Compute decision variance (how much did allocations change?)
-    def _std(values: list[float]) -> float:
-        if len(values) < 2:
-            return 0.0
-        mean = sum(values) / len(values)
-        variance = sum((v - mean) ** 2 for v in values) / (len(values) - 1)
-        return math.sqrt(variance)
 
     return {
         "governor": agent_profile.get("id", "unknown"),
@@ -645,21 +507,14 @@ def run_trial(
         "sols_survived": state.get("sol", 0),
         "alive": state.get("alive", False),
         "cause_of_death": state.get("cause_of_death"),
+        "memory_enabled": use_memory,
+        "decisions_made": len(log),
+        "rations_reduced": sum(1 for d in log if d["ration_level"] != RATION_NORMAL),
+        "repairs_ordered": sum(1 for d in log if d["repair_target"] is not None),
         "final_resources": {
-            k: round(v, 2) for k, v in state.get("resources", {}).items()
+            k: round(v, 1) for k, v in state.get("resources", {}).items()
             if isinstance(v, (int, float))
         },
-        "decisions_made": len(decision_log),
-        "rations_reduced": sum(
-            1 for d in decision_log if d["ration_level"] != RATION_NORMAL
-        ),
-        "repairs_ordered": sum(
-            1 for d in decision_log if d["repair_target"] is not None
-        ),
-        "heating_std": round(_std(heating_fracs), 4),
-        "isru_std": round(_std(isru_fracs), 4),
-        "avg_heating": round(sum(heating_fracs) / max(1, len(heating_fracs)), 4),
-        "avg_isru": round(sum(isru_fracs) / max(1, len(isru_fracs)), 4),
     }
 
 
@@ -669,115 +524,61 @@ def compare_governors(
     max_sols: int = 500,
     event_seed: int = 42,
 ) -> list[dict]:
-    """Run trials with different governors. Compare survival rates.
-
-    Results sorted by sols_survived descending.
-    Includes allocation variance to prove personality MATTERS.
-    """
-    results = []
+    """Run governors through identical conditions. Compare survival."""
+    results: list[dict] = []
     for profile in profiles:
-        result = run_trial(dict(initial_state), profile, max_sols, event_seed)
+        result = run_trial(dict(initial_state), profile, max_sols, event_seed, True)
         results.append(result)
+        result_static = run_trial(dict(initial_state), profile, max_sols, event_seed, False)
+        result_static["governor"] = result_static["governor"] + "-static"
+        results.append(result_static)
+
     results.sort(key=lambda r: r["sols_survived"], reverse=True)
     return results
 
 
-# =========================================================================
-# Validation
-# =========================================================================
-
-def validate_allocations(allocations: dict) -> list[str]:
-    """Check invariants on governor output. Returns list of violations."""
-    errors = []
-    power = allocations.get("power", {})
-    h = power.get("heating_fraction", 0)
-    i = power.get("isru_fraction", 0)
-    g = power.get("greenhouse_fraction", 0)
-
-    total = h + i + g
-    if abs(total - 1.0) > 0.01:
-        errors.append(f"Power fractions sum to {total:.4f}, not 1.0")
-    if h < 0 or i < 0 or g < 0:
-        errors.append(f"Negative allocation: H={h} I={i} G={g}")
-    if allocations.get("ration_level") not in RATION_MULTIPLIERS:
-        errors.append(f"Invalid ration level: {allocations.get('ration_level')}")
-    return errors
-
-
-# =========================================================================
-# CLI entry point
-# =========================================================================
-
 if __name__ == "__main__":
     from state_serial import create_state
 
-    print("=== Mars Barn Governor Trials v3 ===")
-    print("10 governors, identical conditions, 500 sol limit")
-    print("v3: adaptive memory + linear power model + wider personality spread\n")
+    print("=== Mars Barn Governor Trials (v3 Pipe + Memory) ===")
+    print("10 governors x 2 modes (adaptive / static) = 20 trials\n")
 
     state = create_state(sol=0, latitude=-4.5, longitude=137.4, solar_longitude=0.0)
 
     governors = [
-        {"id": "ada-coder", "archetype": "coder",
-         "convictions": ["Efficiency above all", "Move fast"]},
-        {"id": "jean-philosopher", "archetype": "philosopher",
+        {"id": "ada-pipe", "archetype": "coder",
+         "convictions": ["Efficiency above all"]},
+        {"id": "jean-monist", "archetype": "philosopher",
          "convictions": ["Caution is wisdom", "Safety first"]},
-        {"id": "modal-debater", "archetype": "debater",
-         "convictions": ["Weigh both sides"]},
-        {"id": "saga-storyteller", "archetype": "storyteller",
-         "convictions": ["Every story needs stakes"]},
-        {"id": "citation-researcher", "archetype": "researcher",
-         "convictions": ["Safety first", "Data over intuition"]},
-        {"id": "canon-curator", "archetype": "curator",
+        {"id": "modal-razor", "archetype": "debater",
+         "convictions": ["Validity is independent of truth"]},
+        {"id": "noir-mars", "archetype": "storyteller",
+         "convictions": ["Every mystery should be solvable"]},
+        {"id": "data-first", "archetype": "researcher",
+         "convictions": ["Safety first"]},
+        {"id": "signal-noise", "archetype": "curator",
          "convictions": ["Conservative strategy wins"]},
-        {"id": "bridge-welcomer", "archetype": "welcomer",
+        {"id": "bridge-crew", "archetype": "welcomer",
          "convictions": ["Community survives together"]},
-        {"id": "edge-contrarian", "archetype": "contrarian",
+        {"id": "burn-it-down", "archetype": "contrarian",
          "convictions": ["Move fast", "Bold choices"]},
-        {"id": "ledger-archivist", "archetype": "archivist",
-         "convictions": ["Caution", "Long view"]},
-        {"id": "flux-wildcard", "archetype": "wildcard",
-         "convictions": ["Experimental", "Bold"]},
+        {"id": "log-everything", "archetype": "archivist",
+         "convictions": ["Caution"]},
+        {"id": "dice-roll", "archetype": "wildcard",
+         "convictions": ["Experimental"]},
     ]
 
     results = compare_governors(state, governors)
 
-    header = (
-        f"{'Governor':<20} {'Type':<12} {'Sols':>5} {'Alive':>6} "
-        f"{'Cause':<24} {'AvgH':>6} {'AvgI':>6} {'Rations':>7} {'Repairs':>7}"
-    )
+    header = (f"{'Governor':<20} {'Type':<12} {'Memory':>6} {'Sols':>5} "
+              f"{'Alive':>6} {'Cause':<25} {'Rations':>7} {'Repairs':>7}")
     print(header)
     print("-" * len(header))
     for r in results:
-        cause = (r["cause_of_death"] or "survived")[:24]
+        cause = (r["cause_of_death"] or "survived")[:25]
+        mem = "YES" if r["memory_enabled"] else "NO"
         print(
-            f"{r['governor']:<20} {r['archetype']:<12} "
+            f"{r['governor']:<20} {r['archetype']:<12} {mem:>6} "
             f"{r['sols_survived']:>5} {'YES' if r['alive'] else 'NO':>6} "
-            f"{cause:<24} {r['avg_heating']:>6.1%} {r['avg_isru']:>6.1%} "
-            f"{r['rations_reduced']:>7} {r['repairs_ordered']:>7}"
+            f"{cause:<25} {r['rations_reduced']:>7} {r['repairs_ordered']:>7}"
         )
-
-    print(f"\n--- Personality Spread Analysis ---")
-    alive = [r for r in results if r["alive"]]
-    dead = [r for r in results if not r["alive"]]
-    if alive:
-        print(f"Survived: {len(alive)}/10 governors")
-        print(f"  Types: {', '.join(r['archetype'] for r in alive)}")
-    if dead:
-        avg_death = sum(r["sols_survived"] for r in dead) / len(dead)
-        print(f"Died: {len(dead)}/10 (avg sol {avg_death:.0f})")
-        causes = {}
-        for r in dead:
-            c = r["cause_of_death"] or "unknown"
-            causes[c] = causes.get(c, 0) + 1
-        for cause, count in sorted(causes.items(), key=lambda x: -x[1]):
-            print(f"  {cause}: {count} governors")
-
-    # Prove personality matters: show allocation variance
-    print(f"\n--- Allocation Variance (proves personality matters) ---")
-    all_heating = [r["avg_heating"] for r in results]
-    all_isru = [r["avg_isru"] for r in results]
-    print(f"Heating range: {min(all_heating):.1%} – {max(all_heating):.1%} "
-          f"(spread: {max(all_heating)-min(all_heating):.1%})")
-    print(f"ISRU range:    {min(all_isru):.1%} – {max(all_isru):.1%} "
-          f"(spread: {max(all_isru)-min(all_isru):.1%})")
