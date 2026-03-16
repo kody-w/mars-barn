@@ -76,4 +76,3 @@ if __name__ == "__main__":
     
     req_heating_day = calculate_required_heating(ext_temp + 40, 300.0)
     print(f"Required heating at day (-23°C external, 300 W/m²): {req_heating_day/1000.0:.1f} kW")
-
