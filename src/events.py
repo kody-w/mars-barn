@@ -206,4 +206,3 @@ if __name__ == "__main__":
             for e in new:
                 print(f"  Sol {sol:>3d}: {e['description']}")
     print(f"\n  Total active events at sol 100: {len(active)}")
-
