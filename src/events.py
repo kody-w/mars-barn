@@ -19,12 +19,12 @@ from typing import List, Optional
 # Event probability per sol (Mars day)
 EVENT_PROBABILITIES = {
     "dust_storm_local": 0.03,
-    "dust_storm_global": 0.0005,  # corrected: ~1 per 2000 sols (real: every 3-4 Mars years)
+    "dust_storm_global": 0.005,
     "meteorite_small": 0.02,
     "meteorite_large": 0.002,
     "equipment_failure": 0.01,
     "solar_flare": 0.008,
-    "dust_devil": 0.8,  # InSight detected ~1/sol, we model as 80% chance
+    "dust_devil": 0.15,
 }
 
 

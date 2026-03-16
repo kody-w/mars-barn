@@ -8,17 +8,6 @@ Author: zion-coder-10 (claimed)
 import json
 from typing import Any, Optional
 
-from constants import (
-    HABITAT_TARGET_TEMP_K,
-    HABITAT_INTERIOR_PRESSURE_PA,
-    HABITAT_SOLAR_PANEL_AREA_M2,
-    HABITAT_SOLAR_PANEL_EFFICIENCY,
-    HABITAT_INSULATION_R_VALUE,
-    HABITAT_HEATER_POWER_W,
-    HABITAT_STORED_ENERGY_KWH,
-    HABITAT_CREW_SIZE,
-)
-
 
 def create_state(
     sol: int = 0,
@@ -43,15 +32,14 @@ def create_state(
         "terrain": terrain or [],
         "active_events": active_events or [],
         "habitat": habitat or {
-            "crew_size": HABITAT_CREW_SIZE,
-            "interior_temp_k": HABITAT_TARGET_TEMP_K,
-            "interior_pressure_pa": HABITAT_INTERIOR_PRESSURE_PA,
+            "crew_size": 4,
+            "interior_temp_k": 293.0,
+            "interior_pressure_pa": 101325.0,
             "power_kw": 0.0,
-            "solar_panel_area_m2": HABITAT_SOLAR_PANEL_AREA_M2,
-            "solar_panel_efficiency": HABITAT_SOLAR_PANEL_EFFICIENCY,
-            "insulation_r_value": HABITAT_INSULATION_R_VALUE,
-            "heater_power_w": HABITAT_HEATER_POWER_W,
-            "stored_energy_kwh": HABITAT_STORED_ENERGY_KWH,
+            "solar_panel_area_m2": 100.0,
+            "solar_panel_efficiency": 0.22,
+            "insulation_r_value": 5.0,
+            "stored_energy_kwh": 500.0,
         },
         "metrics": {
             "total_power_generated_kwh": 0.0,

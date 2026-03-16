@@ -1,210 +1,78 @@
 """Mars Barn — Thermal Regulation System
 
-Models heat flow in/out of the habitat given solar input and
-atmospheric conditions. Balances heating, insulation, and radiative cooling.
-
-Mars thermal challenges:
-  - Exterior temp: -60°C mean, swings -140°C to +20°C
-  - Interior target: 20°C (293 K)
-  - Thin atmosphere = almost no convective insulation
-  - Radiative losses dominate at night
-  - Solar gain is the primary heat source
+Model heat flow in/out of the habitat given solar input and atmospheric
+conditions. Balance heating, insulation, and radiative cooling.
 
 Author: unclaimed (open workstream)
 """
 import math
-from typing import Optional
 
-from constants import (
-    STEFAN_BOLTZMANN,
-    MARS_SURFACE_TEMP_K as MARS_GROUND_TEMP_K,
-    MARS_SOL_HOURS,
-    HABITAT_SURFACE_AREA_M2,
-    HABITAT_VOLUME_M3,
-    HABITAT_TARGET_TEMP_K as TARGET_TEMP_K,
-    AIR_DENSITY_KG_M3,
-    AIR_SPECIFIC_HEAT_J_KGK as AIR_SPECIFIC_HEAT,
-    THERMAL_MASS_MULTIPLIER,
-    HABITAT_GROUND_COUPLING,
-    GROUND_COUPLING_U_VALUE,
-    HABITAT_HUMAN_METABOLIC_HEAT,
-    HUMAN_METABOLIC_HEAT_W,
-    HABITAT_CREW_SIZE,
-)
+# Thermal constants
+STEFAN_BOLTZMANN = 5.67e-8
+HABITAT_SURFACE_AREA_M2 = 200.0  # Roughly 8m diameter dome
+HABITAT_VOLUME_M3 = 130.0
+HABITAT_TARGET_TEMP_K = 293.15  # 20°C
+HEAT_CAPACITY_AIR = 1005.0  # J/(kg*K) ~ Earth air inside
 
 
-def heat_loss_conduction(
-    interior_temp_k: float,
-    exterior_temp_k: float,
-    r_value: float = 5.0,
-    surface_area_m2: float = HABITAT_SURFACE_AREA_M2,
+def habitat_thermal_balance(
+    external_temp_k: float,
+    internal_temp_k: float,
+    solar_irradiance_w_m2: float,
+    insulation_r_value: float = 5.0, # m²·K/W
+    active_heating_w: float = 0.0,
 ) -> float:
-    """Conductive heat loss through habitat walls in watts.
-
-    R-value is thermal resistance in m²·K/W.
+    """Calculate net heat flow rate (Watts) for the habitat.
+    
+    Positive means habitat is gaining heat, negative means losing.
     """
-    delta_t = interior_temp_k - exterior_temp_k
-    return surface_area_m2 * delta_t / max(r_value, 0.1)
+    # 1. Heat loss through conduction/convection (simplified via R-value)
+    # q = A * ΔT / R
+    heat_loss = HABITAT_SURFACE_AREA_M2 * (internal_temp_k - external_temp_k) / insulation_r_value
+    
+    # 2. Solar gain (assuming 10% effective absorption through windows/surface)
+    solar_gain = solar_irradiance_w_m2 * (HABITAT_SURFACE_AREA_M2 / 4) * 0.1
+    
+    # 3. Radiative loss to space (assuming thin atmosphere, effective emissivity)
+    radiative_loss = STEFAN_BOLTZMANN * 0.8 * HABITAT_SURFACE_AREA_M2 * (internal_temp_k**4 - external_temp_k**4)
+    
+    # Net thermal power (Watts)
+    net_power = active_heating_w + solar_gain - heat_loss - radiative_loss
+    
+    return net_power
 
 
-def heat_loss_radiation(
-    interior_temp_k: float,
-    exterior_temp_k: float,
-    emissivity: float = 0.05,
-    surface_area_m2: float = HABITAT_SURFACE_AREA_M2,
+def update_temperature(
+    current_temp_k: float,
+    net_power_w: float,
+    time_step_s: float,
+    internal_mass_kg: float = 2000.0,  # Air + equipment thermal mass
 ) -> float:
-    """Radiative heat loss in watts (Stefan-Boltzmann law).
+    """Update internal temperature over a time step based on net power."""
+    # ΔT = Q / (m * c)
+    energy_joules = net_power_w * time_step_s
+    temp_change = energy_joules / (internal_mass_kg * HEAT_CAPACITY_AIR)
+    return current_temp_k + temp_change
 
-    On Mars, the thin atmosphere means radiative loss is significant.
-    """
-    return (emissivity * STEFAN_BOLTZMANN * surface_area_m2 *
-            (interior_temp_k ** 4 - exterior_temp_k ** 4))
 
-
-def solar_heat_gain(
-    irradiance_wm2: float,
-    window_area_m2: float = 10.0,
-    transmittance: float = 0.75,
+def calculate_required_heating(
+    external_temp_k: float,
+    solar_irradiance_w_m2: float,
+    insulation_r_value: float = 5.0,
 ) -> float:
-    """Heat gained through habitat windows/solar collectors in watts."""
-    return irradiance_wm2 * window_area_m2 * transmittance
-
-
-def electrical_heating(
-    available_power_w: float,
-    efficiency: float = 0.95,
-) -> float:
-    """Heat from electrical heaters in watts."""
-    return available_power_w * efficiency
-
-
-def thermal_step(
-    interior_temp_k: float,
-    exterior_temp_k: float,
-    solar_irradiance_wm2: float = 0.0,
-    electrical_power_w: float = 0.0,
-    r_value: float = 5.0,
-    dt_seconds: float = 3600.0,
-    surface_area_m2: float = HABITAT_SURFACE_AREA_M2,
-    volume_m3: float = HABITAT_VOLUME_M3,
-) -> dict:
-    """Advance thermal state by one timestep.
-
-    Returns dict with new interior temp and energy flows.
-    """
-    # Heat flows (positive = into habitat)
-    q_solar = solar_heat_gain(solar_irradiance_wm2)
-    q_electric = electrical_heating(electrical_power_w)
-    q_cond_loss = heat_loss_conduction(interior_temp_k, exterior_temp_k, r_value, surface_area_m2)
-    q_rad_loss = heat_loss_radiation(interior_temp_k, exterior_temp_k, surface_area_m2=surface_area_m2)
-
-    # Missing physics: Ground coupling and Metabolic heat
-    q_ground = 0.0
-    if HABITAT_GROUND_COUPLING:
-        # Ground coupling conducts heat to/from the 210K regolith
-        floor_area_m2 = surface_area_m2 / 4  # Estimate floor is ~1/4 of total surface
-        q_ground = floor_area_m2 * GROUND_COUPLING_U_VALUE * (MARS_GROUND_TEMP_K - interior_temp_k)
-
-    q_metabolic = 0.0
-    if HABITAT_HUMAN_METABOLIC_HEAT:
-        q_metabolic = HUMAN_METABOLIC_HEAT_W * HABITAT_CREW_SIZE
-
-    # Net heat flow
-    q_net = q_solar + q_electric - q_cond_loss - q_rad_loss + q_ground + q_metabolic
-
-    # Temperature change: Q = m·c·ΔT
-    thermal_mass = AIR_DENSITY_KG_M3 * volume_m3 * AIR_SPECIFIC_HEAT
-    # Add habitat structure thermal mass
-    thermal_mass *= THERMAL_MASS_MULTIPLIER
-    delta_t = (q_net * dt_seconds) / thermal_mass
-
-    new_temp = interior_temp_k + delta_t
-
-    return {
-        "interior_temp_k": round(new_temp, 2),
-        "delta_t_k": round(delta_t, 3),
-        "q_solar_w": round(q_solar, 1),
-        "q_electric_w": round(q_electric, 1),
-        "q_cond_loss_w": round(q_cond_loss, 1),
-        "q_rad_loss_w": round(q_rad_loss, 1),
-        "q_ground_loss_w": round(-q_ground, 1),
-        "q_metabolic_w": round(q_metabolic, 1),
-        "q_net_w": round(q_net, 1),
-        "heating_required": q_net < 0,
-    }
-
-
-def simulate_sol(
-    start_temp_k: float = TARGET_TEMP_K,
-    latitude_deg: float = 0.0,
-    solar_longitude: float = 0.0,
-    r_value: float = 12.0,  # upgraded: aerogel + regolith sandwich
-    heater_power_w: float = 8000.0,  # upgraded: 2kW → 8kW (4x solar panels)
-    dust_storm: bool = False,
-) -> dict:
-    """Simulate one sol of thermal behavior.
-
-    Returns dict with min/max/mean temps, total energy used, and hourly profile.
-    """
-    from atmosphere import temperature_at_altitude
-    from solar import surface_irradiance
-
-    hours_per_sol = MARS_SOL_HOURS
-    step_hours = 0.5
-    step_seconds = step_hours * 3600
-
-    temp = start_temp_k
-    temps = []
-    total_heating_kwh = 0.0
-    hourly = []
-
-    hour = 0.0
-    while hour < hours_per_sol:
-        ext_temp = temperature_at_altitude(0, latitude_deg, solar_longitude, hour, dust_storm)
-        irr = surface_irradiance(latitude_deg, solar_longitude, hour, dust_storm=dust_storm)
-
-        # Apply heating if below target
-        heater = heater_power_w if temp < TARGET_TEMP_K else 0.0
-
-        result = thermal_step(
-            temp, ext_temp, irr, heater,
-            r_value=r_value, dt_seconds=step_seconds,
-        )
-
-        temp = result["interior_temp_k"]
-        temps.append(temp)
-        if heater > 0:
-            total_heating_kwh += heater * step_hours / 1000
-
-        if hour % 2.0 < step_hours:
-            hourly.append({
-                "hour": round(hour, 1),
-                "interior_k": round(temp, 1),
-                "exterior_k": round(ext_temp, 1),
-                "irradiance": round(irr, 1),
-                "heating": heater > 0,
-            })
-
-        hour += step_hours
-
-    return {
-        "min_temp_k": round(min(temps), 1),
-        "max_temp_k": round(max(temps), 1),
-        "mean_temp_k": round(sum(temps) / len(temps), 1),
-        "heating_kwh": round(total_heating_kwh, 2),
-        "end_temp_k": round(temp, 1),
-        "hourly": hourly,
-    }
+    """Calculate active heating watts needed to maintain target temperature."""
+    loss = HABITAT_SURFACE_AREA_M2 * (HABITAT_TARGET_TEMP_K - external_temp_k) / insulation_r_value
+    rad_loss = STEFAN_BOLTZMANN * 0.8 * HABITAT_SURFACE_AREA_M2 * (HABITAT_TARGET_TEMP_K**4 - external_temp_k**4)
+    gain = solar_irradiance_w_m2 * (HABITAT_SURFACE_AREA_M2 / 4) * 0.1
+    required = loss + rad_loss - gain
+    return max(0.0, required)
 
 
 if __name__ == "__main__":
-    print("=== Mars Habitat Thermal Simulation (1 sol) ===")
-    result = simulate_sol(latitude_deg=-4.5, solar_longitude=250)
-    print(f"  Interior temp: {result['min_temp_k']-273.15:+.1f}°C to {result['max_temp_k']-273.15:+.1f}°C "
-          f"(mean {result['mean_temp_k']-273.15:+.1f}°C)")
-    print(f"  Heating energy: {result['heating_kwh']:.2f} kWh/sol")
-    print()
-    print("=== Dust Storm Comparison ===")
-    storm = simulate_sol(latitude_deg=-4.5, solar_longitude=250, dust_storm=True)
-    print(f"  Storm heating: {storm['heating_kwh']:.2f} kWh/sol "
-          f"({storm['heating_kwh']-result['heating_kwh']:+.2f} vs clear)")
+    print("=== Habitat Thermal Model ===")
+    ext_temp = 210.0  # -63°C
+    req_heating = calculate_required_heating(ext_temp, 0.0)
+    print(f"Required heating at night (-63°C external): {req_heating/1000.0:.1f} kW")
+    
+    req_heating_day = calculate_required_heating(ext_temp + 40, 300.0)
+    print(f"Required heating at day (-23°C external, 300 W/m²): {req_heating_day/1000.0:.1f} kW")
