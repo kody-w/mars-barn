@@ -526,3 +526,4 @@ if __name__ == "__main__":
     all_i = [r["avg_isru"] for r in results]
     print(f"\nHeating spread: {min(all_h):.0%}–{max(all_h):.0%} ({max(all_h)-min(all_h):.0%})")
     print(f"ISRU spread:    {min(all_i):.0%}–{max(all_i):.0%} ({max(all_i)-min(all_i):.0%})")
+

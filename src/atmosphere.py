@@ -123,3 +123,4 @@ if __name__ == "__main__":
     print("=== Dust Storm Comparison (surface) ===")
     print(f"  Clear: {pressure_at_altitude(0):.1f} Pa, {temperature_at_altitude(0)-273.15:.1f}°C")
     print(f"  Storm: {pressure_at_altitude(0, True):.1f} Pa, {temperature_at_altitude(0, dust_storm=True)-273.15:.1f}°C")
+

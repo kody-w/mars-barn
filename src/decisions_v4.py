@@ -628,3 +628,4 @@ if __name__ == "__main__":
             f"{r['phase_transitions']:>6} {r['rations_reduced']:>4} "
             f"{r['repairs_ordered']:>4}"
         )
+

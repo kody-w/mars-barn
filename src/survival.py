@@ -210,3 +210,4 @@ def check(state: dict) -> dict:
         s["death_sol"] = s.get("sol", 0)
         s["cause_of_death"] = resources.get("cause_of_death", "unknown")
     return s
+

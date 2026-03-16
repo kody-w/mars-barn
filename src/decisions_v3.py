@@ -582,3 +582,4 @@ if __name__ == "__main__":
             f"{r['sols_survived']:>5} {'YES' if r['alive'] else 'NO':>6} "
             f"{cause:<25} {r['rations_reduced']:>7} {r['repairs_ordered']:>7}"
         )
+

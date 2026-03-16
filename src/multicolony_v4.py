@@ -605,3 +605,4 @@ if __name__ == "__main__":
                 break
             step(w)
         print_board(_results(w))
+

@@ -711,3 +711,4 @@ if __name__ == "__main__":
 
     results = run_multicolony(world, max_sols=sols)
     print_leaderboard(results)
+

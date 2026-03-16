@@ -52,3 +52,4 @@ if __name__ == "__main__":
     print(render_terrain(grid))
     print("\n=== Atmosphere Profile ===")
     print(render_atmosphere())
+

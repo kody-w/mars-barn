@@ -846,3 +846,4 @@ if __name__ == "__main__":
     print("  " + "-" * 36)
     for a, s in sorted(comp.items(), key=lambda x: -x[1]["avg"]):
         print(f"  {a:<14} {s['avg']:>5} {s['min']:>5} {s['max']:>5} {s['survived_all']:>5}")
+

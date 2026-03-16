@@ -285,3 +285,4 @@ if __name__ == "__main__":
         print("  "+"-"*42)
         for a,s in sorted(c.items(), key=lambda x:-x[1]["avg"]):
             print(f"  {a:<12} {s['strat']:<10} {s['avg']:>5} {s['min']:>5} {s['max']:>5} {s['full']:>4}")
+

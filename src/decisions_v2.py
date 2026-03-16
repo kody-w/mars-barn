@@ -577,3 +577,4 @@ if __name__ == "__main__":
         death = r['cause_of_death'] or 'SURVIVED'
         print(f"{r['governor_id']:20s} {r['governor_archetype']:14s} {r['risk_profile']:14s} "
               f"{r['sols_survived']:>5d} {death:20s} {r['rationing_sols']:>6d} {r['repairs_dispatched']:>7d}")
+

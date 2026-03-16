@@ -80,3 +80,4 @@ if __name__ == "__main__":
     print("=== Dust Storm Impact (noon) ===")
     print(f"  Clear: {surface_irradiance(hour=12):.1f} W/m²")
     print(f"  Storm: {surface_irradiance(hour=12, dust_storm=True):.1f} W/m²")
+
