@@ -2,9 +2,13 @@
 
 @layer base {
   body {
-    @apply bg-zinc-950 text-zinc-50 antialiased min-h-screen overflow-y-auto;
+    @apply bg-stone-950 text-zinc-50 antialiased min-h-screen;
     background-image:
-      radial-gradient(circle at 50% 0%, rgba(30, 41, 59, 0.4) 0%, transparent 60%),
-      radial-gradient(circle at 100% 100%, rgba(120, 30, 30, 0.05) 0%, transparent 50%);
+      radial-gradient(circle at 50% 0%, rgba(120, 53, 15, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 100% 80%, rgba(120, 30, 30, 0.08) 0%, transparent 50%);
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 }
