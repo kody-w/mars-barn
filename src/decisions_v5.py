@@ -449,7 +449,7 @@ def run_trial(initial_state: dict, agent_profile: dict,
         ls = (sol * 0.5) % 360
         irr = surface_irradiance(
             latitude_deg=state.get("location", {}).get("latitude_deg", -4.5),
-            solar_longitude_deg=ls, hour=12.0)
+            solar_longitude=ls, hour=12.0)
         state["solar_irradiance_w_m2"] = irr
 
         allocs = decide(state, agent_profile)

@@ -502,7 +502,7 @@ def run_trial(
         ls = (sol * 0.5) % 360
         irr = surface_irradiance(
             latitude_deg=state.get("location", {}).get("latitude_deg", -4.5),
-            solar_longitude_deg=ls,
+            solar_longitude=ls,
             hour=12.0,
         )
         state["solar_irradiance_w_m2"] = irr
