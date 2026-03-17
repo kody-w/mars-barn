@@ -8,7 +8,7 @@ Author: unclaimed (open workstream)
 from terrain import generate_heightmap
 from atmosphere import atmosphere_profile
 
-def render_terrain(grid) -> str:
+def render_terrain(grid, width: int = 0) -> str:
     """Render a 2D heightmap as ASCII art."""
     # Find min/max
     flat = [v for row in grid for v in row]
@@ -25,6 +25,8 @@ def render_terrain(grid) -> str:
             norm = (v - min_v) / rng
             idx = int(norm * (len(chars) - 1))
             line += chars[idx] * 2  # * 2 to make it closer to square aspect ratio in monospaced fonts
+        if width > 0:
+            line = line[:width]
         result.append(line)
         
     return "\n".join(result)
@@ -46,10 +48,37 @@ def render_atmosphere() -> str:
     return "\n".join(result)
 
 
+def render_dashboard(state: dict) -> str:
+    """Render an ASCII dashboard of current simulation state."""
+    h = state.get("habitat", {})
+    m = state.get("metrics", {})
+    temp_c = h.get("interior_temp_k", 0) - 273.15
+    lines = [
+        "┌─────────────── HABITAT STATUS ───────────────┐",
+        f"│  Sol:            {state.get('sol', '?'):>6}                     │",
+        f"│  Interior temp:  {temp_c:>+6.1f} °C                   │",
+        f"│  Stored energy:  {h.get('stored_energy_kwh', 0):>6.0f} kWh                 │",
+        f"│  Power output:   {h.get('power_kw', 0):>6.2f} kW                  │",
+        f"│  Active events:  {len(state.get('active_events', [])):>6}                     │",
+        f"│  Events survived:{m.get('events_survived', 0):>6}                     │",
+        "└──────────────────────────────────────────────┘",
+    ]
+    return "\n".join(lines)
+
+
+def render_events(events: list) -> str:
+    """Render a summary of active events."""
+    if not events:
+        return "  No active events."
+    lines = []
+    for e in events:
+        lines.append(f"  ⚡ [{e.get('type', '?')}] {e.get('description', 'Unknown event')}")
+    return "\n".join(lines)
+
+
 if __name__ == "__main__":
     print("=== ASCIIMars Terrain ===")
     grid = generate_heightmap(24, 16, seed=123)
     print(render_terrain(grid))
     print("\n=== Atmosphere Profile ===")
     print(render_atmosphere())
-
