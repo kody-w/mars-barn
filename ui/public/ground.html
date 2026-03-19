@@ -128,14 +128,17 @@ const hemi = new THREE.HemisphereLight(0xffd4a0, 0x3a1008, 0.3);
 scene.add(hemi);
 
 // Mars terrain
+function terrainHeight(x, z) {
+  return Math.sin(x * 0.02) * Math.cos(z * 0.015) * 3
+    + Math.sin(x * 0.05 + z * 0.03) * 1.5;
+}
+
 function createTerrain() {
   const geo = new THREE.PlaneGeometry(500, 500, 128, 128);
   const verts = geo.attributes.position.array;
   for (let i = 0; i < verts.length; i += 3) {
     const x = verts[i], y = verts[i + 1];
-    verts[i + 2] = Math.sin(x * 0.02) * Math.cos(y * 0.015) * 3
-      + Math.sin(x * 0.05 + y * 0.03) * 1.5
-      + Math.random() * 0.3;
+    verts[i + 2] = terrainHeight(x, y) + Math.random() * 0.3;
   }
   geo.computeVertexNormals();
   const mat = new THREE.MeshStandardMaterial({
@@ -156,7 +159,7 @@ function createDome(x, z, radius, label) {
     transmission: 0.6, thickness: 0.5, opacity: 0.7, transparent: true,
   });
   const dome = new THREE.Mesh(geo, mat);
-  dome.position.set(x, 0, z);
+  dome.position.set(x, terrainHeight(x, z), z);
   dome.castShadow = true;
   scene.add(dome);
 
@@ -165,7 +168,7 @@ function createDome(x, z, radius, label) {
     new THREE.TorusGeometry(radius, 0.3, 8, 32),
     new THREE.MeshStandardMaterial({ color: 0x666666, roughness: 0.7 })
   );
-  ring.position.set(x, 0.1, z);
+  ring.position.set(x, terrainHeight(x, z) + 0.1, z);
   ring.rotation.x = Math.PI / 2;
   scene.add(ring);
   return dome;
@@ -189,7 +192,7 @@ function createSolarPanel(x, z, angle) {
   panel.rotation.x = -0.3;
   panel.castShadow = true;
   group.add(panel);
-  group.position.set(x, 0, z);
+  group.position.set(x, terrainHeight(x, z), z);
   group.rotation.y = angle;
   scene.add(group);
   return group;
@@ -229,7 +232,7 @@ function createBot(id, x, z, task) {
     });
   });
 
-  group.position.set(x, 0, z);
+  group.position.set(x, terrainHeight(x, z), z);
   group.userData = { id, task, energy: 80 + Math.random() * 20, targetX: x, targetZ: z, speed: 1 + Math.random() };
   scene.add(group);
   return group;
@@ -275,11 +278,9 @@ function buildColony(state) {
       new THREE.DodecahedronGeometry(size, 0),
       new THREE.MeshStandardMaterial({ color: new THREE.Color().setHSL(0.05, 0.3, 0.15 + Math.random() * 0.1), roughness: 1 })
     );
-    rock.position.set(
-      (Math.random() - 0.5) * 200,
-      size * 0.3,
-      (Math.random() - 0.5) * 200
-    );
+    const rx = (Math.random() - 0.5) * 200;
+    const rz = (Math.random() - 0.5) * 200;
+    rock.position.set(rx, terrainHeight(rx, rz) + size * 0.3, rz);
     rock.rotation.set(Math.random(), Math.random(), Math.random());
     rock.castShadow = true;
     scene.add(rock);
@@ -322,6 +323,7 @@ function updateBots(dt) {
     if (dist > 1) {
       bot.position.x += (dx / dist) * ud.speed * dt;
       bot.position.z += (dz / dist) * ud.speed * dt;
+      bot.position.y = terrainHeight(bot.position.x, bot.position.z);
       bot.rotation.y = Math.atan2(dx, dz);
     }
 
