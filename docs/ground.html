@@ -276,6 +276,20 @@ let colony = null;
 let bots = [];
 let possessedBot = null;
 let clock = new THREE.Clock();
+let terrainMesh = null; // stored for raycasting
+
+// Raycast-based terrain height — bulletproof, uses actual mesh surface
+const _rayOrigin = new THREE.Vector3();
+const _rayDown = new THREE.Vector3(0, -1, 0);
+const _raycaster = new THREE.Raycaster();
+
+function getTerrainY(x, z) {
+  if (!terrainMesh) return terrainHeight(x, z);
+  _rayOrigin.set(x, 500, z);
+  _raycaster.set(_rayOrigin, _rayDown);
+  const hits = _raycaster.intersectObject(terrainMesh);
+  return hits.length > 0 ? hits[0].point.y : terrainHeight(x, z);
+}
 
 // Scene setup
 const canvas = document.getElementById('canvas');
@@ -284,7 +298,7 @@ scene.background = new THREE.Color(SKY_COLOR);
 scene.fog = new THREE.FogExp2(SKY_COLOR, 0.005 + currentWeather.dustTau * 0.008);
 
 const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 2000);
-camera.position.set(0, terrainHeight(0, 30) + 1.7, 30);
+camera.position.set(0, getTerrainY(0, 30) + 1.7, 30);
 
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -350,6 +364,7 @@ function createTerrain() {
   mesh.rotation.x = -Math.PI / 2;
   mesh.receiveShadow = true;
   scene.add(mesh);
+  terrainMesh = mesh;
 }
 
 // Colony structures — driven by simulation state
@@ -360,7 +375,7 @@ function createDome(x, z, radius, label) {
     transmission: 0.6, thickness: 0.5, opacity: 0.7, transparent: true,
   });
   const dome = new THREE.Mesh(geo, mat);
-  dome.position.set(x, terrainHeight(x, z), z);
+  dome.position.set(x, getTerrainY(x, z), z);
   dome.castShadow = true;
   scene.add(dome);
 
@@ -369,7 +384,7 @@ function createDome(x, z, radius, label) {
     new THREE.TorusGeometry(radius, 0.3, 8, 32),
     new THREE.MeshStandardMaterial({ color: 0x666666, roughness: 0.7 })
   );
-  ring.position.set(x, terrainHeight(x, z) + 0.1, z);
+  ring.position.set(x, getTerrainY(x, z) + 0.1, z);
   ring.rotation.x = Math.PI / 2;
   scene.add(ring);
   return dome;
@@ -393,7 +408,7 @@ function createSolarPanel(x, z, angle) {
   panel.rotation.x = -0.3;
   panel.castShadow = true;
   group.add(panel);
-  group.position.set(x, terrainHeight(x, z), z);
+  group.position.set(x, getTerrainY(x, z), z);
   group.rotation.y = angle;
   scene.add(group);
   return group;
@@ -433,8 +448,7 @@ function createBot(id, x, z, task) {
     });
   });
 
-  group.position.set(x, terrainHeight(x, z), z);
-  group.userData = { id, task, energy: 80 + Math.random() * 20, targetX: x, targetZ: z, speed: 1 + Math.random() };
+  group.position.set(x, getTerrainY(x, z), z);  group.userData = { id, task, energy: 80 + Math.random() * 20, targetX: x, targetZ: z, speed: 1 + Math.random() };
   scene.add(group);
   return group;
 }
@@ -481,7 +495,7 @@ function buildColony(state) {
     );
     const rx = (Math.random() - 0.5) * 200;
     const rz = (Math.random() - 0.5) * 200;
-    rock.position.set(rx, terrainHeight(rx, rz) + size * 0.3, rz);
+    rock.position.set(rx, getTerrainY(rx, rz) + size * 0.3, rz);
     rock.rotation.set(Math.random(), Math.random(), Math.random());
     rock.castShadow = true;
     scene.add(rock);
@@ -524,7 +538,7 @@ function updateBots(dt) {
     if (dist > 1) {
       bot.position.x += (dx / dist) * ud.speed * dt;
       bot.position.z += (dz / dist) * ud.speed * dt;
-      bot.position.y = terrainHeight(bot.position.x, bot.position.z);
+      bot.position.y = getTerrainY(bot.position.x, bot.position.z);
       bot.rotation.y = Math.atan2(dx, dz);
     }
 
@@ -639,7 +653,7 @@ function animate() {
       dir.y = 0;
       possessedBot.position.add(dir);
       // Clamp bot to terrain
-      possessedBot.position.y = terrainHeight(possessedBot.position.x, possessedBot.position.z);
+      possessedBot.position.y = getTerrainY(possessedBot.position.x, possessedBot.position.z);
       // Camera follows bot at eye height
       camera.position.set(
         possessedBot.position.x,
@@ -650,7 +664,7 @@ function animate() {
       controls.moveRight(dir.x);
       controls.moveForward(-dir.z);
       // Clamp camera to terrain + eye height
-      camera.position.y = terrainHeight(camera.position.x, camera.position.z) + 1.7;
+      camera.position.y = getTerrainY(camera.position.x, camera.position.z) + 1.7;
     }
   }
 
