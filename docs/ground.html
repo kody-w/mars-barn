@@ -86,7 +86,7 @@ scene.background = new THREE.Color(SKY_COLOR);
 scene.fog = new THREE.FogExp2(0x3a1a0a, 0.008);
 
 const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 2000);
-camera.position.set(0, 2, 30);
+camera.position.set(0, terrainHeight(0, 30) + 1.7, 30);
 
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -138,7 +138,9 @@ function createTerrain() {
   const verts = geo.attributes.position.array;
   for (let i = 0; i < verts.length; i += 3) {
     const x = verts[i], y = verts[i + 1];
-    verts[i + 2] = terrainHeight(x, y) + Math.random() * 0.3;
+    // Plane local Y maps to world -Z after rotation, so negate y
+    // to make terrainHeight(worldX, worldZ) correct everywhere
+    verts[i + 2] = terrainHeight(x, -y) + Math.random() * 0.3;
   }
   geo.computeVertexNormals();
   const mat = new THREE.MeshStandardMaterial({
@@ -407,7 +409,9 @@ function animate() {
       dir.applyQuaternion(camera.quaternion);
       dir.y = 0;
       possessedBot.position.add(dir);
-      // Camera follows bot
+      // Clamp bot to terrain
+      possessedBot.position.y = terrainHeight(possessedBot.position.x, possessedBot.position.z);
+      // Camera follows bot at eye height
       camera.position.set(
         possessedBot.position.x,
         possessedBot.position.y + 1.6,
@@ -416,6 +420,8 @@ function animate() {
     } else {
       controls.moveRight(dir.x);
       controls.moveForward(-dir.z);
+      // Clamp camera to terrain + eye height
+      camera.position.y = terrainHeight(camera.position.x, camera.position.z) + 1.7;
     }
   }
 
