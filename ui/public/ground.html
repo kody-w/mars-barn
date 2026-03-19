@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mars Barn — Ground View</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#1a0a04;color:#e0c8b0;font-family:'Courier New',monospace;overflow:hidden}
+#canvas{width:100vw;height:100vh;display:block}
+#hud{position:fixed;top:0;left:0;right:0;padding:12px 20px;background:linear-gradient(180deg,rgba(0,0,0,0.8),transparent);z-index:10;display:flex;justify-content:space-between;pointer-events:none}
+#hud *{pointer-events:auto}
+.hud-left,.hud-right{display:flex;flex-direction:column;gap:4px}
+.hud-right{align-items:flex-end}
+.hud-title{font-size:14px;color:#f0a060;font-weight:bold;letter-spacing:2px}
+.hud-stat{font-size:11px;color:#c09060;opacity:0.9}
+.hud-stat span{color:#f0c080}
+#bot-panel{position:fixed;bottom:0;left:0;right:0;padding:12px 20px;background:linear-gradient(0deg,rgba(0,0,0,0.85),transparent);z-index:10}
+.bot-bar{display:flex;gap:12px;overflow-x:auto;padding:4px 0}
+.bot-card{background:rgba(40,20,10,0.8);border:1px solid #4a2a10;border-radius:6px;padding:8px 12px;min-width:140px;cursor:pointer;flex-shrink:0;transition:border-color 0.2s}
+.bot-card:hover,.bot-card.active{border-color:#f0a060}
+.bot-name{font-size:12px;color:#f0c080;font-weight:bold}
+.bot-task{font-size:10px;color:#907050;margin-top:2px}
+.bot-energy{height:3px;background:#2a1a0a;border-radius:2px;margin-top:4px}
+.bot-energy-fill{height:100%;border-radius:2px;background:#f0a060;transition:width 0.5s}
+#crosshair{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:20px;height:20px;z-index:5;pointer-events:none;opacity:0.3}
+#crosshair::before,#crosshair::after{content:'';position:absolute;background:#f0a060}
+#crosshair::before{width:1px;height:100%;left:50%}
+#crosshair::after{width:100%;height:1px;top:50%}
+#loading{position:fixed;inset:0;background:#0a0400;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;transition:opacity 0.5s}
+#loading.done{opacity:0;pointer-events:none}
+#loading h1{color:#f0a060;font-size:24px;letter-spacing:4px}
+#loading p{color:#907050;font-size:12px;margin-top:8px}
+#possess-hint{position:fixed;top:50%;left:50%;transform:translate(-50%,60px);color:#f0a060;font-size:12px;z-index:5;opacity:0;transition:opacity 0.3s;pointer-events:none;text-align:center}
+</style>
+</head>
+<body>
+<div id="loading"><h1>MARS BARN</h1><p>Loading simulation state...</p></div>
+<div id="crosshair"></div>
+<div id="possess-hint">Click a bot to possess it<br><span style="font-size:10px;color:#907050">ESC to release</span></div>
+<canvas id="canvas"></canvas>
+<div id="hud">
+  <div class="hud-left">
+    <div class="hud-title">MARS BARN — GROUND VIEW</div>
+    <div class="hud-stat">Sol <span id="hud-sol">0</span> | <span id="hud-time">06:00</span></div>
+    <div class="hud-stat">Crew: <span id="hud-crew">0</span> | Morale: <span id="hud-morale">0%</span></div>
+    <div class="hud-stat">Temp: <span id="hud-temp">0°C</span> (ext: <span id="hud-ext-temp">-60°C</span>)</div>
+  </div>
+  <div class="hud-right">
+    <div class="hud-stat">Energy: <span id="hud-energy">0</span> kWh</div>
+    <div class="hud-stat">Water: <span id="hud-water">0</span> L</div>
+    <div class="hud-stat">Food: <span id="hud-food">0</span> kg</div>
+    <div class="hud-stat">O2: <span id="hud-o2">nominal</span></div>
+  </div>
+</div>
+<div id="bot-panel">
+  <div class="bot-bar" id="bot-bar"></div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+
+const RAW = 'https://raw.githubusercontent.com/kody-w/mars-barn/main';
+const MARS_COLOR = 0xb44a2a;
+const SKY_COLOR = 0x2a1008;
+
+// State
+let colony = null;
+let bots = [];
+let possessedBot = null;
+let clock = new THREE.Clock();
+
+// Scene setup
+const canvas = document.getElementById('canvas');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(SKY_COLOR);
+scene.fog = new THREE.FogExp2(0x3a1a0a, 0.008);
+
+const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 2000);
+camera.position.set(0, 2, 30);
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.8;
+
+// Controls
+const controls = new PointerLockControls(camera, document.body);
+canvas.addEventListener('click', () => {
+  if (!possessedBot) controls.lock();
+});
+
+// Movement
+const keys = {};
+document.addEventListener('keydown', e => {
+  keys[e.code] = true;
+  if (e.code === 'Escape' && possessedBot) releasePossession();
+});
+document.addEventListener('keyup', e => keys[e.code] = false);
+
+// Lighting — Mars sun
+const sun = new THREE.DirectionalLight(0xffd4a0, 1.5);
+sun.position.set(100, 80, 50);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.camera.far = 300;
+sun.shadow.camera.left = -100;
+sun.shadow.camera.right = 100;
+sun.shadow.camera.top = 100;
+sun.shadow.camera.bottom = -100;
+scene.add(sun);
+
+const ambient = new THREE.AmbientLight(0x4a2a1a, 0.4);
+scene.add(ambient);
+
+const hemi = new THREE.HemisphereLight(0xffd4a0, 0x3a1008, 0.3);
+scene.add(hemi);
+
+// Mars terrain
+function createTerrain() {
+  const geo = new THREE.PlaneGeometry(500, 500, 128, 128);
+  const verts = geo.attributes.position.array;
+  for (let i = 0; i < verts.length; i += 3) {
+    const x = verts[i], y = verts[i + 1];
+    verts[i + 2] = Math.sin(x * 0.02) * Math.cos(y * 0.015) * 3
+      + Math.sin(x * 0.05 + y * 0.03) * 1.5
+      + Math.random() * 0.3;
+  }
+  geo.computeVertexNormals();
+  const mat = new THREE.MeshStandardMaterial({
+    color: MARS_COLOR, roughness: 0.95, metalness: 0.05,
+    flatShading: true,
+  });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.receiveShadow = true;
+  scene.add(mesh);
+}
+
+// Colony structures — driven by simulation state
+function createDome(x, z, radius, label) {
+  const geo = new THREE.SphereGeometry(radius, 24, 16, 0, Math.PI * 2, 0, Math.PI / 2);
+  const mat = new THREE.MeshPhysicalMaterial({
+    color: 0xaaddff, metalness: 0.1, roughness: 0.1,
+    transmission: 0.6, thickness: 0.5, opacity: 0.7, transparent: true,
+  });
+  const dome = new THREE.Mesh(geo, mat);
+  dome.position.set(x, 0, z);
+  dome.castShadow = true;
+  scene.add(dome);
+
+  // Foundation ring
+  const ring = new THREE.Mesh(
+    new THREE.TorusGeometry(radius, 0.3, 8, 32),
+    new THREE.MeshStandardMaterial({ color: 0x666666, roughness: 0.7 })
+  );
+  ring.position.set(x, 0.1, z);
+  ring.rotation.x = Math.PI / 2;
+  scene.add(ring);
+  return dome;
+}
+
+function createSolarPanel(x, z, angle) {
+  const group = new THREE.Group();
+  // Post
+  const post = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.1, 0.1, 2),
+    new THREE.MeshStandardMaterial({ color: 0x555555 })
+  );
+  post.position.y = 1;
+  group.add(post);
+  // Panel
+  const panel = new THREE.Mesh(
+    new THREE.BoxGeometry(3, 0.05, 2),
+    new THREE.MeshStandardMaterial({ color: 0x1a1a4a, metalness: 0.8, roughness: 0.2 })
+  );
+  panel.position.y = 2;
+  panel.rotation.x = -0.3;
+  panel.castShadow = true;
+  group.add(panel);
+  group.position.set(x, 0, z);
+  group.rotation.y = angle;
+  scene.add(group);
+  return group;
+}
+
+function createBot(id, x, z, task) {
+  const group = new THREE.Group();
+  // Body
+  const body = new THREE.Mesh(
+    new THREE.BoxGeometry(0.8, 1, 0.6),
+    new THREE.MeshStandardMaterial({ color: 0xddaa44, roughness: 0.6 })
+  );
+  body.position.y = 0.7;
+  body.castShadow = true;
+  group.add(body);
+  // Head/sensor
+  const head = new THREE.Mesh(
+    new THREE.SphereGeometry(0.25, 8, 6),
+    new THREE.MeshStandardMaterial({ color: 0x44aadd, emissive: 0x224466, emissiveIntensity: 0.5 })
+  );
+  head.position.y = 1.4;
+  group.add(head);
+  // Eye light
+  const eye = new THREE.PointLight(0x44aadd, 0.5, 5);
+  eye.position.y = 1.4;
+  group.add(eye);
+  // Wheels
+  [-0.3, 0.3].forEach(zOff => {
+    [-0.35, 0.35].forEach(xOff => {
+      const wheel = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.15, 0.15, 0.1, 8),
+        new THREE.MeshStandardMaterial({ color: 0x333333 })
+      );
+      wheel.rotation.z = Math.PI / 2;
+      wheel.position.set(xOff, 0.15, zOff);
+      group.add(wheel);
+    });
+  });
+
+  group.position.set(x, 0, z);
+  group.userData = { id, task, energy: 80 + Math.random() * 20, targetX: x, targetZ: z, speed: 1 + Math.random() };
+  scene.add(group);
+  return group;
+}
+
+// Build colony from simulation state
+function buildColony(state) {
+  // Main dome
+  createDome(0, 0, 8, state.name || 'Mars Barn');
+  // Secondary domes
+  createDome(-15, -10, 5, 'Greenhouse');
+  createDome(12, -8, 4, 'Workshop');
+  createDome(-8, 15, 3, 'Lab');
+
+  // Solar array
+  const panelArea = state.habitat?.solar_panel_area_m2 || 400;
+  const panelCount = Math.min(20, Math.round(panelArea / 20));
+  for (let i = 0; i < panelCount; i++) {
+    const angle = (i / panelCount) * Math.PI * 2;
+    const dist = 25 + Math.random() * 10;
+    createSolarPanel(Math.cos(angle) * dist, Math.sin(angle) * dist, angle);
+  }
+
+  // Bots — driven by crew specializations
+  const specs = state.crew?.specializations || {};
+  const botDefs = [
+    { id: 'BOT-ENG-01', task: 'Structural maintenance', x: 5, z: 3 },
+    { id: 'BOT-BOT-01', task: 'Greenhouse tending', x: -13, z: -8 },
+    { id: 'BOT-GEO-01', task: 'Sample collection', x: 20, z: 15 },
+    { id: 'BOT-MED-01', task: 'Supply logistics', x: -3, z: -5 },
+    { id: 'BOT-SCI-01', task: 'Atmospheric monitoring', x: 8, z: -12 },
+    { id: 'BOT-PWR-01', task: 'Solar panel alignment', x: 30, z: 0 },
+  ];
+  botDefs.forEach(def => {
+    const bot = createBot(def.id, def.x, def.z, def.task);
+    bots.push(bot);
+  });
+
+  // Rocks and debris
+  for (let i = 0; i < 60; i++) {
+    const size = 0.2 + Math.random() * 1.5;
+    const rock = new THREE.Mesh(
+      new THREE.DodecahedronGeometry(size, 0),
+      new THREE.MeshStandardMaterial({ color: new THREE.Color().setHSL(0.05, 0.3, 0.15 + Math.random() * 0.1), roughness: 1 })
+    );
+    rock.position.set(
+      (Math.random() - 0.5) * 200,
+      size * 0.3,
+      (Math.random() - 0.5) * 200
+    );
+    rock.rotation.set(Math.random(), Math.random(), Math.random());
+    rock.castShadow = true;
+    scene.add(rock);
+  }
+
+  // Dust particles
+  const dustGeo = new THREE.BufferGeometry();
+  const dustCount = 2000;
+  const dustPos = new Float32Array(dustCount * 3);
+  for (let i = 0; i < dustCount * 3; i += 3) {
+    dustPos[i] = (Math.random() - 0.5) * 200;
+    dustPos[i + 1] = Math.random() * 20;
+    dustPos[i + 2] = (Math.random() - 0.5) * 200;
+  }
+  dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+  const dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({
+    color: 0xd4956a, size: 0.15, transparent: true, opacity: 0.3
+  }));
+  scene.add(dust);
+}
+
+// Bot AI — autonomous movement
+function updateBots(dt) {
+  bots.forEach(bot => {
+    if (bot === possessedBot) return; // Don't move possessed bot
+    const ud = bot.userData;
+
+    // Pick new target occasionally
+    if (Math.random() < 0.005) {
+      ud.targetX = ud.targetX + (Math.random() - 0.5) * 20;
+      ud.targetZ = ud.targetZ + (Math.random() - 0.5) * 20;
+      ud.targetX = Math.max(-80, Math.min(80, ud.targetX));
+      ud.targetZ = Math.max(-80, Math.min(80, ud.targetZ));
+    }
+
+    // Move toward target
+    const dx = ud.targetX - bot.position.x;
+    const dz = ud.targetZ - bot.position.z;
+    const dist = Math.sqrt(dx * dx + dz * dz);
+    if (dist > 1) {
+      bot.position.x += (dx / dist) * ud.speed * dt;
+      bot.position.z += (dz / dist) * ud.speed * dt;
+      bot.rotation.y = Math.atan2(dx, dz);
+    }
+
+    // Drain energy slowly
+    ud.energy = Math.max(0, ud.energy - dt * 0.1);
+  });
+}
+
+// Possess a bot — first person view through its eyes
+function possessBot(bot) {
+  possessedBot = bot;
+  controls.unlock();
+  document.getElementById('possess-hint').style.opacity = '0';
+  document.getElementById('crosshair').style.opacity = '0.6';
+  document.querySelectorAll('.bot-card').forEach(c => c.classList.remove('active'));
+  document.querySelector(`[data-bot="${bot.userData.id}"]`)?.classList.add('active');
+}
+
+function releasePossession() {
+  if (!possessedBot) return;
+  camera.position.copy(possessedBot.position).add(new THREE.Vector3(0, 5, 10));
+  possessedBot = null;
+  document.getElementById('crosshair').style.opacity = '0.3';
+  document.getElementById('possess-hint').style.opacity = '1';
+  document.querySelectorAll('.bot-card').forEach(c => c.classList.remove('active'));
+}
+
+// HUD update
+function updateHUD(state) {
+  if (!state) return;
+  const h = state.habitat || {};
+  const c = state.crew || {};
+  document.getElementById('hud-sol').textContent = state.sol || 0;
+  document.getElementById('hud-time').textContent = `${String(6 + (state.sol % 24)).padStart(2,'0')}:${String(Math.floor(Math.random()*60)).padStart(2,'0')}`;
+  document.getElementById('hud-crew').textContent = h.crew_size || 0;
+  document.getElementById('hud-morale').textContent = Math.round((c.morale || 0) * 100) + '%';
+  document.getElementById('hud-temp').textContent = Math.round((h.interior_temp_k || 293) - 273.15) + '°C';
+  document.getElementById('hud-ext-temp').textContent = '-63°C';
+  document.getElementById('hud-energy').textContent = Math.round(h.stored_energy_kwh || 0);
+  document.getElementById('hud-water').textContent = Math.round(h.water_reserves_l || 0);
+  document.getElementById('hud-food').textContent = Math.round(h.food_reserves_kg || 0);
+}
+
+// Bot panel
+function updateBotPanel() {
+  const bar = document.getElementById('bot-bar');
+  bar.innerHTML = bots.map(bot => {
+    const ud = bot.userData;
+    const active = bot === possessedBot ? 'active' : '';
+    return `<div class="bot-card ${active}" data-bot="${ud.id}">
+      <div class="bot-name">${ud.id}</div>
+      <div class="bot-task">${ud.task}</div>
+      <div class="bot-energy"><div class="bot-energy-fill" style="width:${ud.energy}%"></div></div>
+    </div>`;
+  }).join('');
+
+  bar.querySelectorAll('.bot-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const bot = bots.find(b => b.userData.id === card.dataset.bot);
+      if (bot) possessBot(bot);
+    });
+  });
+}
+
+// Main loop
+function animate() {
+  requestAnimationFrame(animate);
+  const dt = clock.getDelta();
+
+  // Movement (WASD)
+  if (controls.isLocked || possessedBot) {
+    const speed = 10 * dt;
+    const dir = new THREE.Vector3();
+    if (keys['KeyW']) dir.z -= speed;
+    if (keys['KeyS']) dir.z += speed;
+    if (keys['KeyA']) dir.x -= speed;
+    if (keys['KeyD']) dir.x += speed;
+
+    if (possessedBot) {
+      // Move possessed bot
+      dir.applyQuaternion(camera.quaternion);
+      dir.y = 0;
+      possessedBot.position.add(dir);
+      // Camera follows bot
+      camera.position.set(
+        possessedBot.position.x,
+        possessedBot.position.y + 1.6,
+        possessedBot.position.z
+      );
+    } else {
+      controls.moveRight(dir.x);
+      controls.moveForward(-dir.z);
+    }
+  }
+
+  updateBots(dt);
+
+  // Update bot panel every second
+  if (Math.floor(clock.elapsedTime) !== Math.floor(clock.elapsedTime - dt)) {
+    updateBotPanel();
+  }
+
+  renderer.render(scene, camera);
+}
+
+// Init
+async function init() {
+  createTerrain();
+
+  // Fetch live colony state
+  try {
+    const res = await fetch(`${RAW}/state/colony.json?t=${Date.now()}`);
+    colony = await res.json();
+    buildColony(colony);
+    updateHUD(colony);
+  } catch (err) {
+    console.warn('Failed to fetch colony state, using defaults');
+    buildColony({ habitat: { solar_panel_area_m2: 400, crew_size: 4 }, crew: { morale: 0.8 } });
+  }
+
+  document.getElementById('loading').classList.add('done');
+  document.getElementById('possess-hint').style.opacity = '1';
+
+  // Auto-refresh state every 60s
+  setInterval(async () => {
+    try {
+      const res = await fetch(`${RAW}/state/colony.json?t=${Date.now()}`);
+      colony = await res.json();
+      updateHUD(colony);
+    } catch {}
+  }, 60000);
+
+  animate();
+}
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+init();
+</script>
+</body>
+</html>
