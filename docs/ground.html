@@ -48,6 +48,10 @@ body{background:#1a0a04;color:#e0c8b0;font-family:'Courier New',monospace;overfl
 .hud-equip-item.crit{border-color:#6a1a1a;color:#ef4444}
 .flash-overlay{position:fixed;inset:0;pointer-events:none;z-index:8;opacity:0;transition:opacity 0.3s}
 #colony-switcher{background:#1a0a04;color:#f0a060;border:1px solid #4a2a10;border-radius:4px;padding:2px 6px;font-family:'Courier New',monospace;font-size:11px;cursor:pointer;outline:none;margin-top:2px}
+#touch-move{position:fixed;bottom:100px;left:30px;width:100px;height:100px;border-radius:50%;background:rgba(240,160,96,0.15);border:2px solid rgba(240,160,96,0.3);z-index:15;display:none;touch-action:none}
+#touch-move-stick{position:absolute;width:40px;height:40px;border-radius:50%;background:rgba(240,160,96,0.5);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+#touch-look{position:fixed;bottom:100px;right:30px;width:100px;height:100px;border-radius:50%;background:rgba(240,160,96,0.15);border:2px solid rgba(240,160,96,0.3);z-index:15;display:none;touch-action:none}
+@media (pointer:coarse),(hover:none){#touch-move,#touch-look{display:block}#possess-hint{display:none}}
 #colony-switcher option{background:#1a0a04;color:#f0a060}
 #camera-presets{position:fixed;bottom:70px;right:20px;display:flex;flex-direction:column;gap:6px;z-index:10}
 .cam-btn{width:36px;height:36px;border-radius:50%;background:rgba(26,10,4,0.85);border:1px solid #4a2a10;color:#f0a060;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color 0.2s,transform 0.1s}
@@ -61,6 +65,8 @@ body{background:#1a0a04;color:#e0c8b0;font-family:'Courier New',monospace;overfl
 <div id="possess-hint">Click a bot to possess it<br><span style="font-size:10px;color:#907050">ESC to release</span></div>
 <canvas id="canvas"></canvas>
 <div class="flash-overlay" id="flash-overlay"></div>
+<div id="touch-move"><div id="touch-move-stick"></div></div>
+<div id="touch-look"></div>
 <div id="hud">
   <div class="hud-left">
     <div class="hud-title" id="hud-title">MARS BARN — GROUND VIEW</div>
@@ -389,6 +395,52 @@ document.addEventListener('keydown', e => {
   if (e.code === 'Escape' && possessedBot) releasePossession();
 });
 document.addEventListener('keyup', e => keys[e.code] = false);
+
+// Touch controls for mobile
+const touchMove = { x: 0, z: 0, active: false };
+const touchLook = { active: false, startX: 0, startY: 0 };
+
+const touchMoveEl = document.getElementById('touch-move');
+const touchStick = document.getElementById('touch-move-stick');
+const touchLookEl = document.getElementById('touch-look');
+
+if (touchMoveEl) {
+  touchMoveEl.addEventListener('touchstart', e => { e.preventDefault(); touchMove.active = true; }, { passive: false });
+  touchMoveEl.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const rect = touchMoveEl.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+    const t = e.touches[0];
+    const dx = (t.clientX - cx) / (rect.width / 2);
+    const dz = (t.clientY - cy) / (rect.height / 2);
+    touchMove.x = Math.max(-1, Math.min(1, dx));
+    touchMove.z = Math.max(-1, Math.min(1, dz));
+    touchStick.style.transform = `translate(${-50 + touchMove.x * 30}%, ${-50 + touchMove.z * 30}%)`;
+  }, { passive: false });
+  touchMoveEl.addEventListener('touchend', () => {
+    touchMove.active = false; touchMove.x = 0; touchMove.z = 0;
+    touchStick.style.transform = 'translate(-50%, -50%)';
+  });
+}
+if (touchLookEl) {
+  touchLookEl.addEventListener('touchstart', e => {
+    e.preventDefault();
+    touchLook.active = true;
+    touchLook.startX = e.touches[0].clientX;
+    touchLook.startY = e.touches[0].clientY;
+  }, { passive: false });
+  touchLookEl.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (!touchLook.active) return;
+    const dx = (e.touches[0].clientX - touchLook.startX) * 0.003;
+    const dy = (e.touches[0].clientY - touchLook.startY) * 0.003;
+    camera.rotation.y -= dx;
+    camera.rotation.x = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, camera.rotation.x - dy));
+    touchLook.startX = e.touches[0].clientX;
+    touchLook.startY = e.touches[0].clientY;
+  }, { passive: false });
+  touchLookEl.addEventListener('touchend', () => { touchLook.active = false; });
+}
 
 // Lighting — Mars sun (intensity from real solar irradiance)
 const sunIntensity = 0.8 + (currentWeather.solarWm2 / 470) * 0.7;
@@ -1935,13 +1987,18 @@ function animate() {
   const dt = clock.getDelta();
 
   // Movement (WASD)
-  if (controls.isLocked || possessedBot) {
+  if (controls.isLocked || possessedBot || touchMove.active) {
     const speed = 10 * dt;
     const dir = new THREE.Vector3();
     if (keys['KeyW']) dir.z -= speed;
     if (keys['KeyS']) dir.z += speed;
     if (keys['KeyA']) dir.x -= speed;
     if (keys['KeyD']) dir.x += speed;
+    // Touch joystick input
+    if (touchMove.active) {
+      dir.x += touchMove.x * speed;
+      dir.z += touchMove.z * speed;
+    }
 
     if (possessedBot) {
       // Move possessed bot
@@ -2041,11 +2098,17 @@ async function init() {
 
   // Populate colony switcher
   const switcher = document.getElementById('colony-switcher');
+  // Read colony from URL param: ?colony=olympus
+  const urlParams = new URLSearchParams(window.location.search);
+  const colonyParam = urlParams.get('colony');
+  const colonyMatch = colonyParam ? COLONIES.find(c => c.id === colonyParam) : null;
+  if (colonyMatch) currentColonyFile = colonyMatch.file;
+
   COLONIES.forEach((c, i) => {
     const opt = document.createElement('option');
     opt.value = c.file;
     opt.textContent = c.label;
-    if (i === 0) opt.selected = true;
+    if (colonyMatch ? c.id === colonyMatch.id : i === 0) opt.selected = true;
     switcher.appendChild(opt);
   });
   switcher.addEventListener('change', async (e) => {
