@@ -81,3 +81,54 @@ if __name__ == "__main__":
     print(f"  Clear: {surface_irradiance(hour=12):.1f} W/m²")
     print(f"  Storm: {surface_irradiance(hour=12, dust_storm=True):.1f} W/m²")
 
+
+
+# Reference panel area for energy calculations (m²)
+REFERENCE_PANEL_AREA_M2 = 100.0
+
+# Mars sol length in hours (24h 39m 35s)
+MARS_SOL_HOURS = 24.66
+
+
+def daily_energy(
+    latitude_deg: float = 0.0,
+    solar_longitude: float = 0.0,
+    dust_storm: bool = False,
+    solar_multiplier: float = 1.0,
+    panel_area_m2: float = REFERENCE_PANEL_AREA_M2,
+) -> dict:
+    """Calculate total solar energy generated over one Mars sol.
+
+    Integrates surface_irradiance() over daylight hours for a flat
+    panel array at the given latitude and season.
+
+    Returns dict with:
+        total_kwh: total energy in kWh for the panel area
+        peak_irradiance_w_m2: max irradiance during the sol
+        daylight_hours: number of hours with nonzero irradiance
+    """
+    total_wh = 0.0
+    peak_irr = 0.0
+    daylight_h = 0.0
+    step_hours = 0.5  # 30-minute integration steps
+
+    hour = 0.0
+    while hour < MARS_SOL_HOURS:
+        irr = surface_irradiance(
+            latitude_deg=latitude_deg,
+            solar_longitude_deg=solar_longitude,
+            hour=hour,
+            dust_storm=dust_storm,
+        )
+        irr *= solar_multiplier
+        if irr > 0:
+            daylight_h += step_hours
+            peak_irr = max(peak_irr, irr)
+        total_wh += irr * panel_area_m2 * step_hours
+        hour += step_hours
+
+    return {
+        "total_kwh": round(total_wh / 1000.0, 2),
+        "peak_irradiance_w_m2": round(peak_irr, 1),
+        "daylight_hours": round(daylight_h, 1),
+    }
