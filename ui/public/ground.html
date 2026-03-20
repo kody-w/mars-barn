@@ -462,36 +462,81 @@ function createTerrain() {
 }
 
 // Colony structures — all driven by simulation state (digital twin)
+// constants.py: insulation = "aerogel + regolith sandwich"
+// HABITAT_WINDOW_AREA_M2 = 10 (5% of 200m² surface = small viewports only)
+// Mars habitats are regolith-covered for radiation shielding (GCR + solar flares)
 
-function createDome(x, z, radius, label, opts = {}) {
-  const geo = new THREE.SphereGeometry(radius, 24, 16, 0, Math.PI * 2, 0, Math.PI / 2);
-  const tint = opts.tint || 0xaaddff;
-  const mat = new THREE.MeshPhysicalMaterial({
-    color: tint, metalness: 0.1, roughness: 0.1,
-    transmission: 0.6, thickness: 0.5, opacity: 0.7, transparent: true,
+function createHabitat(x, z, radius, groundCoupling, label) {
+  const baseY = getTerrainY(x, z);
+  const buryDepth = groundCoupling || 0;
+  const group = new THREE.Group();
+
+  // Main dome shell — regolith-covered (opaque Mars-colored, not glass)
+  const shellGeo = new THREE.SphereGeometry(radius, 24, 16, 0, Math.PI * 2, 0, Math.PI / 2);
+  const shellMat = new THREE.MeshStandardMaterial({
+    color: 0x8a6a4a, roughness: 0.95, metalness: 0.05, // regolith-covered
   });
-  const dome = new THREE.Mesh(geo, mat);
-  dome.position.set(x, getTerrainY(x, z), z);
-  dome.castShadow = true;
-  scene.add(dome);
+  const shell = new THREE.Mesh(shellGeo, shellMat);
+  shell.castShadow = true;
+  group.add(shell);
 
-  // Foundation ring
-  const ring = new THREE.Mesh(
-    new THREE.TorusGeometry(radius, 0.3, 8, 32),
-    new THREE.MeshStandardMaterial({ color: 0x666666, roughness: 0.7 })
-  );
-  ring.position.set(x, getTerrainY(x, z) + 0.1, z);
+  // Window strips — small viewport band (10m² of 200m² = 5%)
+  // Rendered as a ring of illuminated panels around the dome equator
+  const winGeo = new THREE.TorusGeometry(radius * 0.92, 0.25, 6, 24);
+  const winMat = new THREE.MeshPhysicalMaterial({
+    color: 0xaaddff, emissive: 0xaaddff, emissiveIntensity: 0.2,
+    transmission: 0.5, thickness: 0.2, opacity: 0.8, transparent: true,
+  });
+  const windows = new THREE.Mesh(winGeo, winMat);
+  windows.position.y = radius * 0.35;
+  windows.rotation.x = Math.PI / 2;
+  group.add(windows);
+
+  // Airlock door (visible entry point)
+  const airlockGeo = new THREE.BoxGeometry(1.2, 2.2, 0.3);
+  const airlockMat = new THREE.MeshStandardMaterial({ color: 0x555566, metalness: 0.6, roughness: 0.3 });
+  const airlock = new THREE.Mesh(airlockGeo, airlockMat);
+  airlock.position.set(0, 1.1, radius - 0.1);
+  group.add(airlock);
+  // Airlock frame light
+  const alLight = new THREE.PointLight(0x44ff44, 0.3, 3);
+  alLight.position.set(0, 2.3, radius);
+  group.add(alLight);
+
+  // Foundation / base ring
+  const ringGeo = new THREE.TorusGeometry(radius + 0.2, 0.4, 8, 32);
+  const ringMat = new THREE.MeshStandardMaterial({ color: 0x555555, roughness: 0.7 });
+  const ring = new THREE.Mesh(ringGeo, ringMat);
+  ring.position.y = 0.1;
   ring.rotation.x = Math.PI / 2;
-  scene.add(ring);
+  group.add(ring);
 
-  // Interior light (warm glow from inside)
-  if (opts.lit !== false) {
-    const glow = new THREE.PointLight(0xffddaa, 0.4, radius * 3);
-    glow.position.set(x, getTerrainY(x, z) + radius * 0.4, z);
-    scene.add(glow);
-  }
+  // Interior warm glow (visible through windows)
+  const glow = new THREE.PointLight(0xffddaa, 0.5, radius * 4);
+  glow.position.y = radius * 0.4;
+  group.add(glow);
 
-  return dome;
+  // Regolith berm — radiation shielding mound around base
+  // Even surface habs (coupling=0) have bermed regolith per "regolith sandwich"
+  const bermHeight = Math.max(0.8, buryDepth * 0.7 + 0.8);
+  const bermGeo = new THREE.TorusGeometry(radius + 0.8, bermHeight, 8, 32);
+  const bermMat = new THREE.MeshStandardMaterial({ color: 0x8a5a3a, roughness: 1.0 });
+  const berm = new THREE.Mesh(bermGeo, bermMat);
+  berm.position.y = bermHeight * 0.3;
+  berm.rotation.x = Math.PI / 2;
+  group.add(berm);
+
+  // Cleared/graded area around habitat (construction disturbed soil)
+  const padGeo = new THREE.CircleGeometry(radius + 4, 32);
+  const padMat = new THREE.MeshStandardMaterial({ color: 0x7a5a3a, roughness: 1.0 });
+  const pad = new THREE.Mesh(padGeo, padMat);
+  pad.rotation.x = -Math.PI / 2;
+  pad.position.y = 0.02;
+  group.add(pad);
+
+  group.position.set(x, baseY - buryDepth, z);
+  scene.add(group);
+  return shell;
 }
 
 function createSolarPanel(x, z, angle, dustFactor) {
@@ -632,22 +677,11 @@ function buildColony(state) {
 
   const groundCoupling = h.ground_coupling_depth_m || 0;
 
-  // ── Main habitat: 8m diameter pressurized dome (from thermal.py constants)
-  // HABITAT_SURFACE_AREA_M2 = 200, HABITAT_VOLUME_M3 = 150 → ~8m diameter hemisphere
-  const habRadius = 4; // meters (8m diameter / 2)
-  const habY = getTerrainY(0, 0) - groundCoupling;
-  const habDome = createDome(0, 0, habRadius, state.name || 'Mars Barn');
-  habDome.position.y = habY;
-
-  // Regolith berm around base if ground-coupled (buried habitat)
-  if (groundCoupling > 0) {
-    const bermGeo = new THREE.TorusGeometry(habRadius + 0.5, groundCoupling * 0.7, 8, 32);
-    const bermMat = new THREE.MeshStandardMaterial({ color: MARS_COLOR, roughness: 1 });
-    const berm = new THREE.Mesh(bermGeo, bermMat);
-    berm.position.set(0, getTerrainY(0, 0), 0);
-    berm.rotation.x = Math.PI / 2;
-    scene.add(berm);
-  }
+  // ── Main habitat: 8m diameter regolith-shielded dome (thermal.py)
+  // "aerogel + regolith sandwich" walls, only 10m² windows (5% of surface)
+  // Buried by ground_coupling_depth_m for radiation/thermal protection
+  const habRadius = 4; // 8m diameter / 2 (from HABITAT_SURFACE_AREA=200m²)
+  createHabitat(0, 0, habRadius, groundCoupling, state.name || 'Mars Barn');
 
   // ── Greenhouse module — connected to habitat, size from planted_area_m2
   // Separate pressurized module (lower profile, elongated)
