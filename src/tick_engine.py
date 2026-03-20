@@ -14,6 +14,8 @@ from pathlib import Path
 # Ensure local imports work for solar and thermal
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+from constants import LIFE_SUPPORT_BASE_KWH_PER_SOL
+
 try:
     from solar import daily_energy
     from thermal import simulate_sol
@@ -25,7 +27,7 @@ STATE_FILE = Path(__file__).parent.parent / "data" / "colonies.json"
 SOLAR_LONGITUDE_ADVANCE = 0.5  # degrees per sol (approximate)
 DUST_STORM_PROBABILITY = 0.15  # per sol
 SUPPLY_DROP_PROBABILITY = 0.10  # per sol
-BASE_LIFE_SUPPORT_KWH = 500.0  # kWh per sol
+BASE_LIFE_SUPPORT_KWH = LIFE_SUPPORT_BASE_KWH_PER_SOL  # was 500.0, now from constants.py
 PANEL_ARRAY_SCALE = 10  # multiplier vs 100 m² reference array
 DIGITAL_TWIN_THRESHOLD_SOLS = 365
 DIGITAL_TWIN_PROBABILITY = 0.05  # chance per sol after threshold
