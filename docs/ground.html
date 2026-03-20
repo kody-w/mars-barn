@@ -623,72 +623,126 @@ function buildColony(state) {
   const equip = state.equipment || {};
   const gh = state.greenhouse || {};
 
-  // ── Main habitat dome — size from insulation R-value (thicker walls = bigger structure)
-  const rValue = h.insulation_r_value || 12;
-  const habRadius = Math.max(5, Math.min(12, rValue * 0.7));
-  createDome(0, 0, habRadius, state.name || 'Mars Barn');
+  // ═══════════════════════════════════════════════════════════════════════
+  // DIGITAL TWIN — structures match simulation exactly
+  // thermal.py: "Roughly 8m diameter dome", 200m² surface, 150m³ volume
+  // State defines: 1 habitat, 1 greenhouse, 5 equipment systems, 1 solar array
+  // ground_coupling_depth_m controls burial depth (regolith berm)
+  // ═══════════════════════════════════════════════════════════════════════
 
-  // ── Greenhouse dome — size from planted area
+  const groundCoupling = h.ground_coupling_depth_m || 0;
+
+  // ── Main habitat: 8m diameter pressurized dome (from thermal.py constants)
+  // HABITAT_SURFACE_AREA_M2 = 200, HABITAT_VOLUME_M3 = 150 → ~8m diameter hemisphere
+  const habRadius = 4; // meters (8m diameter / 2)
+  const habY = getTerrainY(0, 0) - groundCoupling;
+  const habDome = createDome(0, 0, habRadius, state.name || 'Mars Barn');
+  habDome.position.y = habY;
+
+  // Regolith berm around base if ground-coupled (buried habitat)
+  if (groundCoupling > 0) {
+    const bermGeo = new THREE.TorusGeometry(habRadius + 0.5, groundCoupling * 0.7, 8, 32);
+    const bermMat = new THREE.MeshStandardMaterial({ color: MARS_COLOR, roughness: 1 });
+    const berm = new THREE.Mesh(bermGeo, bermMat);
+    berm.position.set(0, getTerrainY(0, 0), 0);
+    berm.rotation.x = Math.PI / 2;
+    scene.add(berm);
+  }
+
+  // ── Greenhouse module — connected to habitat, size from planted_area_m2
+  // Separate pressurized module (lower profile, elongated)
   const ghArea = gh.planted_area_m2 || 15;
-  const ghRadius = Math.max(2, Math.sqrt(ghArea / Math.PI));
-  // Green tint based on growth stage
+  const ghLength = Math.max(3, ghArea / 3); // rectangular footprint
+  const ghWidth = Math.max(2, ghArea / ghLength);
+  const ghHeight = Math.min(3, ghWidth * 0.6);
   const growthStage = gh.growth_stage || 0;
-  const ghTint = new THREE.Color().setHSL(0.33, 0.3 + growthStage * 0.4, 0.6 + growthStage * 0.15);
-  createDome(-15, -10, ghRadius, 'Greenhouse', { tint: ghTint });
 
-  // ── Equipment modules positioned around habitat
+  const ghGroup = new THREE.Group();
+  // Quonset-hut style (half-cylinder) — common Mars greenhouse concept
+  const ghGeo = new THREE.CylinderGeometry(ghHeight, ghHeight, ghLength, 16, 1, false, 0, Math.PI);
+  const ghColor = new THREE.Color().lerpColors(
+    new THREE.Color(0xaaddcc), new THREE.Color(0x44cc44), growthStage
+  );
+  const ghMat = new THREE.MeshPhysicalMaterial({
+    color: ghColor, transmission: 0.5, thickness: 0.3,
+    opacity: 0.65, transparent: true, roughness: 0.15,
+  });
+  const ghMesh = new THREE.Mesh(ghGeo, ghMat);
+  ghMesh.rotation.z = Math.PI / 2;
+  ghMesh.rotation.y = Math.PI / 2;
+  ghMesh.position.y = ghHeight * 0.02;
+  ghGroup.add(ghMesh);
+  // Foundation pad
+  const padGeo = new THREE.BoxGeometry(ghLength + 0.5, 0.15, ghWidth + 0.5);
+  const padMat = new THREE.MeshStandardMaterial({ color: 0x555555, roughness: 0.8 });
+  ghGroup.add(new THREE.Mesh(padGeo, padMat));
+  // Interior grow lights (green glow from plants)
+  if (growthStage > 0.1) {
+    const growLight = new THREE.PointLight(0x88ff44, growthStage * 0.4, ghLength * 2);
+    growLight.position.y = ghHeight * 0.5;
+    ghGroup.add(growLight);
+  }
+  ghGroup.position.set(-habRadius - ghLength / 2 - 2, getTerrainY(-habRadius - ghLength / 2 - 2, 0), 0);
+  scene.add(ghGroup);
+
+  // ── Pressurized tunnel connecting habitat to greenhouse
+  const tunnelLen = 2;
+  const tunnel = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.8, 0.8, tunnelLen, 8),
+    new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.5, metalness: 0.3 })
+  );
+  tunnel.rotation.z = Math.PI / 2;
+  tunnel.position.set(-habRadius - tunnelLen / 2, getTerrainY(-habRadius - 1, 0) + 0.8, 0);
+  scene.add(tunnel);
+
+  // ── 5 Equipment systems (exactly as defined in state.equipment)
   const heaterHealth = equip.heater?.health || 1;
   const recyclerHealth = equip.water_recycler?.health || 1;
   const sealsHealth = equip.hab_seals?.health || 1;
   const commsHealth = equip.comms?.health || 1;
   const panelHealth = equip.solar_panels?.health || 1;
 
-  createEquipmentModule(8, 4, 'Heater', heaterHealth, 0xcc4400);
-  createEquipmentModule(10, -3, 'Water Recycler', recyclerHealth, 0x2266aa);
-  createEquipmentModule(-6, 8, 'Hab Seals', sealsHealth, 0x666688);
+  // Life support cluster — behind habitat
+  createEquipmentModule(2, -habRadius - 2, 'Heater', heaterHealth, 0xcc4400);
+  createEquipmentModule(-2, -habRadius - 2, 'Water Recycler', recyclerHealth, 0x2266aa);
+  createEquipmentModule(0, -habRadius - 4, 'Hab Seals', sealsHealth, 0x666688);
 
-  // ── Comms antenna
-  createCommsAntenna(14, 10, commsHealth);
+  // ── Comms antenna — offset for clear line of sight
+  createCommsAntenna(habRadius + 6, habRadius + 4, commsHealth);
 
-  // ── Solar array — count and layout from panel area
+  // ── Solar array — panel count from solar_panel_area_m2
+  // Each panel ~18m² (3m x 6m with gaps). Laid out in rows east of habitat.
   const panelArea = h.solar_panel_area_m2 || 400;
   const dustFactor = h.panel_dust_factor || 1;
   const panelCount = Math.min(25, Math.max(4, Math.round(panelArea / 18)));
-  // Rows layout (more realistic than circular)
   const rowLength = Math.ceil(Math.sqrt(panelCount));
   for (let i = 0; i < panelCount; i++) {
     const row = Math.floor(i / rowLength);
     const col = i % rowLength;
-    const px = 25 + col * 4;
-    const pz = -15 + row * 5;
+    const px = habRadius + 8 + col * 4;
+    const pz = -(rowLength * 2.5) + row * 5;
     createSolarPanel(px, pz, 0, dustFactor);
   }
 
-  // ── Bots from crew specializations
+  // ── Crew bots — one per specialization from state.crew.specializations
   const specColors = {
     engineer: 0xddaa44, botanist: 0x44aa44, geologist: 0xaa8844,
     medic: 0xdd4444, scientist: 0x4488dd, power: 0xaaaa44,
   };
+  const specEntries = Object.entries(crew.specializations || {});
+  // If no specializations in state, generate from crew_size
   const crewSize = h.crew_size || 4;
-  const specList = Object.entries(crew.specializations || {});
-  const defaultSpecs = [
-    ['engineer', 'Structural maintenance'],
-    ['botanist', 'Greenhouse tending'],
-    ['geologist', 'Sample collection'],
-    ['medic', 'Supply logistics'],
-    ['scientist', 'Atmospheric monitoring'],
-    ['power', 'Solar panel alignment'],
-  ];
-  const botSpecs = specList.length > 0 ? specList : defaultSpecs.slice(0, crewSize);
-  botSpecs.forEach(([spec, task], i) => {
-    // Spread bots around colony
-    const angle = (i / botSpecs.length) * Math.PI * 2;
-    const dist = 5 + Math.random() * 12;
+  const defaultSpecs = ['engineer', 'botanist', 'geologist', 'medic', 'scientist', 'power'];
+  const activeCrew = specEntries.length > 0
+    ? specEntries.flatMap(([spec, count]) => Array.from({ length: count }, () => spec))
+    : defaultSpecs.slice(0, crewSize);
+  activeCrew.forEach((spec, i) => {
+    const angle = (i / activeCrew.length) * Math.PI * 2 + 0.5;
+    const dist = habRadius + 2 + Math.random() * 8;
     const bx = Math.cos(angle) * dist;
     const bz = Math.sin(angle) * dist;
     const color = specColors[spec] || 0xddaa44;
-    const taskStr = typeof task === 'string' ? task : `${spec} ops`;
-    const bot = createBot(`BOT-${spec.toUpperCase().slice(0,3)}-0${i+1}`, bx, bz, taskStr, color);
+    const bot = createBot(`CREW-${spec.toUpperCase().slice(0,3)}-0${i+1}`, bx, bz, `${spec} ops`, color);
     bots.push(bot);
   });
 
