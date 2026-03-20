@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mars Barn — Ground View</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🔴</text></svg>">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#1a0a04;color:#e0c8b0;font-family:'Courier New',monospace;overflow:hidden}
@@ -46,6 +47,12 @@ body{background:#1a0a04;color:#e0c8b0;font-family:'Courier New',monospace;overfl
 .hud-equip-item.warn{border-color:#6a5a1a;color:#facc15}
 .hud-equip-item.crit{border-color:#6a1a1a;color:#ef4444}
 .flash-overlay{position:fixed;inset:0;pointer-events:none;z-index:8;opacity:0;transition:opacity 0.3s}
+#colony-switcher{background:#1a0a04;color:#f0a060;border:1px solid #4a2a10;border-radius:4px;padding:2px 6px;font-family:'Courier New',monospace;font-size:11px;cursor:pointer;outline:none;margin-top:2px}
+#colony-switcher option{background:#1a0a04;color:#f0a060}
+#camera-presets{position:fixed;bottom:70px;right:20px;display:flex;flex-direction:column;gap:6px;z-index:10}
+.cam-btn{width:36px;height:36px;border-radius:50%;background:rgba(26,10,4,0.85);border:1px solid #4a2a10;color:#f0a060;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color 0.2s,transform 0.1s}
+.cam-btn:hover{border-color:#f0a060;transform:scale(1.15)}
+.structure-label{color:#f0c080;font-family:'Courier New',monospace;font-size:10px;background:rgba(10,4,0,0.75);padding:2px 6px;border-radius:3px;border:1px solid rgba(74,42,16,0.5);white-space:nowrap;pointer-events:none}
 </style>
 </head>
 <body>
@@ -56,10 +63,11 @@ body{background:#1a0a04;color:#e0c8b0;font-family:'Courier New',monospace;overfl
 <div class="flash-overlay" id="flash-overlay"></div>
 <div id="hud">
   <div class="hud-left">
-    <div class="hud-title">MARS BARN — GROUND VIEW</div>
+    <div class="hud-title" id="hud-title">MARS BARN — GROUND VIEW</div>
+    <select id="colony-switcher"></select>
     <div class="hud-stat">Sol <span id="hud-sol">0</span> | <span id="hud-time">06:00</span> LMST</div>
     <div class="hud-stat">Ls <span id="hud-ls">0</span>° | <span id="hud-season">—</span></div>
-    <div class="hud-stat">Jezero Crater · 18.38°N 77.58°E</div>
+    <div class="hud-stat" id="hud-location">Jezero Crater · 18.38°N 77.58°E</div>
     <div class="hud-divider"></div>
     <div class="hud-label">Colony Status</div>
     <div class="hud-stat">Crew: <span id="hud-crew">0</span> | Morale: <span id="hud-morale">0%</span></div>
@@ -91,6 +99,12 @@ body{background:#1a0a04;color:#e0c8b0;font-family:'Courier New',monospace;overfl
     <div class="hud-source">Weather: NASA Viking/Curiosity/MEDA data model</div>
   </div>
 </div>
+<div id="camera-presets">
+  <button class="cam-btn" data-cam="overview" title="Overview">🏠</button>
+  <button class="cam-btn" data-cam="solar" title="Solar Field">☀️</button>
+  <button class="cam-btn" data-cam="greenhouse" title="Greenhouse">🌿</button>
+  <button class="cam-btn" data-cam="landing" title="Landing Pad">🚀</button>
+</div>
 <div id="bot-panel">
   <div class="bot-bar" id="bot-bar"></div>
 </div>
@@ -106,6 +120,7 @@ body{background:#1a0a04;color:#e0c8b0;font-family:'Courier New',monospace;overfl
 <script type="module">
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
 // ── Mars Climate Engine ─────────────────────────────────────────────────
 // Real-time Mars weather modeled from NASA mission data (1976-2026).
@@ -280,6 +295,15 @@ let currentWeather = computeMarsWeather();
 const RAW = 'https://raw.githubusercontent.com/kody-w/mars-barn/main';
 const MARS_COLOR = 0xb44a2a;
 
+const COLONIES = [
+  { id: 'mars-barn', label: 'Mars Barn — Jezero', file: 'state/colony.json' },
+  { id: 'olympus', label: 'Olympus Base', file: 'state/olympus_base.json' },
+  { id: 'hobbit', label: 'The Hobbit Hole', file: 'state/the_hobbit_hole.json' },
+  { id: 'valles', label: 'Valles Marineris Outpost', file: 'state/valles_marineris_outpost.json' },
+  { id: 'doa', label: 'Dead on Arrival', file: 'state/dead_on_arrival.json' },
+];
+let currentColonyFile = COLONIES[0].file;
+
 // Dynamic sky color based on dust conditions
 function skyColorFromWeather(w) {
   // Clear: dark rust (0x2a1008), Dusty: hazy orange (0x6a3018), Storm: brown (0x4a2008)
@@ -297,6 +321,11 @@ let colony = null;
 let bots = [];
 let possessedBot = null;
 let clock = new THREE.Clock();
+let colonyObjects = [];
+let cameraTarget = null;
+let cameraLookTarget = null;
+let labelMap = {};
+let css2dRenderer = null;
 let terrainMesh = null; // stored for raycasting
 let dustParticles = null; // wind-driven dust
 let starField = null; // night sky stars
@@ -338,6 +367,14 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 0.8;
+
+// CSS2D Renderer for structure labels
+css2dRenderer = new CSS2DRenderer();
+css2dRenderer.setSize(window.innerWidth, window.innerHeight);
+css2dRenderer.domElement.style.position = 'absolute';
+css2dRenderer.domElement.style.top = '0px';
+css2dRenderer.domElement.style.pointerEvents = 'none';
+document.body.appendChild(css2dRenderer.domElement);
 
 // Controls
 const controls = new PointerLockControls(camera, document.body);
@@ -1162,7 +1199,31 @@ function createHabSeals(x, z, health) {
   scene.add(group);
   return group;
 }
+function clearColony() {
+  colonyObjects.forEach(obj => {
+    scene.remove(obj);
+    obj.traverse(child => {
+      if (child.geometry) child.geometry.dispose();
+      if (child.material) {
+        if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
+        else child.material.dispose();
+      }
+    });
+  });
+  colonyObjects = [];
+  bots = [];
+  activeEventMeshes = [];
+  shuttleMeshes = [];
+  dustParticles = null;
+  starField = null;
+  habWindowMat = null;
+  habGlowLight = null;
+  Object.values(labelMap).forEach(l => { scene.remove(l); });
+  labelMap = {};
+}
+
 function buildColony(state) {
+  const sceneChildrenBefore = new Set(scene.children.slice());
   const h = state.habitat || {};
   const crew = state.crew || {};
   const equip = state.equipment || {};
@@ -1424,6 +1485,81 @@ function buildColony(state) {
     (state.log && state.log.length > 0) ? (state.log[state.log.length - 1].events || []) : []
   );
   spawnEventVisuals(events);
+
+  // Track all colony objects added to scene
+  scene.children.forEach(obj => {
+    if (!sceneChildrenBefore.has(obj)) colonyObjects.push(obj);
+  });
+
+  // Create floating structure labels
+  createStructureLabels(state);
+}
+
+function createStructureLabels(state) {
+  const h = state?.habitat || {};
+  const gh = state?.greenhouse || {};
+  const resupply = state?.resupply || {};
+  const habRadius = 4;
+
+  function makeLabel(text, x, z, yOffset) {
+    const div = document.createElement('div');
+    div.className = 'structure-label';
+    div.textContent = text;
+    const label = new CSS2DObject(div);
+    const baseY = getTerrainY(x, z);
+    label.position.set(x, baseY + yOffset, z);
+    scene.add(label);
+    colonyObjects.push(label);
+    return label;
+  }
+
+  const interiorC = Math.round((h.interior_temp_k || 293) - 273.15);
+  labelMap.habitat = makeLabel(`${state?.name || 'Habitat'} | ${interiorC}°C`, 0, 0, habRadius + 1.5);
+
+  const growthPct = Math.round((gh.growth_stage || 0) * 100);
+  labelMap.greenhouse = makeLabel(`Greenhouse | Growth: ${growthPct}%`, -habRadius - 5, 0, 4);
+
+  const energyKwh = Math.round(h.stored_energy_kwh || 0);
+  labelMap.battery = makeLabel(`Battery | ${energyKwh}/${BATTERY_MAX} kWh`, habRadius + 3, -2, 2.5);
+
+  const waterL = Math.round(h.water_reserves_l || 0);
+  labelMap.water = makeLabel(`H\u2082O | ${waterL} L`, -3.5, -habRadius - 5, 2.5);
+
+  const isruRate = h.o2_production_rate || 4.0;
+  labelMap.isru = makeLabel(`ISRU O\u2082 | ${isruRate} kg/sol`, -habRadius - 1, -habRadius - 2, 2);
+
+  const panelArea = h.solar_panel_area_m2 || 400;
+  labelMap.solar = makeLabel(`Solar Array | ${panelArea} m\u00B2`, habRadius + 12, 0, 3.5);
+
+  const shuttles = resupply?.shuttles || [];
+  if (shuttles.length > 0) {
+    const s = shuttles[0];
+    const shuttleText = s.status === 'in_transit'
+      ? `${s.id || 'Shuttle'} | ETA: ${s.eta_sol} sols`
+      : `${s.id || 'Shuttle'} | ${s.status}`;
+    labelMap.shuttle = makeLabel(shuttleText, 0, 30, 5);
+  }
+}
+
+function updateLabels(state) {
+  const h = state?.habitat || {};
+  const gh = state?.greenhouse || {};
+  const resupply = state?.resupply || {};
+
+  if (labelMap.habitat) labelMap.habitat.element.textContent = `${state?.name || 'Habitat'} | ${Math.round((h.interior_temp_k || 293) - 273.15)}°C`;
+  if (labelMap.greenhouse) labelMap.greenhouse.element.textContent = `Greenhouse | Growth: ${Math.round((gh.growth_stage || 0) * 100)}%`;
+  if (labelMap.battery) labelMap.battery.element.textContent = `Battery | ${Math.round(h.stored_energy_kwh || 0)}/${BATTERY_MAX} kWh`;
+  if (labelMap.water) labelMap.water.element.textContent = `H\u2082O | ${Math.round(h.water_reserves_l || 0)} L`;
+  if (labelMap.isru) labelMap.isru.element.textContent = `ISRU O\u2082 | ${h.o2_production_rate || 4.0} kg/sol`;
+  if (labelMap.solar) labelMap.solar.element.textContent = `Solar Array | ${h.solar_panel_area_m2 || 400} m\u00B2`;
+
+  const shuttles = resupply?.shuttles || [];
+  if (labelMap.shuttle && shuttles.length > 0) {
+    const s = shuttles[0];
+    labelMap.shuttle.element.textContent = s.status === 'in_transit'
+      ? `${s.id || 'Shuttle'} | ETA: ${s.eta_sol} sols`
+      : `${s.id || 'Shuttle'} | ${s.status}`;
+  }
 }
 
 // ── Active Event Visualization ──────────────────────────────────────────
@@ -1828,6 +1964,16 @@ function animate() {
     }
   }
 
+  // Camera preset animation
+  if (cameraTarget && !controls.isLocked && !possessedBot) {
+    camera.position.lerp(cameraTarget, 0.05);
+    if (cameraLookTarget) camera.lookAt(cameraLookTarget);
+    if (camera.position.distanceTo(cameraTarget) < 0.5) {
+      cameraTarget = null;
+      cameraLookTarget = null;
+    }
+  }
+
   updateBots(dt);
 
   // Animate dust particles with wind direction
@@ -1885,6 +2031,7 @@ function animate() {
   }
 
   renderer.render(scene, camera);
+  if (css2dRenderer) css2dRenderer.render(scene, camera);
 }
 
 // Init
@@ -1892,9 +2039,55 @@ async function init() {
   createTerrain();
   camera.position.set(0, getTerrainY(0, 30) + 1.7, 30);
 
+  // Populate colony switcher
+  const switcher = document.getElementById('colony-switcher');
+  COLONIES.forEach((c, i) => {
+    const opt = document.createElement('option');
+    opt.value = c.file;
+    opt.textContent = c.label;
+    if (i === 0) opt.selected = true;
+    switcher.appendChild(opt);
+  });
+  switcher.addEventListener('change', async (e) => {
+    currentColonyFile = e.target.value;
+    const colonyInfo = COLONIES.find(c => c.file === currentColonyFile);
+    try {
+      const res = await fetch(`${RAW}/${currentColonyFile}?t=${Date.now()}`);
+      colony = await res.json();
+      clearColony();
+      buildColony(colony);
+      updateHUD(colony);
+      document.getElementById('hud-title').textContent =
+        `${(colonyInfo?.label || colony.name || 'COLONY').toUpperCase()} — GROUND VIEW`;
+      if (colony.location) {
+        document.getElementById('hud-location').textContent = colony.location;
+      }
+    } catch (err) {
+      console.warn('Failed to fetch colony:', err);
+    }
+  });
+
+  // Camera preset buttons
+  const CAMERA_PRESETS = {
+    overview:   { pos: new THREE.Vector3(0, 25, 40), look: new THREE.Vector3(0, 0, 0) },
+    solar:      { pos: new THREE.Vector3(20, 8, 8), look: new THREE.Vector3(16, 0, 0) },
+    greenhouse: { pos: new THREE.Vector3(-14, 6, 8), look: new THREE.Vector3(-10, 0, 0) },
+    landing:    { pos: new THREE.Vector3(8, 12, 42), look: new THREE.Vector3(0, 0, 30) },
+  };
+  document.querySelectorAll('.cam-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const preset = CAMERA_PRESETS[btn.dataset.cam];
+      if (!preset) return;
+      if (possessedBot) releasePossession();
+      controls.unlock();
+      cameraTarget = preset.pos.clone();
+      cameraLookTarget = preset.look.clone();
+    });
+  });
+
   // Fetch live colony state
   try {
-    const res = await fetch(`${RAW}/state/colony.json?t=${Date.now()}`);
+    const res = await fetch(`${RAW}/${currentColonyFile}?t=${Date.now()}`);
     colony = await res.json();
     buildColony(colony);
     updateHUD(colony);
@@ -1912,9 +2105,10 @@ async function init() {
   // Auto-refresh colony state every 60s
   setInterval(async () => {
     try {
-      const res = await fetch(`${RAW}/state/colony.json?t=${Date.now()}`);
+      const res = await fetch(`${RAW}/${currentColonyFile}?t=${Date.now()}`);
       colony = await res.json();
       updateHUD(colony);
+      updateLabels(colony);
     } catch {}
   }, 60000);
 
@@ -1928,6 +2122,7 @@ window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+  if (css2dRenderer) css2dRenderer.setSize(window.innerWidth, window.innerHeight);
 });
 
 init();
