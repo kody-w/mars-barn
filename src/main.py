@@ -24,6 +24,7 @@ from events import generate_events, tick_events, aggregate_effects
 from state_serial import create_state, snapshot, diff_states
 from viz import render_terrain, render_dashboard, render_events
 from validate import run_all_validations
+from habitat import Habitat
 
 
 def run_simulation(
@@ -52,6 +53,9 @@ def run_simulation(
         sol=0, terrain=terrain,
         latitude=latitude, longitude=longitude,
     )
+
+    # Wrap state in typed Habitat interface
+    hab = Habitat(state)
 
     # Simulation history
     snapshots = [snapshot(state)]
@@ -122,6 +126,15 @@ def run_simulation(
         net_energy = sol_power_kwh - sol_heating_kwh
         state["habitat"]["stored_energy_kwh"] = max(0, state["habitat"]["stored_energy_kwh"] + net_energy)
 
+        # Check colony habitability
+        if not hab.is_habitable:
+            if verbose:
+                print(f"  Sol {sol:>3d}: ☠️  COLONY LOST — {hab.status_line()}")
+            state["sol"] = sol
+            state["metrics"]["sols_survived"] = sol
+            state["metrics"]["colony_alive"] = False
+            break
+
         # Update metrics
         state["sol"] = sol
         state["metrics"]["sols_survived"] = sol
@@ -139,10 +152,7 @@ def run_simulation(
 
         # Print progress
         if verbose and sol % 10 == 0:
-            temp_c = state["habitat"]["interior_temp_k"] - 273.15
-            stored = state["habitat"]["stored_energy_kwh"]
-            print(f"  Sol {sol:>3d}: {temp_c:+.1f}°C inside, {stored:.0f} kWh stored, "
-                  f"{len(state['active_events'])} active events")
+            print(f"  {hab.status_line()}")
 
     # Final report
     if verbose:
@@ -181,6 +191,7 @@ def run_simulation(
             "stored_energy_kwh": round(state["habitat"]["stored_energy_kwh"], 1),
             "validation_passed": validation["passed"],
             "validation_total": validation["total"],
+            "colony_alive": state["metrics"].get("colony_alive", True),
         },
     }
 
