@@ -15,7 +15,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Run Python tests
-        run: python -m pytest tests/ -v
+        run: python -m pytest tests/ src/ -v --ignore=api/
 
   api:
     runs-on: ubuntu-latest
