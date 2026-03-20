@@ -60,3 +60,10 @@ GROUND_COUPLING_U_VALUE = 0.5       # W/m²·K (approximate)
 AIR_DENSITY_KG_M3 = 1.2             # kg/m³ at ~1 atm, ~20°C
 AIR_SPECIFIC_HEAT_J_KGK = 1005      # J/(kg·K), dry air at ~20°C
 THERMAL_MASS_MULTIPLIER = 20.0      # habitat structure ≈ 20× air thermal mass
+
+# ── Life Support Power Budget ───────────────────────────────────────────
+# Base electrical power for life support systems (ECLSS, lighting, comms,
+# computers) excluding active heating.  30 kWh/sol matches ISS-class
+# estimates scaled to a 4-crew Mars habitat.
+# Reference: survival.py POWER_BASE_KWH_PER_SOL (was 30.0 inline)
+LIFE_SUPPORT_BASE_KWH_PER_SOL = 30.0
