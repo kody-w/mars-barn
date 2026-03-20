@@ -62,6 +62,7 @@ def tick_colony(colony, current_ls):
     r_val = stats.get("thermal_insulation", 12.0)
 
     # Seasonal dust probability from NASA measurement data
+    current_ls = current_ls % 360  # ensure Ls wraps to valid bin range
     conditions = get_mars_conditions(current_ls)
     dust_storm = random.random() < conditions["dust_any_prob"]
     global_storm = dust_storm and random.random() < (
@@ -69,7 +70,7 @@ def tick_colony(colony, current_ls):
     )
     supply_drop = random.random() < SUPPLY_DROP_PROBABILITY
 
-    event_str = f"Weather nominal. Ls {current_ls:.0f}, dust prob {conditions[dust_any_prob]:.0%}."
+    event_str = f"Weather nominal. Ls {current_ls:.0f}, dust prob {conditions['dust_any_prob']:.0%}."
     if global_storm:
         event_str = f"GLOBAL dust storm! Ls {current_ls:.0f}. Solar generation near zero."
     elif dust_storm:
