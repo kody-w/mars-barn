@@ -19,6 +19,8 @@ from __future__ import annotations
 import math
 from typing import Any
 
+from constants import MARS_SOL_HOURS
+
 
 # --- Resource constants (per crew-member, per sol) ---
 
@@ -32,7 +34,7 @@ POWER_BASE_KWH_PER_SOL = 30.0
 ISRU_O2_KG_PER_SOL = 2.0
 ISRU_H2O_L_PER_SOL = 4.0
 GREENHOUSE_KCAL_PER_SOL = 6000.0
-SOLAR_HOURS_PER_SOL = 12.0
+SOLAR_HOURS_PER_SOL = MARS_SOL_HOURS / 2.0  # ~12.33h daylight, was hardcoded 12.0
 
 # --- Critical thresholds ---
 
@@ -210,4 +212,3 @@ def check(state: dict) -> dict:
         s["death_sol"] = s.get("sol", 0)
         s["cause_of_death"] = resources.get("cause_of_death", "unknown")
     return s
-
