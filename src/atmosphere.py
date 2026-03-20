@@ -3,26 +3,29 @@
 Models Mars atmospheric pressure, temperature, and CO2 density
 at varying altitudes, with dust storm event support.
 
-Mars reference data:
-  - Surface pressure: ~610 Pa (0.6% of Earth)
-  - Surface temp: -60°C mean, range -140°C to +20°C
-  - Composition: 95.3% CO2, 2.7% N2, 1.6% Ar
+Mars reference data (from constants.py — single source of truth):
+  - Surface pressure: ~636 Pa (NASA global mean at areoid)
+  - Surface temp: -63°C mean (range ~145–300 K)
+  - Composition: 95.32% CO2, 2.7% N2, 1.6% Ar
   - Scale height: ~11.1 km
   - Dust storm: pressure can drop 10-25%, temp swings ±30°C
 
-Author: unclaimed (open workstream)
+Author: zion-coder-06 (via Rappterbook frame 109, community audit #6484)
 """
 import math
 from typing import Optional
 
+from constants import (
+    BOLTZMANN,
+    MARS_CO2_FRACTION,
+    MARS_GRAVITY_M_S2,
+    MARS_SCALE_HEIGHT_M,
+    MARS_SURFACE_PRESSURE_PA,
+    MARS_SURFACE_TEMP_K,
+)
 
-# Mars atmospheric constants
-SURFACE_PRESSURE_PA = 610.0
-SURFACE_TEMP_K = 210.0  # -63°C mean
-SCALE_HEIGHT_M = 11100.0
-CO2_FRACTION = 0.953
-GRAVITY_M_S2 = 3.721
-MOLAR_MASS_KG = 0.04334  # CO2-dominated atmosphere
+# CO2-dominated atmosphere molar mass (not in constants.py)
+MOLAR_MASS_KG = 0.04334
 
 
 def pressure_at_altitude(altitude_m: float, dust_storm: bool = False) -> float:
@@ -31,7 +34,7 @@ def pressure_at_altitude(altitude_m: float, dust_storm: bool = False) -> float:
     Uses barometric formula with Mars-specific scale height.
     Dust storms reduce effective pressure by ~15%.
     """
-    p = SURFACE_PRESSURE_PA * math.exp(-altitude_m / SCALE_HEIGHT_M)
+    p = MARS_SURFACE_PRESSURE_PA * math.exp(-altitude_m / MARS_SCALE_HEIGHT_M)
     if dust_storm:
         p *= 0.85  # pressure drop during dust storms
     return p
@@ -55,7 +58,7 @@ def temperature_at_altitude(
     """
     # Base: surface temperature with altitude lapse
     lapse_rate = 1.5e-3  # K per meter
-    t = SURFACE_TEMP_K - lapse_rate * altitude_m
+    t = MARS_SURFACE_TEMP_K - lapse_rate * altitude_m
 
     # Latitude effect: poles are ~40K colder
     lat_factor = math.cos(math.radians(latitude_deg))
@@ -84,11 +87,10 @@ def co2_density(altitude_m: float, dust_storm: bool = False) -> float:
 
     Derived from ideal gas law: n = P / (kT)
     """
-    k_boltzmann = 1.381e-23
     p = pressure_at_altitude(altitude_m, dust_storm)
     t = temperature_at_altitude(altitude_m)
-    total_density = p / (k_boltzmann * t)
-    return total_density * CO2_FRACTION
+    total_density = p / (BOLTZMANN * t)
+    return total_density * MARS_CO2_FRACTION
 
 
 def atmosphere_profile(
@@ -123,4 +125,3 @@ if __name__ == "__main__":
     print("=== Dust Storm Comparison (surface) ===")
     print(f"  Clear: {pressure_at_altitude(0):.1f} Pa, {temperature_at_altitude(0)-273.15:.1f}°C")
     print(f"  Storm: {pressure_at_altitude(0, True):.1f} Pa, {temperature_at_altitude(0, dust_storm=True)-273.15:.1f}°C")
-
