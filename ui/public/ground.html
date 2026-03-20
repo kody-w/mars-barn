@@ -461,11 +461,13 @@ function createTerrain() {
   terrainMesh = mesh;
 }
 
-// Colony structures — driven by simulation state
-function createDome(x, z, radius, label) {
+// Colony structures — all driven by simulation state (digital twin)
+
+function createDome(x, z, radius, label, opts = {}) {
   const geo = new THREE.SphereGeometry(radius, 24, 16, 0, Math.PI * 2, 0, Math.PI / 2);
+  const tint = opts.tint || 0xaaddff;
   const mat = new THREE.MeshPhysicalMaterial({
-    color: 0xaaddff, metalness: 0.1, roughness: 0.1,
+    color: tint, metalness: 0.1, roughness: 0.1,
     transmission: 0.6, thickness: 0.5, opacity: 0.7, transparent: true,
   });
   const dome = new THREE.Mesh(geo, mat);
@@ -481,22 +483,33 @@ function createDome(x, z, radius, label) {
   ring.position.set(x, getTerrainY(x, z) + 0.1, z);
   ring.rotation.x = Math.PI / 2;
   scene.add(ring);
+
+  // Interior light (warm glow from inside)
+  if (opts.lit !== false) {
+    const glow = new THREE.PointLight(0xffddaa, 0.4, radius * 3);
+    glow.position.set(x, getTerrainY(x, z) + radius * 0.4, z);
+    scene.add(glow);
+  }
+
   return dome;
 }
 
-function createSolarPanel(x, z, angle) {
+function createSolarPanel(x, z, angle, dustFactor) {
   const group = new THREE.Group();
-  // Post
   const post = new THREE.Mesh(
     new THREE.CylinderGeometry(0.1, 0.1, 2),
     new THREE.MeshStandardMaterial({ color: 0x555555 })
   );
   post.position.y = 1;
   group.add(post);
-  // Panel
+  // Panel color shifts brownish with dust accumulation
+  const dustTint = 1 - (dustFactor || 1);
+  const panelColor = new THREE.Color(
+    0.1 + dustTint * 0.3, 0.1 + dustTint * 0.15, 0.29 - dustTint * 0.15
+  );
   const panel = new THREE.Mesh(
     new THREE.BoxGeometry(3, 0.05, 2),
-    new THREE.MeshStandardMaterial({ color: 0x1a1a4a, metalness: 0.8, roughness: 0.2 })
+    new THREE.MeshStandardMaterial({ color: panelColor, metalness: 0.8, roughness: 0.2 + dustTint * 0.5 })
   );
   panel.position.y = 2;
   panel.rotation.x = -0.3;
@@ -508,28 +521,84 @@ function createSolarPanel(x, z, angle) {
   return group;
 }
 
-function createBot(id, x, z, task) {
+function createEquipmentModule(x, z, label, health, color) {
   const group = new THREE.Group();
-  // Body
+  // Cylindrical module (like ISS-style equipment canisters)
+  const body = new THREE.Mesh(
+    new THREE.CylinderGeometry(1, 1, 2.5, 12),
+    new THREE.MeshStandardMaterial({
+      color: health > 0.7 ? color : 0x884422, roughness: 0.6,
+      emissive: health < 0.4 ? 0x440000 : 0x000000, emissiveIntensity: health < 0.4 ? 0.3 : 0,
+    })
+  );
+  body.position.y = 1.25;
+  body.castShadow = true;
+  group.add(body);
+  // Status light
+  const light = new THREE.Mesh(
+    new THREE.SphereGeometry(0.12, 8, 6),
+    new THREE.MeshStandardMaterial({
+      color: health > 0.7 ? 0x00ff44 : health > 0.4 ? 0xffaa00 : 0xff0000,
+      emissive: health > 0.7 ? 0x00ff44 : health > 0.4 ? 0xffaa00 : 0xff0000,
+      emissiveIntensity: 0.8,
+    })
+  );
+  light.position.set(0, 2.6, 0.8);
+  group.add(light);
+  group.position.set(x, getTerrainY(x, z), z);
+  scene.add(group);
+  return group;
+}
+
+function createCommsAntenna(x, z, health) {
+  const group = new THREE.Group();
+  // Mast
+  const mast = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.08, 0.08, 5),
+    new THREE.MeshStandardMaterial({ color: 0x888888 })
+  );
+  mast.position.y = 2.5;
+  group.add(mast);
+  // Dish
+  const dish = new THREE.Mesh(
+    new THREE.SphereGeometry(1.5, 12, 8, 0, Math.PI * 2, 0, Math.PI / 3),
+    new THREE.MeshStandardMaterial({
+      color: 0xcccccc, metalness: 0.9, roughness: 0.1,
+      side: THREE.DoubleSide,
+    })
+  );
+  dish.position.y = 5;
+  dish.rotation.x = Math.PI + 0.3;
+  group.add(dish);
+  // Signal light
+  const sig = new THREE.PointLight(
+    health > 0.7 ? 0x00ff88 : 0xff4400, 0.3, 8
+  );
+  sig.position.y = 5.5;
+  group.add(sig);
+  group.position.set(x, getTerrainY(x, z), z);
+  scene.add(group);
+  return group;
+}
+
+function createBot(id, x, z, task, specColor) {
+  const group = new THREE.Group();
   const body = new THREE.Mesh(
     new THREE.BoxGeometry(0.8, 1, 0.6),
-    new THREE.MeshStandardMaterial({ color: 0xddaa44, roughness: 0.6 })
+    new THREE.MeshStandardMaterial({ color: specColor || 0xddaa44, roughness: 0.6 })
   );
   body.position.y = 0.7;
   body.castShadow = true;
   group.add(body);
-  // Head/sensor
   const head = new THREE.Mesh(
     new THREE.SphereGeometry(0.25, 8, 6),
     new THREE.MeshStandardMaterial({ color: 0x44aadd, emissive: 0x224466, emissiveIntensity: 0.5 })
   );
   head.position.y = 1.4;
   group.add(head);
-  // Eye light
   const eye = new THREE.PointLight(0x44aadd, 0.5, 5);
   eye.position.y = 1.4;
   group.add(eye);
-  // Wheels
   [-0.3, 0.3].forEach(zOff => {
     [-0.35, 0.35].forEach(xOff => {
       const wheel = new THREE.Mesh(
@@ -541,42 +610,85 @@ function createBot(id, x, z, task) {
       group.add(wheel);
     });
   });
-
-  group.position.set(x, getTerrainY(x, z), z);  group.userData = { id, task, energy: 80 + Math.random() * 20, targetX: x, targetZ: z, speed: 1 + Math.random() };
+  group.position.set(x, getTerrainY(x, z), z);
+  group.userData = { id, task, energy: 80 + Math.random() * 20, targetX: x, targetZ: z, speed: 1 + Math.random() };
   scene.add(group);
   return group;
 }
 
-// Build colony from simulation state
+// Build colony as a digital twin of simulation state
 function buildColony(state) {
-  // Main dome
-  createDome(0, 0, 8, state.name || 'Mars Barn');
-  // Secondary domes
-  createDome(-15, -10, 5, 'Greenhouse');
-  createDome(12, -8, 4, 'Workshop');
-  createDome(-8, 15, 3, 'Lab');
+  const h = state.habitat || {};
+  const crew = state.crew || {};
+  const equip = state.equipment || {};
+  const gh = state.greenhouse || {};
 
-  // Solar array
-  const panelArea = state.habitat?.solar_panel_area_m2 || 400;
-  const panelCount = Math.min(20, Math.round(panelArea / 20));
+  // ── Main habitat dome — size from insulation R-value (thicker walls = bigger structure)
+  const rValue = h.insulation_r_value || 12;
+  const habRadius = Math.max(5, Math.min(12, rValue * 0.7));
+  createDome(0, 0, habRadius, state.name || 'Mars Barn');
+
+  // ── Greenhouse dome — size from planted area
+  const ghArea = gh.planted_area_m2 || 15;
+  const ghRadius = Math.max(2, Math.sqrt(ghArea / Math.PI));
+  // Green tint based on growth stage
+  const growthStage = gh.growth_stage || 0;
+  const ghTint = new THREE.Color().setHSL(0.33, 0.3 + growthStage * 0.4, 0.6 + growthStage * 0.15);
+  createDome(-15, -10, ghRadius, 'Greenhouse', { tint: ghTint });
+
+  // ── Equipment modules positioned around habitat
+  const heaterHealth = equip.heater?.health || 1;
+  const recyclerHealth = equip.water_recycler?.health || 1;
+  const sealsHealth = equip.hab_seals?.health || 1;
+  const commsHealth = equip.comms?.health || 1;
+  const panelHealth = equip.solar_panels?.health || 1;
+
+  createEquipmentModule(8, 4, 'Heater', heaterHealth, 0xcc4400);
+  createEquipmentModule(10, -3, 'Water Recycler', recyclerHealth, 0x2266aa);
+  createEquipmentModule(-6, 8, 'Hab Seals', sealsHealth, 0x666688);
+
+  // ── Comms antenna
+  createCommsAntenna(14, 10, commsHealth);
+
+  // ── Solar array — count and layout from panel area
+  const panelArea = h.solar_panel_area_m2 || 400;
+  const dustFactor = h.panel_dust_factor || 1;
+  const panelCount = Math.min(25, Math.max(4, Math.round(panelArea / 18)));
+  // Rows layout (more realistic than circular)
+  const rowLength = Math.ceil(Math.sqrt(panelCount));
   for (let i = 0; i < panelCount; i++) {
-    const angle = (i / panelCount) * Math.PI * 2;
-    const dist = 25 + Math.random() * 10;
-    createSolarPanel(Math.cos(angle) * dist, Math.sin(angle) * dist, angle);
+    const row = Math.floor(i / rowLength);
+    const col = i % rowLength;
+    const px = 25 + col * 4;
+    const pz = -15 + row * 5;
+    createSolarPanel(px, pz, 0, dustFactor);
   }
 
-  // Bots — driven by crew specializations
-  const specs = state.crew?.specializations || {};
-  const botDefs = [
-    { id: 'BOT-ENG-01', task: 'Structural maintenance', x: 5, z: 3 },
-    { id: 'BOT-BOT-01', task: 'Greenhouse tending', x: -13, z: -8 },
-    { id: 'BOT-GEO-01', task: 'Sample collection', x: 20, z: 15 },
-    { id: 'BOT-MED-01', task: 'Supply logistics', x: -3, z: -5 },
-    { id: 'BOT-SCI-01', task: 'Atmospheric monitoring', x: 8, z: -12 },
-    { id: 'BOT-PWR-01', task: 'Solar panel alignment', x: 30, z: 0 },
+  // ── Bots from crew specializations
+  const specColors = {
+    engineer: 0xddaa44, botanist: 0x44aa44, geologist: 0xaa8844,
+    medic: 0xdd4444, scientist: 0x4488dd, power: 0xaaaa44,
+  };
+  const crewSize = h.crew_size || 4;
+  const specList = Object.entries(crew.specializations || {});
+  const defaultSpecs = [
+    ['engineer', 'Structural maintenance'],
+    ['botanist', 'Greenhouse tending'],
+    ['geologist', 'Sample collection'],
+    ['medic', 'Supply logistics'],
+    ['scientist', 'Atmospheric monitoring'],
+    ['power', 'Solar panel alignment'],
   ];
-  botDefs.forEach(def => {
-    const bot = createBot(def.id, def.x, def.z, def.task);
+  const botSpecs = specList.length > 0 ? specList : defaultSpecs.slice(0, crewSize);
+  botSpecs.forEach(([spec, task], i) => {
+    // Spread bots around colony
+    const angle = (i / botSpecs.length) * Math.PI * 2;
+    const dist = 5 + Math.random() * 12;
+    const bx = Math.cos(angle) * dist;
+    const bz = Math.sin(angle) * dist;
+    const color = specColors[spec] || 0xddaa44;
+    const taskStr = typeof task === 'string' ? task : `${spec} ops`;
+    const bot = createBot(`BOT-${spec.toUpperCase().slice(0,3)}-0${i+1}`, bx, bz, taskStr, color);
     bots.push(bot);
   });
 
