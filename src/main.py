@@ -24,6 +24,7 @@ from events import generate_events, tick_events, aggregate_effects
 from state_serial import create_state, snapshot, diff_states
 from viz import render_terrain, render_dashboard, render_events
 from validate import run_all_validations
+from survival import create_resources, check as survival_check, colony_alive
 
 
 def run_simulation(
@@ -52,6 +53,10 @@ def run_simulation(
         sol=0, terrain=terrain,
         latitude=latitude, longitude=longitude,
     )
+
+    # Initialize survival resources (O2, H2O, food, power reserves)
+    crew_size = state["habitat"].get("crew_size", 4)
+    state["resources"] = create_resources(crew_size=crew_size)
 
     # Simulation history
     snapshots = [snapshot(state)]
@@ -122,6 +127,22 @@ def run_simulation(
         net_energy = sol_power_kwh - sol_heating_kwh
         state["habitat"]["stored_energy_kwh"] = max(0, state["habitat"]["stored_energy_kwh"] + net_energy)
 
+        # Survival system: resource production, consumption, failure cascade
+        avg_irr = sol_power_kwh * 1000 / max(1.0, panel_area * panel_eff * MARS_SOL_HOURS)
+        state["solar_irradiance_w_m2"] = avg_irr
+        state = survival_check(state)
+
+        if not colony_alive(state):
+            res = state.get("resources", {})
+            if verbose:
+                print(f"\n  ☠️  Colony DEAD on sol {sol}")
+                print(f"      Cause: {res.get('cause_of_death', 'unknown')}")
+                print(f"      O2: {res.get('o2_kg', 0):.1f} kg | "
+                      f"H2O: {res.get('h2o_liters', 0):.1f} L | "
+                      f"Food: {res.get('food_kcal', 0):.0f} kcal")
+            state["metrics"]["cause_of_death"] = res.get("cause_of_death", "unknown")
+            break
+
         # Update metrics
         state["sol"] = sol
         state["metrics"]["sols_survived"] = sol
@@ -167,6 +188,9 @@ def run_simulation(
                 if not r["passed"]:
                     print(f"    ❌ {r['check']}: {r['detail']}")
 
+    # Colony survival status
+    alive = colony_alive({"resources": state.get("resources", {})})
+
     return {
         "state": state,
         "snapshots": snapshots,
@@ -174,11 +198,17 @@ def run_simulation(
         "validation": validation,
         "summary": {
             "sols_survived": state["sol"],
+            "colony_alive": alive,
+            "cause_of_death": state.get("metrics", {}).get("cause_of_death"),
             "total_power_kwh": round(state["metrics"]["total_power_generated_kwh"], 1),
             "total_heating_kwh": round(state["metrics"]["total_heat_lost_kwh"], 1),
             "events_survived": state["metrics"]["events_survived"],
             "final_temp_c": round(state["habitat"]["interior_temp_k"] - 273.15, 1),
             "stored_energy_kwh": round(state["habitat"]["stored_energy_kwh"], 1),
+            "resources": {
+                k: round(v, 1) if isinstance(v, float) else v
+                for k, v in state.get("resources", {}).items()
+            },
             "validation_passed": validation["passed"],
             "validation_total": validation["total"],
         },
@@ -201,12 +231,18 @@ if __name__ == "__main__":
     )
 
     s = result["summary"]
+    status = "SURVIVED" if s.get("colony_alive", True) else f"DEAD — {s.get('cause_of_death', '?')}"
     print(f"\n{'='*50}")
-    print(f"  SIMULATION COMPLETE — {s['sols_survived']} sols survived")
+    print(f"  SIMULATION COMPLETE — {s['sols_survived']} sols | {status}")
     print(f"  Power generated:    {s['total_power_kwh']:>6.0f} kWh")
     print(f"  Heating used:       {s['total_heating_kwh']:>6.0f} kWh")
     print(f"  Final temp:         {s['final_temp_c']:>+6.1f} °C")
     print(f"  Energy reserves:    {s['stored_energy_kwh']:>6.0f} kWh")
+    res = s.get("resources", {})
+    if res:
+        print(f"  O2 remaining:       {res.get('o2_kg', 0):>6.1f} kg")
+        print(f"  H2O remaining:      {res.get('h2o_liters', 0):>6.1f} L")
+        print(f"  Food remaining:     {res.get('food_kcal', 0):>6.0f} kcal")
     print(f"  Events survived:    {s['events_survived']:>6d}")
     print(f"  Validation:         {s['validation_passed']}/{s['validation_total']} ✓")
     print(f"{'='*50}")
