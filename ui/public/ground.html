@@ -1304,16 +1304,20 @@ function buildColony(state) {
   const growthStage = gh.growth_stage || 0;
 
   const ghGroup = new THREE.Group();
-  // Quonset-hut style (half-cylinder) — common Mars greenhouse concept
-  const ghGeo = new THREE.CylinderGeometry(ghHeight, ghHeight, ghLength, 16, 1, false, 0, Math.PI);
+  // Quonset-hut style (half-cylinder) — lay flat on ground
+  // Use a simple semicircular extrusion that's guaranteed to sit on terrain
+  const ghShape = new THREE.Shape();
+  ghShape.absarc(0, 0, ghHeight, 0, Math.PI, false);
+  ghShape.lineTo(-ghHeight, 0);
+  const ghExtrudeSettings = { steps: 1, depth: ghLength, bevelEnabled: false };
+  const ghGeo = new THREE.ExtrudeGeometry(ghShape, ghExtrudeSettings);
   const ghMat = new THREE.MeshPhysicalMaterial({
     color: 0xaaddcc, transmission: 0.5, thickness: 0.3,
-    opacity: 0.55, transparent: true, roughness: 0.15,
+    opacity: 0.55, transparent: true, roughness: 0.15, side: THREE.DoubleSide,
   });
   const ghMesh = new THREE.Mesh(ghGeo, ghMat);
-  ghMesh.rotation.z = Math.PI / 2;
-  ghMesh.rotation.y = Math.PI / 2;
-  ghMesh.position.y = ghHeight * 0.02;
+  // Center the extrusion along its length
+  ghMesh.position.z = -ghLength / 2;
   ghGroup.add(ghMesh);
   // Foundation pad
   const ghPadGeo = new THREE.BoxGeometry(ghLength + 0.5, 0.15, ghWidth + 0.5);
@@ -1389,17 +1393,20 @@ function buildColony(state) {
     ghGroup.add(mist);
   }
 
-  ghGroup.position.set(-habRadius - ghLength / 2 - 2, getTerrainY(-habRadius - ghLength / 2 - 2, 0), 0);
+  const ghX = -habRadius - ghLength / 2 - 2;
+  const ghZ = 0;
+  ghGroup.position.set(ghX, getTerrainY(ghX, ghZ), ghZ);
   scene.add(ghGroup);
 
   // ── Pressurized tunnel connecting habitat to greenhouse
   const tunnelLen = 2;
+  const tunnelX = -habRadius - tunnelLen / 2;
   const tunnel = new THREE.Mesh(
     new THREE.CylinderGeometry(0.8, 0.8, tunnelLen, 8),
     new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.5, metalness: 0.3 })
   );
   tunnel.rotation.z = Math.PI / 2;
-  tunnel.position.set(-habRadius - tunnelLen / 2, getTerrainY(-habRadius - 1, 0) + 0.8, 0);
+  tunnel.position.set(tunnelX, getTerrainY(tunnelX, 0) + 0.8, 0);
   scene.add(tunnel);
 
   // ── 5 Equipment systems — unique shapes per type (state.equipment)
