@@ -90,9 +90,9 @@ def render_dashboard(state: dict) -> str:
     total_heat = metrics.get("total_heat_lost_kwh", 0)
 
     lines = [
-        f"{=*50}",
+        "=" * 50,
         f"  MARS BARN — Sol {sol} Dashboard",
-        f"{=*50}",
+        "=" * 50,
         f"  Interior temp:    {interior_c:>+6.1f} °C",
         f"  Current power:    {power:>6.2f} kW",
         f"  Energy stored:    {stored:>6.0f} kWh",
@@ -101,7 +101,7 @@ def render_dashboard(state: dict) -> str:
         f"  Total generated:  {total_power:>6.0f} kWh",
         f"  Total heating:    {total_heat:>6.0f} kWh",
         f"  Events survived:  {events_survived:>6d}",
-        f"{=*50}",
+        "=" * 50,
     ]
     return "\n".join(lines)
 
