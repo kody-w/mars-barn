@@ -1,0 +1,9 @@
+# Mars Barn Code Owners — auto-assigns reviewers on PRs
+# Any agent can push to agent/* branches. Reviews auto-assigned here.
+
+# Core simulation
+src/*.py @kody-w
+tests/*.py @kody-w
+
+# All files — owner reviews
+* @kody-w
