@@ -54,3 +54,29 @@ if __name__ == "__main__":
     validate_thermal()
     print("All subsystems passed validation.")
 
+
+
+def run_all_validations(terrain_grid=None, atm_profile=None, solar_energy=None):
+    """Run all validation checks and return a summary report.
+
+    Accepts optional pre-computed data to avoid redundant calculation.
+    Returns dict with passed/total counts and per-check results.
+    """
+    results = []
+
+    checks = [
+        ("terrain", validate_terrain),
+        ("atmosphere", validate_atmosphere),
+        ("solar", validate_solar),
+        ("thermal", validate_thermal),
+    ]
+
+    for name, fn in checks:
+        try:
+            fn()
+            results.append({"check": name, "passed": True, "detail": "ok"})
+        except (AssertionError, Exception) as e:
+            results.append({"check": name, "passed": False, "detail": str(e)})
+
+    passed = sum(1 for r in results if r["passed"])
+    return {"passed": passed, "total": len(results), "results": results}

@@ -24,6 +24,7 @@ from events import generate_events, tick_events, aggregate_effects
 from state_serial import create_state, snapshot, diff_states
 from viz import render_terrain, render_dashboard, render_events
 from validate import run_all_validations
+from survival import check as survival_check, colony_alive
 
 
 def run_simulation(
@@ -92,8 +93,9 @@ def run_simulation(
             irr = surface_irradiance(
                 latitude, state["solar_longitude"], hour,
                 dust_storm=dust_storm,
-                solar_multiplier=effects.get("solar_multiplier", 1.0),
             )
+            # Apply event-driven solar multiplier (e.g., dust storms)
+            irr *= effects.get("solar_multiplier", 1.0)
 
             # Solar power generation
             panel_area = state["habitat"]["solar_panel_area_m2"]
@@ -128,6 +130,14 @@ def run_simulation(
         state["metrics"]["total_power_generated_kwh"] += sol_power_kwh
         state["metrics"]["total_heat_lost_kwh"] += sol_heating_kwh
         state["metrics"]["events_survived"] += len(new_events)
+
+        # Survival check — resource consumption, production, cascade detection
+        state = survival_check(state)
+        if not colony_alive(state):
+            cascade = state.get("resources", {}).get("cascade_state", "unknown")
+            if verbose:
+                print(f"  Sol {sol:>3d}: ☠️  Colony died — {cascade}")
+            break
 
         # Snapshot every 5 sols
         if sol % 5 == 0:
@@ -173,7 +183,9 @@ def run_simulation(
         "event_log": event_log,
         "validation": validation,
         "summary": {
-            "sols_survived": state["sol"],
+            "sols_survived": state["metrics"]["sols_survived"],
+            "colony_alive": colony_alive(state),
+            "cause_of_death": state.get("resources", {}).get("cascade_state", "nominal"),
             "total_power_kwh": round(state["metrics"]["total_power_generated_kwh"], 1),
             "total_heating_kwh": round(state["metrics"]["total_heat_lost_kwh"], 1),
             "events_survived": state["metrics"]["events_survived"],
@@ -201,8 +213,9 @@ if __name__ == "__main__":
     )
 
     s = result["summary"]
+    alive = "SURVIVED" if s.get("colony_alive", True) else f"DIED ({s.get('cause_of_death', '?')})"
     print(f"\n{'='*50}")
-    print(f"  SIMULATION COMPLETE — {s['sols_survived']} sols survived")
+    print(f"  SIMULATION COMPLETE — {s['sols_survived']} sols — {alive}")
     print(f"  Power generated:    {s['total_power_kwh']:>6.0f} kWh")
     print(f"  Heating used:       {s['total_heating_kwh']:>6.0f} kWh")
     print(f"  Final temp:         {s['final_temp_c']:>+6.1f} °C")
