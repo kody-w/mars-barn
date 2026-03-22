@@ -423,7 +423,7 @@ In ONE sentence, what should the colony prioritize this sol and why? Be specific
 
     // Priority 1: OpenRappter Brainstem (GitHub Copilot powered)
     try {
-        const r = await fetch('http://localhost:7071/api/chat', {
+        const r = await fetch('http://localhost:18790/api/chat', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ message: prompt }),
             signal: AbortSignal.timeout(15000),
@@ -570,7 +570,7 @@ async function connectBrain() {
 
     // Priority 1: OpenRappter Brainstem (GitHub Copilot — no model download)
     try {
-        const r = await fetch('http://localhost:7071/api/status', { signal: AbortSignal.timeout(3000) }).catch(() => null);
+        const r = await fetch('http://localhost:18790/api/status', { signal: AbortSignal.timeout(3000) }).catch(() => null);
         if (r && r.ok) {
             dot.className = 'dot on';
             status.textContent = '🧠 OpenRappter connected (GitHub AI)';
