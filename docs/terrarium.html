@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mars Barn — Living Terrarium</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, sans-serif; background: #0a0a0a; color: #e0e0e0; min-height: 100vh; }
+.header { text-align: center; padding: 20px; border-bottom: 1px solid #222; }
+.header h1 { font-size: 1.5em; color: #ff6347; }
+.header span { color: #666; font-size: 0.9em; }
+
+.world { display: grid; grid-template-columns: 1fr 300px; gap: 0; height: calc(100vh - 80px); }
+
+/* Body Map */
+.body-map { padding: 20px; position: relative; overflow: hidden; }
+.organism { position: relative; width: 100%; height: 100%; }
+
+/* Organs */
+.organ { position: absolute; border-radius: 12px; padding: 12px; cursor: pointer; transition: all 0.3s; border: 2px solid transparent; }
+.organ:hover { border-color: #fff; transform: scale(1.05); z-index: 10; }
+.organ .name { font-weight: bold; font-size: 0.85em; margin-bottom: 4px; }
+.organ .value { font-size: 1.4em; font-weight: bold; }
+.organ .unit { font-size: 0.7em; color: rgba(255,255,255,0.6); }
+.organ .bar { height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin-top: 6px; }
+.organ .bar-fill { height: 100%; border-radius: 2px; transition: width 0.5s; }
+
+/* Organ positions — the body */
+#solar { left: 5%; top: 5%; width: 25%; background: linear-gradient(135deg, #ff8c00, #ff6600); }
+#thermal { left: 35%; top: 5%; width: 25%; background: linear-gradient(135deg, #e74c3c, #c0392b); }
+#power { right: 5%; top: 5%; width: 25%; background: linear-gradient(135deg, #f1c40f, #f39c12); }
+#water { left: 5%; top: 35%; width: 28%; background: linear-gradient(135deg, #3498db, #2980b9); }
+#food { right: 5%; top: 35%; width: 28%; background: linear-gradient(135deg, #2ecc71, #27ae60); }
+#population { left: 33%; top: 35%; width: 34%; background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+#events { left: 5%; bottom: 15%; width: 45%; background: #1a1a2e; border: 1px solid #333; min-height: 120px; }
+#survival { right: 5%; bottom: 15%; width: 45%; background: linear-gradient(135deg, #1abc9c, #16a085); }
+
+/* Connections between organs */
+.connection { position: absolute; pointer-events: none; }
+.connection line { stroke: rgba(255,255,255,0.1); stroke-width: 1; }
+.connection line.active { stroke: #ff6b9d; stroke-width: 2; animation: pulse-line 1s infinite; }
+@keyframes pulse-line { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* Sidebar */
+.sidebar { border-left: 1px solid #222; padding: 16px; overflow-y: auto; background: #0d0d0d; }
+.controls { margin-bottom: 16px; }
+.controls h3 { color: #ff6347; margin-bottom: 8px; font-size: 0.9em; }
+.controls button { padding: 8px 16px; border: 1px solid #333; background: #111; color: #e0e0e0; border-radius: 6px; cursor: pointer; margin: 2px; font-size: 0.85em; }
+.controls button:hover { background: #222; border-color: #7b68ee; }
+.controls button.primary { background: #7b68ee; border-color: #7b68ee; color: #fff; }
+.controls button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.sol-display { text-align: center; font-size: 2em; font-weight: bold; color: #ff6347; margin: 12px 0; }
+.sol-display span { font-size: 0.4em; color: #666; display: block; }
+
+.history { font-size: 0.8em; }
+.history .entry { padding: 6px 0; border-bottom: 1px solid #1a1a1a; }
+.history .entry.event { color: #ff6b9d; }
+.history .entry.death { color: #e74c3c; }
+.history .entry.good { color: #2ecc71; }
+
+.status-bar { display: flex; justify-content: space-between; padding: 8px; background: #111; border-radius: 6px; margin: 8px 0; font-size: 0.8em; }
+.status-bar .alive { color: #2ecc71; }
+.status-bar .dead { color: #e74c3c; }
+
+.agent-list { margin-top: 12px; }
+.agent-list h3 { color: #7b68ee; margin-bottom: 8px; font-size: 0.9em; }
+.agent-item { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.8em; border-bottom: 1px solid #111; }
+.agent-item .fired { color: #2ecc71; }
+.agent-item .idle { color: #444; }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1>🔴 Mars Barn — Living Terrarium</h1>
+    <span>The organism's body in real time. Each sol is one heartbeat.</span>
+</div>
+
+<div class="world">
+    <div class="body-map">
+        <div class="organism">
+            <div class="organ" id="solar">
+                <div class="name">☀️ Solar</div>
+                <div class="value" id="solar-val">0</div>
+                <div class="unit">kWh generated</div>
+                <div class="bar"><div class="bar-fill" id="solar-bar" style="width:0%; background:#ff8c00;"></div></div>
+            </div>
+            <div class="organ" id="thermal">
+                <div class="name">🌡️ Thermal</div>
+                <div class="value" id="thermal-val">293</div>
+                <div class="unit">K habitat temp</div>
+                <div class="bar"><div class="bar-fill" id="thermal-bar" style="width:70%; background:#e74c3c;"></div></div>
+            </div>
+            <div class="organ" id="power">
+                <div class="name">⚡ Power</div>
+                <div class="value" id="power-val">0</div>
+                <div class="unit">kWh stored</div>
+                <div class="bar"><div class="bar-fill" id="power-bar" style="width:0%; background:#f1c40f;"></div></div>
+            </div>
+            <div class="organ" id="water">
+                <div class="name">💧 Water</div>
+                <div class="value" id="water-val">0</div>
+                <div class="unit">liters</div>
+                <div class="bar"><div class="bar-fill" id="water-bar" style="width:0%; background:#3498db;"></div></div>
+            </div>
+            <div class="organ" id="population">
+                <div class="name">👥 Population</div>
+                <div class="value" id="pop-val">0</div>
+                <div class="unit">colonists</div>
+                <div class="bar"><div class="bar-fill" id="pop-bar" style="width:0%; background:#9b59b6;"></div></div>
+            </div>
+            <div class="organ" id="food">
+                <div class="name">🌱 Food</div>
+                <div class="value" id="food-val">0</div>
+                <div class="unit">kg</div>
+                <div class="bar"><div class="bar-fill" id="food-bar" style="width:0%; background:#2ecc71;"></div></div>
+            </div>
+            <div class="organ" id="events">
+                <div class="name">⚠️ Events</div>
+                <div id="events-list" style="font-size:0.8em; color:#aaa; max-height:100px; overflow-y:auto;"></div>
+            </div>
+            <div class="organ" id="survival">
+                <div class="name">💚 Survival</div>
+                <div class="value" id="survival-val">--</div>
+                <div class="unit" id="survival-status">Waiting for first sol</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="controls">
+            <h3>BRAINSTEM CONTROLS</h3>
+            <div class="sol-display" id="sol-display">Sol 0<span>Awaiting initialization</span></div>
+            <button class="primary" onclick="initColony()">🔴 Initialize Colony</button>
+            <button onclick="tickSol()">▶ Tick 1 Sol</button>
+            <button onclick="tick10()">▶▶ Tick 10</button>
+            <button onclick="tick100()">▶▶▶ Tick 100</button>
+            <button onclick="toggleAuto()" id="autoBtn">⏯ Auto-play</button>
+            <button onclick="resetColony()">🔄 Reset</button>
+        </div>
+
+        <div class="status-bar">
+            <span>Status:</span>
+            <span id="alive-status" class="alive">Not initialized</span>
+        </div>
+        <div class="status-bar">
+            <span>Morale:</span>
+            <span id="morale-val">--</span>
+        </div>
+
+        <div class="agent-list">
+            <h3>🧠 AGENTS (neurons)</h3>
+            <div id="agent-roster"></div>
+        </div>
+
+        <div class="history" style="margin-top:16px;">
+            <h3 style="color:#ff6347; font-size:0.9em; margin-bottom:8px;">SOL LOG</h3>
+            <div id="sol-log"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// The Brainstem — client-side simulation
+const AGENTS = [
+    { name: 'solar', phase: 'physics', priority: 1, triggers: ['power','power_critical','physics'] },
+    { name: 'thermal', phase: 'physics', priority: 2, triggers: ['thermal','thermal_critical','physics'] },
+    { name: 'water', phase: 'life_support', priority: 2, triggers: ['water','water_critical'] },
+    { name: 'food', phase: 'life_support', priority: 3, triggers: ['food','food_critical'] },
+    { name: 'survival', phase: 'life_support', priority: 10, triggers: ['survival','extinction'] },
+    { name: 'events', phase: 'events', priority: 1, triggers: ['events'] },
+];
+
+let colony = null;
+let autoInterval = null;
+
+function initColony() {
+    colony = {
+        name: 'Olympus Base', sol: 0, latitude: -4.5, longitude: 137.4,
+        population: 6, habitat_temp_k: 293, power_kwh: 500, power_demand_kwh: 200,
+        solar_panels_m2: 1000, water_liters: 2000, water_recycling_rate: 0.92,
+        food_kg: 500, food_growth_rate_kg_per_sol: 3.0, oxygen_hours: 720,
+        solar_longitude: 0, dust_storm_active: false, morale: 0.8, alive: true,
+        history: []
+    };
+    updateUI();
+    addLog('Colony founded: Olympus Base, 6 colonists', 'good');
+}
+
+function evaluateNeeds() {
+    const needs = ['physics', 'events'];
+    const c = colony;
+    needs.push(c.habitat_temp_k < 270 || c.habitat_temp_k > 310 ? 'thermal_critical' : 'thermal');
+    needs.push(c.power_kwh / Math.max(c.power_demand_kwh, 1) < 0.5 ? 'power_critical' : 'power');
+    needs.push(c.water_liters / Math.max(c.population, 1) < 5 ? 'water_critical' : 'water');
+    needs.push(c.food_kg / Math.max(c.population, 1) < 2 ? 'food_critical' : 'food');
+    if (c.population > 0) needs.push('survival');
+    if (c.population === 0 && c.sol > 0) needs.push('extinction');
+    return needs;
+}
+
+function matchAgents(needs) {
+    return AGENTS.filter(a => a.triggers.some(t => needs.includes(t)))
+        .sort((a, b) => {
+            const po = { physics: 0, life_support: 1, events: 2, decisions: 3 };
+            return (po[a.phase] || 9) - (po[b.phase] || 9) || a.priority - b.priority;
+        });
+}
+
+// Agent implementations (mirrors the Python)
+function runSolar(c) {
+    const ls = c.solar_longitude, lat = c.latitude;
+    const ecc = 1 + 0.09 * Math.cos((ls - 250) * Math.PI / 180);
+    const decl = 25.19 * Math.sin(ls * Math.PI / 180);
+    const cosZ = Math.max(0.1, Math.cos(Math.abs(lat - decl) * Math.PI / 180));
+    const dust = c.dust_storm_active ? 0.2 : 1.0;
+    const irr = 590 * ecc * cosZ * dust;
+    const energy = irr * c.solar_panels_m2 * 0.20 * 12 / 1000;
+    c.power_kwh = Math.round((c.power_kwh + energy) * 10) / 10;
+    c.solar_longitude = (ls + 0.5) % 360;
+    return energy < c.power_demand_kwh * 0.5 ? [`LOW POWER: ${energy.toFixed(0)} kWh`] : [];
+}
+
+function runThermal(c) {
+    const ls = c.solar_longitude, seasonal = 20 * Math.sin(ls * Math.PI / 180);
+    const marsK = 210 + seasonal, loss = (c.habitat_temp_k - marsK) * 0.02;
+    const heatPower = Math.min(c.power_kwh * 0.3, 100);
+    c.habitat_temp_k = Math.round((c.habitat_temp_k - loss + heatPower * 0.5) * 10) / 10;
+    c.power_kwh = Math.round((c.power_kwh - heatPower) * 10) / 10;
+    const ev = [];
+    if (c.habitat_temp_k < 270) ev.push(`COLD: Habitat ${c.habitat_temp_k.toFixed(0)}K`);
+    if (c.habitat_temp_k > 310) ev.push(`HOT: Habitat ${c.habitat_temp_k.toFixed(0)}K`);
+    return ev;
+}
+
+function runWater(c) {
+    const consumed = c.population * 3, recovered = consumed * c.water_recycling_rate;
+    c.water_liters = Math.round((c.water_liters + recovered) * 10) / 10;
+    const ev = [];
+    if (c.water_liters < c.population * 10 && c.power_kwh > 50) {
+        c.water_liters += 20; c.power_kwh -= 50;
+        ev.push('ICE MINING: +20L water');
+    }
+    return ev;
+}
+
+function runFood(c) {
+    let tf = c.habitat_temp_k < 280 ? 0.3 : c.habitat_temp_k > 305 ? 0.5 : 1;
+    let wf = c.water_liters < 100 ? 0.2 : 1;
+    let pf = c.power_kwh < 30 ? 0.5 : 1;
+    const grown = c.food_growth_rate_kg_per_sol * tf * wf * pf;
+    c.food_kg = Math.round((c.food_kg + grown) * 10) / 10;
+    c.water_liters = Math.round((c.water_liters - grown * 2) * 10) / 10;
+    c.power_kwh = Math.round((c.power_kwh - 10) * 10) / 10;
+    return tf < 1 || wf < 1 || pf < 1 ? ['Crop yield reduced'] : [];
+}
+
+function runSurvival(c) {
+    const ev = []; let deaths = 0, pop = c.population;
+    if (pop <= 0) { c.alive = false; return ['Colony extinct']; }
+    if (c.habitat_temp_k < 250) { deaths = pop; ev.push(`FREEZE: All ${pop} dead`); }
+    else if (c.habitat_temp_k < 270) { deaths = Math.max(1, Math.floor(pop / 4)); ev.push(`COLD: ${deaths} dead`); }
+    const wn = pop * 3; if (c.water_liters < wn) { const d = Math.max(1, pop - Math.floor(c.water_liters / 3)); deaths += d; ev.push(`DEHYDRATION: ${d} dead`); }
+    c.water_liters = Math.max(0, Math.round((c.water_liters - wn) * 10) / 10);
+    const fn = pop * 2; if (c.food_kg < fn) { const d = Math.max(1, pop - Math.floor(c.food_kg / 2)); deaths += d; ev.push(`STARVATION: ${d} dead`); }
+    c.food_kg = Math.max(0, Math.round((c.food_kg - fn) * 10) / 10);
+    deaths = Math.min(deaths, pop); c.population -= deaths; c.alive = c.population > 0;
+    if (deaths > 0) c.morale = Math.max(0, c.morale - 0.1 * deaths);
+    else { c.morale = Math.min(1, c.morale + 0.01); ev.push(`All ${c.population} survived`); }
+    return ev;
+}
+
+function runEvents(c) {
+    const ev = [];
+    if (!c.dust_storm_active && Math.random() < 0.03) { c.dust_storm_active = true; ev.push('🌪 DUST STORM begins!'); }
+    if (c.dust_storm_active && Math.random() < 0.15) { c.dust_storm_active = false; ev.push('☀️ Dust storm cleared'); }
+    if (Math.random() < 0.02) { c.solar_panels_m2 *= 0.95; ev.push('⚠ Solar panel damage'); }
+    if (Math.random() < 0.02) { c.water_liters *= 0.9; ev.push('⚠ Water leak'); }
+    if (Math.random() < 0.01 && c.population > 4 && c.morale > 0.6) { c.population++; ev.push('👶 Birth!'); }
+    return ev;
+}
+
+const AGENT_FNS = { solar: runSolar, thermal: runThermal, water: runWater, food: runFood, survival: runSurvival, events: runEvents };
+
+function tickSol() {
+    if (!colony) return initColony();
+    if (!colony.alive) return;
+    colony.sol++;
+    const needs = evaluateNeeds();
+    const active = matchAgents(needs);
+    let allEvents = [];
+    const fired = [];
+    for (const agent of active) {
+        const fn = AGENT_FNS[agent.name];
+        if (fn) {
+            const events = fn(colony);
+            allEvents = allEvents.concat(events);
+            fired.push(agent.name);
+        }
+    }
+    colony.history.push({ sol: colony.sol, needs, fired, events: allEvents, pop: colony.population, power: colony.power_kwh, water: colony.water_liters, food: colony.food_kg, temp: colony.habitat_temp_k });
+    if (colony.history.length > 365) colony.history = colony.history.slice(-365);
+    updateUI(fired, allEvents, needs);
+}
+
+function tick10() { for (let i = 0; i < 10; i++) { tickSol(); if (!colony?.alive) break; } }
+function tick100() { for (let i = 0; i < 100; i++) { tickSol(); if (!colony?.alive) break; } }
+function toggleAuto() {
+    if (autoInterval) { clearInterval(autoInterval); autoInterval = null; document.getElementById('autoBtn').textContent = '⏯ Auto-play'; }
+    else { autoInterval = setInterval(tickSol, 200); document.getElementById('autoBtn').textContent = '⏸ Pause'; }
+}
+function resetColony() { colony = null; if (autoInterval) { clearInterval(autoInterval); autoInterval = null; } document.getElementById('sol-log').innerHTML = ''; updateUI(); }
+
+function updateUI(fired = [], events = [], needs = []) {
+    if (!colony) { document.getElementById('sol-display').innerHTML = 'Sol 0<span>Click Initialize</span>'; return; }
+    const c = colony;
+    document.getElementById('sol-display').innerHTML = `Sol ${c.sol}<span>${c.alive ? (c.dust_storm_active ? '🌪 Dust Storm' : '☀️ Clear skies') : '💀 EXTINCT'}</span>`;
+    document.getElementById('solar-val').textContent = Math.round(c.power_kwh);
+    document.getElementById('thermal-val').textContent = c.habitat_temp_k.toFixed(0);
+    document.getElementById('power-val').textContent = Math.round(c.power_kwh);
+    document.getElementById('water-val').textContent = Math.round(c.water_liters);
+    document.getElementById('food-val').textContent = Math.round(c.food_kg);
+    document.getElementById('pop-val').textContent = c.population;
+    document.getElementById('morale-val').textContent = (c.morale * 100).toFixed(0) + '%';
+    document.getElementById('alive-status').className = c.alive ? 'alive' : 'dead';
+    document.getElementById('alive-status').textContent = c.alive ? `Alive (${c.population} colonists)` : 'EXTINCT';
+    // Bars
+    document.getElementById('power-bar').style.width = Math.min(100, c.power_kwh / 10) + '%';
+    document.getElementById('thermal-bar').style.width = Math.min(100, Math.max(0, (c.habitat_temp_k - 200) / 1.2)) + '%';
+    document.getElementById('water-bar').style.width = Math.min(100, c.water_liters / 30) + '%';
+    document.getElementById('food-bar').style.width = Math.min(100, c.food_kg / 10) + '%';
+    document.getElementById('pop-bar').style.width = Math.min(100, c.population * 10) + '%';
+    // Survival
+    document.getElementById('survival-val').textContent = c.alive ? '✓' : '✗';
+    document.getElementById('survival-status').textContent = c.alive ? `Morale: ${(c.morale*100).toFixed(0)}%` : 'Colony dead';
+    // Events
+    document.getElementById('events-list').innerHTML = events.slice(-5).map(e => `<div>${e}</div>`).join('');
+    // Agents
+    document.getElementById('agent-roster').innerHTML = AGENTS.map(a => `<div class="agent-item"><span>${a.name}</span><span class="${fired.includes(a.name) ? 'fired' : 'idle'}">${fired.includes(a.name) ? '● fired' : '○'}</span></div>`).join('');
+    // Log
+    for (const e of events) {
+        const cls = e.includes('dead') || e.includes('EXTINCT') || e.includes('CATASTROPH') ? 'death' : e.includes('survived') || e.includes('Birth') ? 'good' : 'event';
+        addLog(`Sol ${c.sol}: ${e}`, cls);
+    }
+}
+
+function addLog(text, cls = '') {
+    const log = document.getElementById('sol-log');
+    log.innerHTML = `<div class="entry ${cls}">${text}</div>` + log.innerHTML;
+    if (log.children.length > 100) log.removeChild(log.lastChild);
+}
+</script>
+</body>
+</html>
