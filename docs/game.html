@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔴 Parameters for Survival — Mars Colony Simulation</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, sans-serif; background: #0a0a0a; color: #e0e0e0; min-height: 100vh; overflow: hidden; }
+
+/* Layout */
+.game { display: grid; grid-template-columns: 280px 1fr 300px; height: 100vh; }
+
+/* Left: Parameters */
+.params { background: #0d0d0d; border-right: 1px solid #222; padding: 16px; overflow-y: auto; }
+.params h1 { font-size: 1.1em; color: #ff6347; margin-bottom: 4px; }
+.params .subtitle { font-size: 0.75em; color: #666; margin-bottom: 16px; }
+.param-group { margin: 12px 0; }
+.param-group h3 { font-size: 0.8em; color: #7b68ee; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.param { margin: 8px 0; }
+.param label { display: flex; justify-content: space-between; font-size: 0.8em; color: #aaa; margin-bottom: 4px; }
+.param label span { color: #fff; font-weight: 600; }
+.param input[type=range] { width: 100%; -webkit-appearance: none; height: 4px; background: #333; border-radius: 2px; outline: none; }
+.param input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: #7b68ee; border-radius: 50%; cursor: pointer; }
+.launch-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #e74c3c, #c0392b); color: #fff; border: none; border-radius: 8px; font-size: 1em; font-weight: 700; cursor: pointer; margin-top: 16px; letter-spacing: 1px; }
+.launch-btn:hover { opacity: 0.9; }
+.launch-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.brain-config { margin-top: 16px; padding: 12px; background: #111; border: 1px solid #222; border-radius: 8px; }
+.brain-config h3 { font-size: 0.8em; color: #ff6b9d; margin-bottom: 8px; }
+.brain-config .status { font-size: 0.75em; }
+.brain-config .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+.brain-config .dot.on { background: #2ecc71; }
+.brain-config .dot.off { background: #e74c3c; }
+
+/* Center: 3D Globe */
+.globe-container { position: relative; background: #000; }
+#globe { width: 100%; height: 100%; }
+.hud { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); text-align: center; pointer-events: none; }
+.hud .sol { font-size: 3em; font-weight: 800; color: #ff6347; text-shadow: 0 0 20px rgba(255,99,71,0.5); }
+.hud .status { font-size: 1em; color: #888; }
+.hud .alive { color: #2ecc71; }
+.hud .dead { color: #e74c3c; }
+.speed-controls { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+.speed-controls button { padding: 8px 16px; background: rgba(20,20,20,0.8); border: 1px solid #333; color: #aaa; border-radius: 6px; cursor: pointer; font-size: 0.85em; }
+.speed-controls button:hover { border-color: #7b68ee; color: #fff; }
+.speed-controls button.active { background: #7b68ee44; border-color: #7b68ee; color: #7b68ee; }
+
+/* Right: Telemetry + AI Brain */
+.telemetry { background: #0d0d0d; border-left: 1px solid #222; padding: 12px; overflow-y: auto; }
+.telemetry h2 { font-size: 0.85em; color: #ff6347; text-transform: uppercase; letter-spacing: 1px; margin: 12px 0 8px; }
+.meter { margin: 6px 0; }
+.meter .head { display: flex; justify-content: space-between; font-size: 0.8em; }
+.meter .head .val { font-weight: 700; }
+.meter .bar { height: 6px; background: #222; border-radius: 3px; margin-top: 3px; overflow: hidden; }
+.meter .bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
+.meter.critical .head .val { color: #e74c3c; }
+.meter.critical .bar-fill { background: #e74c3c !important; }
+
+.brain-panel { margin-top: 12px; }
+.brain-panel .thought { background: #111; border: 1px solid #1a1a2e; border-radius: 8px; padding: 10px; margin: 6px 0; font-size: 0.8em; }
+.brain-panel .thought .label { color: #7b68ee; font-weight: 600; font-size: 0.75em; text-transform: uppercase; margin-bottom: 4px; }
+.brain-panel .thought .text { color: #ccc; line-height: 1.4; }
+.brain-panel .neurons { display: flex; flex-wrap: wrap; gap: 4px; margin: 8px 0; }
+.brain-panel .neuron { padding: 3px 8px; border-radius: 12px; font-size: 0.7em; background: #1a1a1a; color: #666; border: 1px solid #222; }
+.brain-panel .neuron.firing { background: #7b68ee22; color: #7b68ee; border-color: #7b68ee; }
+
+.event-log { max-height: 200px; overflow-y: auto; font-size: 0.75em; }
+.event-log .ev { padding: 3px 0; border-bottom: 1px solid #111; }
+.event-log .ev.bad { color: #e74c3c; }
+.event-log .ev.good { color: #2ecc71; }
+.event-log .ev.warn { color: #f39c12; }
+
+@media (max-width: 900px) {
+    .game { grid-template-columns: 1fr; grid-template-rows: auto 300px auto; }
+}
+</style>
+<script src="https://unpkg.com/globe.gl@2.27.2"></script>
+</head>
+<body>
+<div class="game">
+
+<!-- LEFT: Parameters -->
+<div class="params">
+    <h1>🔴 Parameters for Survival</h1>
+    <div class="subtitle">Set your colony's starting conditions. The AI decides the rest.</div>
+
+    <div class="param-group">
+        <h3>👥 Crew</h3>
+        <div class="param">
+            <label>Crew Size <span id="v-crew">6</span></label>
+            <input type="range" id="p-crew" min="2" max="20" value="6" oninput="document.getElementById('v-crew').textContent=this.value">
+        </div>
+        <div class="param">
+            <label>Initial Morale <span id="v-morale">80%</span></label>
+            <input type="range" id="p-morale" min="20" max="100" value="80" oninput="document.getElementById('v-morale').textContent=this.value+'%'">
+        </div>
+    </div>
+
+    <div class="param-group">
+        <h3>⚡ Power</h3>
+        <div class="param">
+            <label>Solar Panels (m²) <span id="v-solar">1000</span></label>
+            <input type="range" id="p-solar" min="100" max="5000" step="100" value="1000" oninput="document.getElementById('v-solar').textContent=this.value">
+        </div>
+        <div class="param">
+            <label>Battery Storage (kWh) <span id="v-battery">500</span></label>
+            <input type="range" id="p-battery" min="100" max="2000" step="50" value="500" oninput="document.getElementById('v-battery').textContent=this.value">
+        </div>
+    </div>
+
+    <div class="param-group">
+        <h3>💧 Water</h3>
+        <div class="param">
+            <label>Water Reserves (L) <span id="v-water">2000</span></label>
+            <input type="range" id="p-water" min="500" max="10000" step="100" value="2000" oninput="document.getElementById('v-water').textContent=this.value">
+        </div>
+        <div class="param">
+            <label>Recycling Rate <span id="v-recycle">92%</span></label>
+            <input type="range" id="p-recycle" min="50" max="99" value="92" oninput="document.getElementById('v-recycle').textContent=this.value+'%'">
+        </div>
+    </div>
+
+    <div class="param-group">
+        <h3>🌱 Food</h3>
+        <div class="param">
+            <label>Food Reserves (kg) <span id="v-food">500</span></label>
+            <input type="range" id="p-food" min="100" max="5000" step="50" value="500" oninput="document.getElementById('v-food').textContent=this.value">
+        </div>
+        <div class="param">
+            <label>Growth Rate (kg/sol) <span id="v-growth">3.0</span></label>
+            <input type="range" id="p-growth" min="0.5" max="10" step="0.5" value="3" oninput="document.getElementById('v-growth').textContent=this.value">
+        </div>
+    </div>
+
+    <div class="param-group">
+        <h3>📍 Location</h3>
+        <div class="param">
+            <label>Latitude <span id="v-lat">18.7°</span></label>
+            <input type="range" id="p-lat" min="-80" max="80" value="18.7" step="0.1" oninput="document.getElementById('v-lat').textContent=this.value+'°'">
+        </div>
+    </div>
+
+    <button class="launch-btn" id="launchBtn" onclick="launchColony()">🚀 LAUNCH COLONY</button>
+
+    <div class="brain-config">
+        <h3>🧠 AI Brain (optional)</h3>
+        <div class="status">
+            <span class="dot off" id="brainDot"></span>
+            <span id="brainStatus">Not connected</span>
+        </div>
+        <div style="font-size:0.7em; color:#666; margin-top:6px;">
+            Connect to local Ollama or RAPP Brainstem for AI-driven decisions each sol.
+            Without AI, the simulation runs on physics only.
+        </div>
+        <button style="width:100%; margin-top:8px; padding:6px; background:#111; border:1px solid #333; color:#888; border-radius:4px; cursor:pointer; font-size:0.75em;" onclick="connectBrain()">Connect Brain</button>
+    </div>
+</div>
+
+<!-- CENTER: Globe -->
+<div class="globe-container">
+    <div id="globe"></div>
+    <div class="hud">
+        <div class="sol" id="hud-sol">--</div>
+        <div class="status" id="hud-status">Set parameters and launch</div>
+    </div>
+    <div class="speed-controls">
+        <button onclick="setSpeed(0)" id="btn-pause">⏸ Pause</button>
+        <button onclick="setSpeed(500)" class="active" id="btn-1x">1x</button>
+        <button onclick="setSpeed(100)" id="btn-5x">5x</button>
+        <button onclick="setSpeed(20)" id="btn-25x">25x</button>
+        <button onclick="tickOnce()">▶ Step</button>
+    </div>
+</div>
+
+<!-- RIGHT: Telemetry -->
+<div class="telemetry">
+    <h2>Colony Telemetry</h2>
+
+    <div class="meter" id="m-pop"><div class="head"><span>👥 Population</span><span class="val" id="t-pop">--</span></div><div class="bar"><div class="bar-fill" id="b-pop" style="width:0%; background:#9b59b6;"></div></div></div>
+    <div class="meter" id="m-temp"><div class="head"><span>🌡 Temperature</span><span class="val" id="t-temp">--</span></div><div class="bar"><div class="bar-fill" id="b-temp" style="width:50%; background:#e74c3c;"></div></div></div>
+    <div class="meter" id="m-power"><div class="head"><span>⚡ Power</span><span class="val" id="t-power">--</span></div><div class="bar"><div class="bar-fill" id="b-power" style="width:0%; background:#f1c40f;"></div></div></div>
+    <div class="meter" id="m-water"><div class="head"><span>💧 Water</span><span class="val" id="t-water">--</span></div><div class="bar"><div class="bar-fill" id="b-water" style="width:0%; background:#3498db;"></div></div></div>
+    <div class="meter" id="m-food"><div class="head"><span>🌱 Food</span><span class="val" id="t-food">--</span></div><div class="bar"><div class="bar-fill" id="b-food" style="width:0%; background:#2ecc71;"></div></div></div>
+    <div class="meter"><div class="head"><span>😊 Morale</span><span class="val" id="t-morale">--</span></div><div class="bar"><div class="bar-fill" id="b-morale" style="width:0%; background:#f39c12;"></div></div></div>
+    <div class="meter"><div class="head"><span>🌪 Weather</span><span class="val" id="t-weather">Clear</span></div></div>
+
+    <div class="brain-panel">
+        <h2>🧠 AI Consciousness</h2>
+        <div class="neurons" id="neuron-display">
+            <span class="neuron">solar</span>
+            <span class="neuron">thermal</span>
+            <span class="neuron">water</span>
+            <span class="neuron">food</span>
+            <span class="neuron">survival</span>
+            <span class="neuron">events</span>
+            <span class="neuron">governance</span>
+        </div>
+        <div class="thought" id="ai-thought" style="display:none;">
+            <div class="label">AI Decision</div>
+            <div class="text" id="ai-text">--</div>
+        </div>
+    </div>
+
+    <h2>📋 Event Log</h2>
+    <div class="event-log" id="event-log"></div>
+</div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// MARS BARN SIMULATION ENGINE — Pure JavaScript
+// Data Sloshing: sol N output = sol N+1 input
+// ═══════════════════════════════════════════════════════
+
+let colony = null;
+let simInterval = null;
+let speed = 500;
+let brainConnected = false;
+let globe = null;
+
+// ── Initialize Globe ──
+function initGlobe() {
+    const container = document.getElementById('globe');
+    globe = Globe()(container)
+        .globeImageUrl('https://raw.githubusercontent.com/kody-w/mars-barn/main/assets/textures/2k_mars.jpg')
+        .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png')
+        .atmosphereColor('#ef4444')
+        .atmosphereAltitude(0.15)
+        .pointsData([])
+        .pointAltitude(0.01)
+        .pointRadius(0.8)
+        .pointColor(() => '#2ecc71')
+        .ringsData([])
+        .ringColor(() => t => `rgba(46,204,113,${1-t})`)
+        .ringMaxRadius(3)
+        .ringPropagationSpeed(1)
+        .ringRepeatPeriod(1500);
+
+    globe.controls().autoRotate = true;
+    globe.controls().autoRotateSpeed = 0.3;
+}
+
+// ── Colony Init ──
+function launchColony() {
+    const crew = +document.getElementById('p-crew').value;
+    const morale = +document.getElementById('p-morale').value / 100;
+    const solar = +document.getElementById('p-solar').value;
+    const battery = +document.getElementById('p-battery').value;
+    const water = +document.getElementById('p-water').value;
+    const recycle = +document.getElementById('p-recycle').value / 100;
+    const food = +document.getElementById('p-food').value;
+    const growth = +document.getElementById('p-growth').value;
+    const lat = +document.getElementById('p-lat').value;
+
+    colony = {
+        sol: 0, population: crew, habitat_temp_k: 293,
+        power_kwh: battery, power_demand_kwh: crew * 30 + 50,
+        solar_panels_m2: solar, water_liters: water,
+        water_recycling_rate: recycle, food_kg: food,
+        food_growth_rate_kg_per_sol: growth, solar_longitude: 0,
+        dust_storm_active: false, morale: morale, alive: true,
+        latitude: lat, longitude: 226.2, max_pop: crew,
+        history: [],
+    };
+
+    document.getElementById('event-log').innerHTML = '';
+    document.getElementById('launchBtn').textContent = '🔄 RELAUNCH';
+
+    // Place colony on globe
+    const lng = 226.2 > 180 ? 226.2 - 360 : 226.2;
+    globe.pointsData([{ lat, lng, size: 1 }]);
+    globe.ringsData([{ lat, lng }]);
+    globe.pointOfView({ lat, lng, altitude: 2 }, 1000);
+
+    updateUI();
+    addEvent('🚀 Colony launched! ' + crew + ' colonists at lat ' + lat + '°', 'good');
+
+    if (speed > 0) startSim();
+}
+
+// ── Brainstem: evaluate needs ──
+function evaluateNeeds() {
+    const c = colony;
+    const needs = ['physics', 'events'];
+    const tempDanger = c.habitat_temp_k < 270 || c.habitat_temp_k > 310;
+    needs.push(tempDanger ? 'thermal_critical' : 'thermal');
+    const powerRatio = c.power_kwh / Math.max(c.power_demand_kwh, 1);
+    needs.push(powerRatio < 0.5 ? 'power_critical' : 'power');
+    const waterPP = c.water_liters / Math.max(c.population, 1);
+    needs.push(waterPP < 5 ? 'water_critical' : 'water');
+    const foodPP = c.food_kg / Math.max(c.population, 1);
+    needs.push(foodPP < 2 ? 'food_critical' : 'food');
+    if (c.population > 0) needs.push('survival');
+    if (c.population <= 0 && c.sol > 0) needs.push('extinction');
+    if (c.sol % 30 === 0 && c.sol > 0) needs.push('governance');
+    return needs;
+}
+
+// ── Agent: Solar ──
+function agentSolar(c) {
+    const ls = c.solar_longitude;
+    const ecc = 1 + 0.09 * Math.cos((ls - 250) * Math.PI / 180);
+    const decl = 25.19 * Math.sin(ls * Math.PI / 180);
+    const cosZ = Math.max(0.1, Math.cos(Math.abs(c.latitude - decl) * Math.PI / 180));
+    const dust = c.dust_storm_active ? 0.2 : 1.0;
+    const irr = 590 * ecc * cosZ * dust;
+    const energy = irr * c.solar_panels_m2 * 0.20 * 12 / 1000;
+    c.power_kwh = Math.round((c.power_kwh + energy) * 10) / 10;
+    c.solar_longitude = (ls + 0.5) % 360;
+    return energy < c.power_demand_kwh * 0.5 ? ['⚡ LOW POWER: ' + Math.round(energy) + ' kWh'] : [];
+}
+
+// ── Agent: Thermal (fixed) ──
+function agentThermal(c) {
+    const ls = c.solar_longitude;
+    const marsK = 210 + 20 * Math.sin(ls * Math.PI / 180);
+    const loss = (c.habitat_temp_k - marsK) * 0.02;
+    const target = 293;
+    const afterLoss = c.habitat_temp_k - loss;
+    const delta = target - afterLoss;
+    let heatPower = 0, heatK = 0;
+    if (delta > 0) {
+        heatPower = Math.min(c.power_kwh * 0.2, delta * 2, 50);
+        heatK = heatPower * 0.5;
+    } else {
+        heatK = delta * 0.3;
+    }
+    c.habitat_temp_k = Math.max(180, Math.min(320, Math.round((afterLoss + heatK) * 10) / 10));
+    c.power_kwh = Math.round((c.power_kwh - Math.max(0, heatPower)) * 10) / 10;
+    const ev = [];
+    if (c.habitat_temp_k < 270) ev.push('🥶 COLD: ' + Math.round(c.habitat_temp_k) + 'K');
+    if (c.habitat_temp_k > 310) ev.push('🔥 HOT: ' + Math.round(c.habitat_temp_k) + 'K');
+    return ev;
+}
+
+// ── Agent: Water ──
+function agentWater(c) {
+    const consumed = c.population * 3;
+    const recovered = consumed * c.water_recycling_rate;
+    c.water_liters = Math.round((c.water_liters + recovered) * 10) / 10;
+    const ev = [];
+    if (c.water_liters < c.population * 10 && c.power_kwh > 50) {
+        c.water_liters += 20; c.power_kwh -= 50;
+        ev.push('⛏ Ice mining: +20L');
+    }
+    return ev;
+}
+
+// ── Agent: Food ──
+function agentFood(c) {
+    const tf = c.habitat_temp_k < 280 ? 0.3 : c.habitat_temp_k > 305 ? 0.5 : 1;
+    const wf = c.water_liters < 100 ? 0.2 : 1;
+    const pf = c.power_kwh < 30 ? 0.5 : 1;
+    const grown = c.food_growth_rate_kg_per_sol * tf * wf * pf;
+    c.food_kg = Math.round((c.food_kg + grown) * 10) / 10;
+    c.water_liters = Math.max(0, Math.round((c.water_liters - grown * 2) * 10) / 10);
+    c.power_kwh = Math.max(0, Math.round((c.power_kwh - 10) * 10) / 10);
+    return (tf < 1 || wf < 1 || pf < 1) ? ['🌾 Crop yield reduced'] : [];
+}
+
+// ── Agent: Survival ──
+function agentSurvival(c) {
+    const ev = []; let deaths = 0, pop = c.population;
+    if (pop <= 0) { c.alive = false; return ['💀 Colony extinct']; }
+    if (c.habitat_temp_k < 250) { deaths = pop; ev.push('❄️ FREEZE: All ' + pop + ' dead'); }
+    else if (c.habitat_temp_k < 270) { const d = Math.max(1, Math.floor(pop/4)); deaths += d; ev.push('🥶 Cold: ' + d + ' died'); }
+    const wn = pop * 3;
+    if (c.water_liters < wn) { const d = Math.max(1, pop - Math.floor(c.water_liters/3)); deaths += d; ev.push('🏜 Dehydration: ' + d + ' died'); }
+    c.water_liters = Math.max(0, Math.round((c.water_liters - wn) * 10) / 10);
+    const fn = pop * 2;
+    if (c.food_kg < fn) { const d = Math.max(1, pop - Math.floor(c.food_kg/2)); deaths += d; ev.push('😫 Starvation: ' + d + ' died'); }
+    c.food_kg = Math.max(0, Math.round((c.food_kg - fn) * 10) / 10);
+    deaths = Math.min(deaths, pop); c.population -= deaths; c.alive = c.population > 0;
+    if (deaths > 0) c.morale = Math.max(0, c.morale - 0.05 * deaths);
+    else { c.morale = Math.min(1, c.morale + 0.005); if (pop > 0) ev.push('✅ All ' + c.population + ' survived'); }
+    // Birth chance
+    if (c.population >= 4 && c.morale > 0.6 && Math.random() < 0.02) { c.population++; c.max_pop = Math.max(c.max_pop, c.population); ev.push('👶 Birth!'); }
+    return ev;
+}
+
+// ── Agent: Events ──
+function agentEvents(c) {
+    const ev = [];
+    if (!c.dust_storm_active && Math.random() < 0.03) { c.dust_storm_active = true; ev.push('🌪 DUST STORM!'); }
+    if (c.dust_storm_active && Math.random() < 0.15) { c.dust_storm_active = false; ev.push('☀️ Storm cleared'); }
+    if (Math.random() < 0.02) { c.solar_panels_m2 = Math.round(c.solar_panels_m2 * 0.95); ev.push('⚠️ Panel damage'); }
+    if (Math.random() < 0.01) { c.population = Math.max(0, c.population - 1); ev.push('💥 Accident: 1 dead'); }
+    return ev;
+}
+
+// ── AI Brain (Ollama/Brainstem) ──
+async function askBrain(c, needs) {
+    if (!brainConnected) return null;
+    try {
+        const prompt = `You are the AI governor of a Mars colony. Sol ${c.sol}. Population: ${c.population}. Power: ${Math.round(c.power_kwh)} kWh. Water: ${Math.round(c.water_liters)}L. Food: ${Math.round(c.food_kg)}kg. Temp: ${Math.round(c.habitat_temp_k)}K. Morale: ${Math.round(c.morale*100)}%. Dust storm: ${c.dust_storm_active}. Needs: ${needs.join(', ')}. In ONE sentence, what should the colony prioritize this sol?`;
+        const r = await fetch('http://localhost:11434/api/generate', {
+            method: 'POST', headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ model: 'llama3.2', prompt, stream: false }),
+        });
+        if (r.ok) { const d = await r.json(); return d.response; }
+    } catch {}
+    // Try brainstem
+    try {
+        const r = await fetch('http://localhost:7071/api/chat', {
+            method: 'POST', headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ message: `Colony sol ${c.sol}: pop ${c.population}, power ${Math.round(c.power_kwh)}, water ${Math.round(c.water_liters)}, food ${Math.round(c.food_kg)}, temp ${Math.round(c.habitat_temp_k)}K. What should we prioritize?` }),
+        });
+        if (r.ok) { const d = await r.json(); return d.response || d.message; }
+    } catch {}
+    return null;
+}
+
+// ── One Sol (One Thought) ──
+async function tickSol() {
+    if (!colony || !colony.alive) return;
+    colony.sol++;
+
+    // Brainstem: evaluate needs
+    const needs = evaluateNeeds();
+    const fired = [];
+    let allEvents = [];
+
+    // Fire agents based on needs
+    const agents = [
+        { name: 'solar', triggers: ['power','power_critical','physics'], fn: agentSolar },
+        { name: 'thermal', triggers: ['thermal','thermal_critical','physics'], fn: agentThermal },
+        { name: 'water', triggers: ['water','water_critical'], fn: agentWater },
+        { name: 'food', triggers: ['food','food_critical'], fn: agentFood },
+        { name: 'survival', triggers: ['survival','extinction'], fn: agentSurvival },
+        { name: 'events', triggers: ['events'], fn: agentEvents },
+    ];
+
+    for (const agent of agents) {
+        if (agent.triggers.some(t => needs.includes(t))) {
+            const events = agent.fn(colony);
+            allEvents = allEvents.concat(events);
+            fired.push(agent.name);
+        }
+    }
+
+    // Cap power storage
+    colony.power_kwh = Math.min(colony.power_kwh, colony.solar_panels_m2 * 2);
+
+    // Ask AI brain (async, non-blocking)
+    const aiThought = await askBrain(colony, needs);
+
+    // Record history
+    colony.history.push({ sol: colony.sol, pop: colony.population, power: colony.power_kwh, water: colony.water_liters, food: colony.food_kg, temp: colony.habitat_temp_k, morale: colony.morale });
+    if (colony.history.length > 365) colony.history = colony.history.slice(-365);
+
+    // Update UI
+    updateUI(fired, needs);
+    for (const e of allEvents) {
+        const cls = e.includes('died') || e.includes('dead') || e.includes('extinct') || e.includes('Accident') ? 'bad' : e.includes('survived') || e.includes('Birth') || e.includes('cleared') ? 'good' : 'warn';
+        addEvent('Sol ' + colony.sol + ': ' + e, cls);
+    }
+
+    // Show AI thought
+    if (aiThought) {
+        document.getElementById('ai-thought').style.display = 'block';
+        document.getElementById('ai-text').textContent = aiThought;
+    }
+
+    // Update globe colony marker
+    if (!colony.alive) {
+        globe.pointColor(() => '#e74c3c');
+        globe.ringsData([]);
+        if (simInterval) { clearInterval(simInterval); simInterval = null; }
+    }
+}
+
+function tickOnce() { tickSol(); }
+
+// ── UI Update ──
+function updateUI(fired = [], needs = []) {
+    if (!colony) return;
+    const c = colony;
+    document.getElementById('hud-sol').textContent = 'Sol ' + c.sol;
+    const statusEl = document.getElementById('hud-status');
+    statusEl.textContent = c.alive ? (c.dust_storm_active ? '🌪 Dust Storm' : '☀️ Clear') + ' | Pop ' + c.population : '💀 COLONY LOST — Sol ' + c.sol;
+    statusEl.className = 'status ' + (c.alive ? 'alive' : 'dead');
+
+    // Meters
+    const maxPop = Math.max(c.max_pop, 1);
+    setMeter('pop', c.population, c.population + '/' + maxPop, c.population / maxPop * 100);
+    setMeter('temp', Math.round(c.habitat_temp_k) + 'K (' + Math.round(c.habitat_temp_k - 273) + '°C)', null, Math.max(0, Math.min(100, (c.habitat_temp_k - 200) / 1.2)));
+    setMeter('power', Math.round(c.power_kwh) + ' kWh', null, Math.min(100, c.power_kwh / (c.solar_panels_m2 * 2) * 100));
+    setMeter('water', Math.round(c.water_liters) + ' L', null, Math.min(100, c.water_liters / 30));
+    setMeter('food', Math.round(c.food_kg) + ' kg', null, Math.min(100, c.food_kg / 10));
+    document.getElementById('t-morale').textContent = Math.round(c.morale * 100) + '%';
+    document.getElementById('b-morale').style.width = (c.morale * 100) + '%';
+    document.getElementById('t-weather').textContent = c.dust_storm_active ? '🌪 DUST STORM' : '☀️ Clear';
+
+    // Criticals
+    document.getElementById('m-temp').className = 'meter' + (c.habitat_temp_k < 270 || c.habitat_temp_k > 310 ? ' critical' : '');
+    document.getElementById('m-water').className = 'meter' + (c.water_liters < c.population * 10 ? ' critical' : '');
+    document.getElementById('m-food').className = 'meter' + (c.food_kg < c.population * 5 ? ' critical' : '');
+
+    // Neurons
+    document.querySelectorAll('.neuron').forEach(n => {
+        n.className = 'neuron' + (fired.includes(n.textContent) ? ' firing' : '');
+    });
+}
+
+function setMeter(id, text, _, pct) {
+    document.getElementById('t-' + id).textContent = text;
+    if (pct !== undefined) document.getElementById('b-' + id).style.width = Math.max(0, Math.min(100, pct)) + '%';
+}
+
+function addEvent(text, cls = '') {
+    const log = document.getElementById('event-log');
+    log.innerHTML = '<div class="ev ' + cls + '">' + text + '</div>' + log.innerHTML;
+    if (log.children.length > 100) log.removeChild(log.lastChild);
+}
+
+// ── Playback ──
+function startSim() { if (simInterval) clearInterval(simInterval); if (speed > 0) simInterval = setInterval(tickSol, speed); }
+function setSpeed(ms) {
+    speed = ms;
+    document.querySelectorAll('.speed-controls button').forEach(b => b.classList.remove('active'));
+    if (ms === 0) document.getElementById('btn-pause').classList.add('active');
+    else if (ms >= 500) document.getElementById('btn-1x').classList.add('active');
+    else if (ms >= 100) document.getElementById('btn-5x').classList.add('active');
+    else document.getElementById('btn-25x').classList.add('active');
+    if (colony) startSim();
+}
+
+// ── Brain Connection ──
+async function connectBrain() {
+    const dot = document.getElementById('brainDot');
+    const status = document.getElementById('brainStatus');
+    try {
+        let r = await fetch('http://localhost:11434/api/version').catch(() => null);
+        if (r && r.ok) { dot.className = 'dot on'; status.textContent = 'Ollama connected'; brainConnected = true; return; }
+        r = await fetch('http://localhost:7071/api/status').catch(() => null);
+        if (r && r.ok) { dot.className = 'dot on'; status.textContent = 'Brainstem connected'; brainConnected = true; return; }
+    } catch {}
+    dot.className = 'dot off';
+    status.textContent = 'No brain found (physics-only mode)';
+}
+
+// Boot
+initGlobe();
+connectBrain();
+</script>
+</body>
+</html>
