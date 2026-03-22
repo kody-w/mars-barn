@@ -154,16 +154,15 @@ body { font-family: -apple-system, sans-serif; background: #0a0a0a; color: #e0e0
     </div>
 
     <div class="brain-config">
-        <h3>🧠 AI Brain (optional)</h3>
+        <h3>🧠 AI Brain — OpenRappter</h3>
         <div class="status">
             <span class="dot off" id="brainDot"></span>
             <span id="brainStatus">Not connected</span>
         </div>
         <div style="font-size:0.7em; color:#666; margin-top:6px;">
-            Connect to local Ollama or RAPP Brainstem for AI-driven decisions each sol.
-            Without AI, the simulation runs on physics only.
+            OpenRappter uses GitHub Copilot for AI — no model download needed. Just a GitHub account. The AI governor makes decisions each sol based on colony state.
         </div>
-        <button style="width:100%; margin-top:8px; padding:6px; background:#111; border:1px solid #333; color:#888; border-radius:4px; cursor:pointer; font-size:0.75em;" onclick="connectBrain()">Connect Brain</button>
+        <button style="width:100%; margin-top:8px; padding:6px; background:#111; border:1px solid #7b68ee; color:#7b68ee; border-radius:4px; cursor:pointer; font-size:0.75em;" onclick="connectBrain()">🔌 Connect Brain</button>
     </div>
 </div>
 
@@ -182,6 +181,7 @@ body { font-family: -apple-system, sans-serif; background: #0a0a0a; color: #e0e0
         <button onclick="tickOnce()">▶ Step</button>
         <button onclick="toggleZoom()" id="btn-zoom">🔍 Colony View</button>
         <button onclick="zoomOrbit()">🌍 Orbit</button>
+        <button onclick="enterGroundView()" id="btn-ground">🔭 Ground Level</button>
     </div>
 </div>
 
@@ -402,25 +402,48 @@ function agentEvents(c) {
     return ev;
 }
 
-// ── AI Brain (Ollama/Brainstem) ──
+// ── AI Brain — OpenRappter (RAPP Brainstem) first, Ollama fallback ──
+// OpenRappter uses GitHub Copilot for inference — just needs a GitHub account
+// No model download. No GPU. Just intelligence.
 async function askBrain(c, needs) {
     if (!brainConnected) return null;
+    const prompt = `You are the AI governor of a Mars colony called "${colony?.name || 'Olympus Base'}". This is sol ${c.sol}.
+
+COLONY STATUS:
+- Population: ${c.population} colonists
+- Power: ${Math.round(c.power_kwh)} kWh stored
+- Water: ${Math.round(c.water_liters)} liters
+- Food: ${Math.round(c.food_kg)} kg
+- Habitat Temp: ${Math.round(c.habitat_temp_k)}K (${Math.round(c.habitat_temp_k - 273)}°C)
+- Morale: ${Math.round(c.morale * 100)}%
+- Dust Storm: ${c.dust_storm_active ? 'ACTIVE — solar reduced 80%' : 'None'}
+- Needs: ${needs.join(', ')}
+
+In ONE sentence, what should the colony prioritize this sol and why? Be specific about resource allocation.`;
+
+    // Priority 1: OpenRappter Brainstem (GitHub Copilot powered)
     try {
-        const prompt = `You are the AI governor of a Mars colony. Sol ${c.sol}. Population: ${c.population}. Power: ${Math.round(c.power_kwh)} kWh. Water: ${Math.round(c.water_liters)}L. Food: ${Math.round(c.food_kg)}kg. Temp: ${Math.round(c.habitat_temp_k)}K. Morale: ${Math.round(c.morale*100)}%. Dust storm: ${c.dust_storm_active}. Needs: ${needs.join(', ')}. In ONE sentence, what should the colony prioritize this sol?`;
+        const r = await fetch('http://localhost:7071/api/chat', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: prompt }),
+            signal: AbortSignal.timeout(15000),
+        });
+        if (r.ok) {
+            const d = await r.json();
+            return d.response || d.message || d.choices?.[0]?.message?.content;
+        }
+    } catch {}
+
+    // Priority 2: Ollama (local model fallback)
+    try {
         const r = await fetch('http://localhost:11434/api/generate', {
-            method: 'POST', headers: {'Content-Type':'application/json'},
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ model: 'llama3.2', prompt, stream: false }),
+            signal: AbortSignal.timeout(30000),
         });
         if (r.ok) { const d = await r.json(); return d.response; }
     } catch {}
-    // Try brainstem
-    try {
-        const r = await fetch('http://localhost:7071/api/chat', {
-            method: 'POST', headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({ message: `Colony sol ${c.sol}: pop ${c.population}, power ${Math.round(c.power_kwh)}, water ${Math.round(c.water_liters)}, food ${Math.round(c.food_kg)}, temp ${Math.round(c.habitat_temp_k)}K. What should we prioritize?` }),
-        });
-        if (r.ok) { const d = await r.json(); return d.response || d.message; }
-    } catch {}
+
     return null;
 }
 
@@ -462,8 +485,9 @@ async function tickSol() {
     colony.history.push({ sol: colony.sol, pop: colony.population, power: colony.power_kwh, water: colony.water_liters, food: colony.food_kg, temp: colony.habitat_temp_k, morale: colony.morale });
     if (colony.history.length > 365) colony.history = colony.history.slice(-365);
 
-    // Update UI
+    // Update UI + robots
     updateUI(fired, needs);
+    updateRobots(fired);
     for (const e of allEvents) {
         const cls = e.includes('died') || e.includes('dead') || e.includes('extinct') || e.includes('Accident') ? 'bad' : e.includes('survived') || e.includes('Birth') || e.includes('cleared') ? 'good' : 'warn';
         addEvent('Sol ' + colony.sol + ': ' + e, cls);
@@ -539,18 +563,36 @@ function setSpeed(ms) {
     if (colony) startSim();
 }
 
-// ── Brain Connection ──
+// ── Brain Connection — OpenRappter first ──
 async function connectBrain() {
     const dot = document.getElementById('brainDot');
     const status = document.getElementById('brainStatus');
+
+    // Priority 1: OpenRappter Brainstem (GitHub Copilot — no model download)
     try {
-        let r = await fetch('http://localhost:11434/api/version').catch(() => null);
-        if (r && r.ok) { dot.className = 'dot on'; status.textContent = 'Ollama connected'; brainConnected = true; return; }
-        r = await fetch('http://localhost:7071/api/status').catch(() => null);
-        if (r && r.ok) { dot.className = 'dot on'; status.textContent = 'Brainstem connected'; brainConnected = true; return; }
+        const r = await fetch('http://localhost:7071/api/status', { signal: AbortSignal.timeout(3000) }).catch(() => null);
+        if (r && r.ok) {
+            dot.className = 'dot on';
+            status.textContent = '🧠 OpenRappter connected (GitHub AI)';
+            brainConnected = true;
+            return;
+        }
     } catch {}
+
+    // Priority 2: Ollama (local model)
+    try {
+        const r = await fetch('http://localhost:11434/api/version', { signal: AbortSignal.timeout(3000) }).catch(() => null);
+        if (r && r.ok) {
+            dot.className = 'dot on';
+            status.textContent = 'Ollama connected (local)';
+            brainConnected = true;
+            return;
+        }
+    } catch {}
+
     dot.className = 'dot off';
-    status.textContent = 'No brain found (physics-only mode)';
+    status.textContent = 'No brain — physics only';
+    status.innerHTML += '<div style="margin-top:4px;font-size:0.7em;color:#555;">Install OpenRappter:<br><code style="color:#7b68ee;">curl -fsSL kody-w.github.io/rapp-installer/install.sh | bash</code></div>';
 }
 
 // ═══════════════════════════════════════════════════════
@@ -896,6 +938,295 @@ function toggleZoom() {
         document.getElementById('btn-zoom').textContent = '🔍 Colony View';
         zoomedIn = false;
     }
+}
+
+// ═══════════════════════════════════════════════════════
+// GROUND VIEW — First person on Mars surface
+// Robots work. You watch through their eyes.
+// ═══════════════════════════════════════════════════════
+
+let groundMode = false;
+let groundScene3D = null;
+let groundCam = null;
+let groundRender = null;
+let groundAnimFrame = null;
+let robots = [];
+let activeRobotIdx = -1; // -1 = free camera
+const THREE = Globe.__THREE__ || window.THREE;
+
+function enterGroundView() {
+    if (!colony) return;
+    if (groundMode) { exitGroundView(); return; }
+    groundMode = true;
+    document.getElementById('btn-ground').textContent = '🌍 Exit Ground';
+
+    // Hide globe, show ground canvas
+    const container = document.getElementById('globe');
+    container.innerHTML = '';
+
+    // Build 3D scene
+    const w = container.clientWidth, h = container.clientHeight;
+    groundScene3D = new THREE.Scene();
+    groundScene3D.background = new THREE.Color(0x2a1008);
+    groundScene3D.fog = new THREE.FogExp2(0x3a1a0a, 0.008);
+
+    groundCam = new THREE.PerspectiveCamera(65, w / h, 0.1, 500);
+    groundCam.position.set(0, 8, 30);
+
+    groundRender = new THREE.WebGLRenderer({ antialias: true });
+    groundRender.setSize(w, h);
+    groundRender.setPixelRatio(window.devicePixelRatio);
+    groundRender.shadowMap.enabled = true;
+    container.appendChild(groundRender.domElement);
+
+    // Lights
+    groundScene3D.add(new THREE.AmbientLight(0x404060, 0.5));
+    const sun = new THREE.DirectionalLight(0xffeedd, 1.0);
+    sun.position.set(30, 40, 20);
+    sun.castShadow = true;
+    groundScene3D.add(sun);
+
+    // Mars terrain
+    const terrainGeo = new THREE.PlaneGeometry(300, 300, 80, 80);
+    const verts = terrainGeo.attributes.position;
+    for (let i = 0; i < verts.count; i++) {
+        verts.setZ(i, (Math.random() - 0.5) * 2 + Math.sin(verts.getX(i) * 0.05) * 1.5);
+    }
+    terrainGeo.computeVertexNormals();
+    const terrain = new THREE.Mesh(terrainGeo, new THREE.MeshStandardMaterial({ color: 0xb44a2a, roughness: 0.9, flatShading: true }));
+    terrain.rotation.x = -Math.PI / 2;
+    terrain.receiveShadow = true;
+    groundScene3D.add(terrain);
+
+    // Habitat dome
+    const dome = new THREE.Mesh(
+        new THREE.SphereGeometry(5, 20, 14, 0, Math.PI * 2, 0, Math.PI / 2),
+        new THREE.MeshStandardMaterial({ color: 0x88bbdd, roughness: 0.2, metalness: 0.6, transparent: true, opacity: 0.4 })
+    );
+    groundScene3D.add(dome);
+
+    // Solar panels
+    for (let i = 0; i < 8; i++) {
+        const panel = new THREE.Mesh(
+            new THREE.BoxGeometry(3, 0.1, 2),
+            new THREE.MeshStandardMaterial({ color: 0x2233aa, metalness: 0.7 })
+        );
+        const angle = (i / 8) * Math.PI * 2;
+        panel.position.set(Math.cos(angle) * 15, 2, Math.sin(angle) * 15);
+        panel.rotation.x = -0.3;
+        panel.rotation.y = angle;
+        panel.castShadow = true;
+        groundScene3D.add(panel);
+        // Panel stand
+        const stand = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.1, 0.1, 2),
+            new THREE.MeshStandardMaterial({ color: 0x888888 })
+        );
+        stand.position.set(panel.position.x, 1, panel.position.z);
+        groundScene3D.add(stand);
+    }
+
+    // Buildings
+    for (let i = 0; i < 6; i++) {
+        const bh = 2 + Math.random() * 4;
+        const bld = new THREE.Mesh(
+            new THREE.BoxGeometry(1.5 + Math.random(), bh, 1.5 + Math.random()),
+            new THREE.MeshStandardMaterial({ color: new THREE.Color().setHSL(0.55, 0.4, 0.25) })
+        );
+        const a = (i / 6) * Math.PI * 2 + 0.3;
+        bld.position.set(Math.cos(a) * 8, bh / 2, Math.sin(a) * 8);
+        bld.castShadow = true;
+        groundScene3D.add(bld);
+    }
+
+    // Antenna
+    const antenna = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.08, 0.12, 10),
+        new THREE.MeshStandardMaterial({ color: 0xaaaaaa, metalness: 0.8 })
+    );
+    antenna.position.set(-10, 5, -8);
+    groundScene3D.add(antenna);
+
+    // ROBOTS — one per active RAPP agent type
+    robots = [];
+    const agentTypes = ['solar', 'thermal', 'water', 'food', 'survival', 'events'];
+    const robotColors = { solar: 0xf1c40f, thermal: 0xe74c3c, water: 0x3498db, food: 0x2ecc71, survival: 0x9b59b6, events: 0xf39c12 };
+    const robotTasks = { solar: 'Checking panels', thermal: 'Regulating habitat', water: 'Mining ice', food: 'Tending greenhouse', survival: 'Medical check', events: 'Scanning horizon' };
+
+    agentTypes.forEach((type, i) => {
+        const body = new THREE.Mesh(
+            new THREE.BoxGeometry(0.6, 1.2, 0.6),
+            new THREE.MeshStandardMaterial({ color: robotColors[type], metalness: 0.5 })
+        );
+        const head = new THREE.Mesh(
+            new THREE.SphereGeometry(0.35, 8, 8),
+            new THREE.MeshStandardMaterial({ color: robotColors[type], emissive: robotColors[type], emissiveIntensity: 0.3 })
+        );
+        head.position.y = 0.9;
+
+        const eye = new THREE.Mesh(
+            new THREE.SphereGeometry(0.1, 6, 6),
+            new THREE.MeshBasicMaterial({ color: 0xffffff })
+        );
+        eye.position.set(0, 0.95, 0.3);
+
+        const group = new THREE.Group();
+        group.add(body);
+        group.add(head);
+        group.add(eye);
+
+        const angle = (i / agentTypes.length) * Math.PI * 2;
+        group.position.set(Math.cos(angle) * 12, 0.6, Math.sin(angle) * 12);
+        group.userData = { type, task: robotTasks[type], active: false, targetAngle: angle, speed: 0.01 + Math.random() * 0.01 };
+
+        groundScene3D.add(group);
+        robots.push(group);
+    });
+
+    // Stars
+    const starGeo = new THREE.BufferGeometry();
+    const starPos = new Float32Array(400 * 3);
+    for (let i = 0; i < 400; i++) {
+        const t = Math.random() * Math.PI * 2, p = Math.random() * Math.PI * 0.4, r = 200;
+        starPos[i*3] = r * Math.sin(p) * Math.cos(t);
+        starPos[i*3+1] = r * Math.cos(p);
+        starPos[i*3+2] = r * Math.sin(p) * Math.sin(t);
+    }
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+    groundScene3D.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.4 })));
+
+    // Dust particles
+    const dustGeo = new THREE.BufferGeometry();
+    const dustPos = new Float32Array(300 * 3);
+    for (let i = 0; i < 300; i++) {
+        dustPos[i*3] = (Math.random()-0.5) * 100;
+        dustPos[i*3+1] = Math.random() * 15;
+        dustPos[i*3+2] = (Math.random()-0.5) * 100;
+    }
+    dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+    const dustParticles = new THREE.Points(dustGeo, new THREE.PointsMaterial({ color: 0xb44a2a, size: 0.12, transparent: true, opacity: 0.4 }));
+    groundScene3D.add(dustParticles);
+
+    // Robot selector UI
+    showRobotSelector();
+
+    // Animate
+    let t = 0;
+    function animateGround() {
+        groundAnimFrame = requestAnimationFrame(animateGround);
+        t += 0.01;
+
+        // Move robots on their patrol paths
+        robots.forEach((robot, i) => {
+            const ud = robot.userData;
+            ud.targetAngle += ud.speed;
+            const r = ud.type === 'solar' ? 15 : ud.type === 'water' ? 20 : 10;
+            robot.position.x = Math.cos(ud.targetAngle) * r;
+            robot.position.z = Math.sin(ud.targetAngle) * r;
+            robot.lookAt(0, 0.6, 0);
+
+            // Firing animation — pulse when active
+            if (ud.active) {
+                robot.children[1].material.emissiveIntensity = 0.3 + Math.sin(t * 5) * 0.3;
+            } else {
+                robot.children[1].material.emissiveIntensity = 0.1;
+            }
+        });
+
+        // Camera
+        if (activeRobotIdx >= 0 && activeRobotIdx < robots.length) {
+            // POV — follow robot from behind
+            const r = robots[activeRobotIdx];
+            const behind = new THREE.Vector3(0, 2, -3).applyQuaternion(r.quaternion).add(r.position);
+            groundCam.position.lerp(behind, 0.05);
+            const lookTarget = r.position.clone();
+            lookTarget.y += 1;
+            groundCam.lookAt(lookTarget);
+        } else {
+            // Free orbit
+            groundCam.position.x = Math.sin(t * 0.2) * 30;
+            groundCam.position.z = Math.cos(t * 0.2) * 30;
+            groundCam.position.y = 10 + Math.sin(t * 0.3) * 3;
+            groundCam.lookAt(0, 2, 0);
+        }
+
+        // Dust drift
+        const dp = dustParticles.geometry.attributes.position;
+        for (let i = 0; i < 300; i++) {
+            dp.array[i*3] += Math.sin(t + i) * 0.03;
+            dp.array[i*3+1] += 0.01;
+            if (dp.array[i*3+1] > 15) dp.array[i*3+1] = 0;
+        }
+        dp.needsUpdate = true;
+
+        // Dust storm = more particles, less visibility
+        if (colony && colony.dust_storm_active) {
+            dustParticles.material.opacity = 0.8;
+            dustParticles.material.size = 0.25;
+            groundScene3D.fog.density = 0.02;
+        } else {
+            dustParticles.material.opacity = 0.4;
+            dustParticles.material.size = 0.12;
+            groundScene3D.fog.density = 0.008;
+        }
+
+        groundRender.render(groundScene3D, groundCam);
+    }
+    animateGround();
+}
+
+function exitGroundView() {
+    groundMode = false;
+    document.getElementById('btn-ground').textContent = '🔭 Ground Level';
+    if (groundAnimFrame) cancelAnimationFrame(groundAnimFrame);
+    if (groundRender) groundRender.dispose();
+    const container = document.getElementById('globe');
+    container.innerHTML = '';
+    hideRobotSelector();
+    initGlobe();
+    if (colony) {
+        const lng = colony.longitude > 180 ? colony.longitude - 360 : colony.longitude;
+        globe.pointsData([{ lat: colony.latitude, lng, size: 1 }]);
+        globe.ringsData([{ lat: colony.latitude, lng }]);
+    }
+}
+
+function showRobotSelector() {
+    let sel = document.getElementById('robot-selector');
+    if (!sel) {
+        sel = document.createElement('div');
+        sel.id = 'robot-selector';
+        sel.style.cssText = 'position:absolute;top:60px;left:50%;transform:translateX(-50%);display:flex;gap:4px;z-index:10;';
+        document.querySelector('.globe-container').appendChild(sel);
+    }
+    sel.innerHTML = '<button onclick="setRobotPOV(-1)" style="padding:4px 8px;background:rgba(20,20,20,0.8);border:1px solid #333;color:#aaa;border-radius:4px;cursor:pointer;font-size:0.75em;">🎥 Free Cam</button>';
+    robots.forEach((r, i) => {
+        const c = r.userData.type;
+        const colors = { solar:'#f1c40f', thermal:'#e74c3c', water:'#3498db', food:'#2ecc71', survival:'#9b59b6', events:'#f39c12' };
+        sel.innerHTML += `<button onclick="setRobotPOV(${i})" style="padding:4px 8px;background:rgba(20,20,20,0.8);border:1px solid ${colors[c]};color:${colors[c]};border-radius:4px;cursor:pointer;font-size:0.75em;">🤖 ${c}</button>`;
+    });
+}
+
+function hideRobotSelector() {
+    const sel = document.getElementById('robot-selector');
+    if (sel) sel.remove();
+}
+
+function setRobotPOV(idx) {
+    activeRobotIdx = idx;
+    if (idx >= 0) {
+        addEvent(`🤖 POV: ${robots[idx].userData.type} robot — ${robots[idx].userData.task}`, 'good');
+    } else {
+        addEvent('🎥 Free camera', '');
+    }
+}
+
+// Update robot activity when sols tick
+function updateRobots(fired) {
+    if (!groundMode) return;
+    robots.forEach(r => {
+        r.userData.active = fired.includes(r.userData.type);
+    });
 }
 
 function zoomOrbit() {
