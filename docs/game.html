@@ -142,6 +142,17 @@ body { font-family: -apple-system, sans-serif; background: #0a0a0a; color: #e0e0
 
     <button class="launch-btn" id="launchBtn" onclick="launchColony()">🚀 LAUNCH COLONY</button>
 
+    <div class="param-group" style="margin-top:12px; padding:10px; background:#0a0a1a; border:1px solid #7b68ee33; border-radius:8px;">
+        <h3>🖌️🦖 YOUR RAPPTER</h3>
+        <div id="rappter-card" style="margin:6px 0;">
+            <div style="font-weight:700; color:#7b68ee;">Genesis</div>
+            <div style="font-size:0.75em; color:#888;">Gen 1 | Best: Sol 0 | Runs: 0</div>
+        </div>
+        <button style="width:100%; padding:6px; margin:2px 0; background:#111; border:1px solid #333; color:#aaa; border-radius:4px; cursor:pointer; font-size:0.75em;" onclick="renameRappter()">✏️ Rename</button>
+        <button style="width:100%; padding:6px; margin:2px 0; background:#111; border:1px solid #7b68ee; color:#7b68ee; border-radius:4px; cursor:pointer; font-size:0.75em;" onclick="exportRappter()">📤 Export rappter.json</button>
+        <button style="width:100%; padding:6px; margin:2px 0; background:#111; border:1px solid #f39c12; color:#f39c12; border-radius:4px; cursor:pointer; font-size:0.75em;" onclick="importRappter()">📥 Import rappter.json</button>
+    </div>
+
     <div class="brain-config">
         <h3>🧠 AI Brain (optional)</h3>
         <div class="status">
@@ -169,6 +180,8 @@ body { font-family: -apple-system, sans-serif; background: #0a0a0a; color: #e0e0
         <button onclick="setSpeed(100)" id="btn-5x">5x</button>
         <button onclick="setSpeed(20)" id="btn-25x">25x</button>
         <button onclick="tickOnce()">▶ Step</button>
+        <button onclick="toggleZoom()" id="btn-zoom">🔍 Colony View</button>
+        <button onclick="zoomOrbit()">🌍 Orbit</button>
     </div>
 </div>
 
@@ -540,9 +553,378 @@ async function connectBrain() {
     status.textContent = 'No brain found (physics-only mode)';
 }
 
+// ═══════════════════════════════════════════════════════
+// EVOLUTION ENGINE — Death → Mutation → Backtest → Trade
+// Data Sloshing applied to AI evolution
+// ═══════════════════════════════════════════════════════
+
+let rappter = {
+    id: crypto.randomUUID(),
+    name: 'Genesis',
+    generation: 1,
+    lineage: [],
+    mutations: [],
+    strategy: { ice_mining_threshold: 10, heating_aggression: 0.2, food_priority: 0.5 },
+    record: [],        // win/loss per run
+    best_sol: 0,
+    total_runs: 0,
+    total_deaths: 0,
+    created: new Date().toISOString(),
+};
+
+// Strategy genes — these are what mutate
+const GENES = {
+    ice_mining_threshold: { min: 3, max: 30, step: 1, desc: 'Days of water supply before mining' },
+    heating_aggression: { min: 0.05, max: 0.5, step: 0.05, desc: 'Power fraction for heating' },
+    food_priority: { min: 0.1, max: 1.0, step: 0.1, desc: 'Water allocation to greenhouse' },
+    birth_morale_min: { min: 0.3, max: 0.9, step: 0.05, desc: 'Morale threshold for births' },
+    storm_power_reserve: { min: 0.1, max: 0.5, step: 0.05, desc: 'Power reserved during storms' },
+    expansion_pop: { min: 4, max: 15, step: 1, desc: 'Population before expansion focus' },
+};
+
+function applyStrategy(c, strat) {
+    // The strategy modifies agent behavior — the genes ARE the brain's wiring
+    // This is called each sol to adjust parameters based on the rappter's evolved strategy
+    const s = strat || rappter.strategy;
+
+    // Water agent: when to mine ice
+    if (c.water_liters < c.population * s.ice_mining_threshold && c.power_kwh > 50) {
+        c.water_liters += 20; c.power_kwh -= 50;
+        return ['⛏ Strategic ice mining (threshold: ' + s.ice_mining_threshold + 'd)'];
+    }
+    return [];
+}
+
+// ── Death Analysis — what killed the colony? ──
+function analyzeDeath(history) {
+    if (!history || history.length === 0) return { cause: 'unknown', sol: 0 };
+    const last = history[history.length - 1];
+    const cause = [];
+
+    // Find the critical resource
+    if (last.water <= 0) cause.push('dehydration');
+    if (last.food <= 0) cause.push('starvation');
+    if (last.temp < 270) cause.push('freezing');
+    if (last.temp > 310) cause.push('overheating');
+    if (last.pop <= 0) cause.push('extinction');
+
+    // Find when things started going wrong
+    let crisis_sol = last.sol;
+    for (let i = history.length - 1; i >= 0; i--) {
+        if (history[i].pop > 0 && history[i].water > 50 && history[i].food > 50) {
+            crisis_sol = history[i].sol;
+            break;
+        }
+    }
+
+    return { cause: cause.join('+') || 'unknown', sol: last.sol, crisis_sol, last };
+}
+
+// ── Mutation — evolve the strategy based on death ──
+function mutateRappter(death) {
+    const newStrat = { ...rappter.strategy };
+    const mutation = { generation: rappter.generation + 1, cause: death.cause, sol: death.sol, changes: [] };
+
+    // Targeted mutations based on cause of death
+    if (death.cause.includes('dehydration')) {
+        const oldVal = newStrat.ice_mining_threshold;
+        newStrat.ice_mining_threshold = Math.min(30, oldVal + Math.floor(Math.random() * 5) + 2);
+        mutation.changes.push(`ice_mining: ${oldVal} → ${newStrat.ice_mining_threshold} (died of thirst)`);
+    }
+    if (death.cause.includes('freezing')) {
+        const oldVal = newStrat.heating_aggression;
+        newStrat.heating_aggression = Math.min(0.5, oldVal + 0.05);
+        mutation.changes.push(`heating: ${oldVal.toFixed(2)} → ${newStrat.heating_aggression.toFixed(2)} (died of cold)`);
+    }
+    if (death.cause.includes('starvation')) {
+        const oldVal = newStrat.food_priority;
+        newStrat.food_priority = Math.min(1.0, oldVal + 0.1);
+        mutation.changes.push(`food_priority: ${oldVal.toFixed(1)} → ${newStrat.food_priority.toFixed(1)} (died of hunger)`);
+    }
+    if (death.cause.includes('overheating')) {
+        const oldVal = newStrat.heating_aggression;
+        newStrat.heating_aggression = Math.max(0.05, oldVal - 0.05);
+        mutation.changes.push(`heating: ${oldVal.toFixed(2)} → ${newStrat.heating_aggression.toFixed(2)} (died of heat)`);
+    }
+
+    // Random secondary mutation (genetic drift)
+    const genes = Object.keys(GENES);
+    const randomGene = genes[Math.floor(Math.random() * genes.length)];
+    const gene = GENES[randomGene];
+    const drift = (Math.random() - 0.5) * gene.step * 4;
+    const oldVal = newStrat[randomGene] || (gene.min + gene.max) / 2;
+    newStrat[randomGene] = Math.max(gene.min, Math.min(gene.max, oldVal + drift));
+    mutation.changes.push(`${randomGene}: ${oldVal.toFixed?.(2) || oldVal} → ${newStrat[randomGene].toFixed?.(2) || newStrat[randomGene]} (drift)`);
+
+    rappter.generation++;
+    rappter.mutations.push(mutation);
+    rappter.strategy = newStrat;
+    rappter.lineage.push({ gen: rappter.generation, cause: death.cause, died_sol: death.sol, changes: mutation.changes });
+
+    return mutation;
+}
+
+// ── Backtest — replay history with new strategy ──
+function backtest(originalHistory, newStrategy) {
+    // Clone the initial state from sol 0
+    if (!originalHistory || originalHistory.length === 0) return { survived: false, sol: 0 };
+
+    // Reconstruct initial colony from first history entry
+    const init = originalHistory[0];
+    let c = {
+        sol: 0, population: init.pop, habitat_temp_k: init.temp,
+        power_kwh: init.power, water_liters: init.water, food_kg: init.food,
+        morale: init.morale || 0.8, solar_panels_m2: colony?.solar_panels_m2 || 1000,
+        power_demand_kwh: init.pop * 30 + 50, water_recycling_rate: colony?.water_recycling_rate || 0.92,
+        food_growth_rate_kg_per_sol: colony?.food_growth_rate_kg_per_sol || 3,
+        solar_longitude: 0, dust_storm_active: false, alive: true,
+        latitude: colony?.latitude || 18.7, max_pop: init.pop,
+    };
+
+    // Replay with new strategy
+    const results = [];
+    for (let sol = 1; sol <= originalHistory.length + 50; sol++) {
+        c.sol = sol;
+        // Run same agents but with strategy modifications
+        agentSolar(c);
+
+        // Modified thermal using strategy
+        const ls = c.solar_longitude;
+        const marsK = 210 + 20 * Math.sin(ls * Math.PI / 180);
+        const loss = (c.habitat_temp_k - marsK) * 0.02;
+        const target = 293;
+        const afterLoss = c.habitat_temp_k - loss;
+        const delta = target - afterLoss;
+        const heatPower = delta > 0 ? Math.min(c.power_kwh * newStrategy.heating_aggression, delta * 2, 50) : 0;
+        c.habitat_temp_k = Math.max(180, Math.min(320, afterLoss + (delta > 0 ? heatPower * 0.5 : delta * 0.3)));
+        c.power_kwh -= Math.max(0, heatPower);
+
+        // Modified water with strategy threshold
+        const consumed = c.population * 3;
+        c.water_liters += consumed * (colony?.water_recycling_rate || 0.92);
+        if (c.water_liters < c.population * newStrategy.ice_mining_threshold && c.power_kwh > 50) {
+            c.water_liters += 20; c.power_kwh -= 50;
+        }
+
+        // Modified food with strategy priority
+        const tf = c.habitat_temp_k < 280 ? 0.3 : c.habitat_temp_k > 305 ? 0.5 : 1;
+        const wf = c.water_liters < 100 ? 0.2 : 1;
+        const grown = (colony?.food_growth_rate_kg_per_sol || 3) * tf * wf * newStrategy.food_priority;
+        c.food_kg += grown;
+        c.water_liters -= grown * 2 * newStrategy.food_priority;
+        c.power_kwh -= 10;
+
+        // Survival
+        let deaths = 0;
+        if (c.habitat_temp_k < 250) deaths = c.population;
+        else if (c.habitat_temp_k < 270) deaths = Math.max(1, Math.floor(c.population / 4));
+        const wn = c.population * 3;
+        if (c.water_liters < wn) deaths += Math.max(1, c.population - Math.floor(c.water_liters / 3));
+        c.water_liters = Math.max(0, c.water_liters - wn);
+        const fn = c.population * 2;
+        if (c.food_kg < fn) deaths += Math.max(1, c.population - Math.floor(c.food_kg / 2));
+        c.food_kg = Math.max(0, c.food_kg - fn);
+        deaths = Math.min(deaths, c.population);
+        c.population -= deaths;
+        c.alive = c.population > 0;
+
+        // Events (deterministic for backtest — use sol as seed)
+        const rng = Math.sin(sol * 12345.6789) * 0.5 + 0.5;
+        if (!c.dust_storm_active && rng < 0.03) c.dust_storm_active = true;
+        if (c.dust_storm_active && rng > 0.85) c.dust_storm_active = false;
+
+        c.power_kwh = Math.min(c.power_kwh, (colony?.solar_panels_m2 || 1000) * 2);
+
+        results.push({ sol, pop: c.population, alive: c.alive });
+        if (!c.alive) break;
+    }
+
+    const lastResult = results[results.length - 1];
+    return { survived: lastResult.alive, sol: lastResult.sol, results };
+}
+
+// ── Handle colony death → evolve ──
+function onColonyDeath() {
+    const death = analyzeDeath(colony.history);
+
+    // Record the run
+    rappter.record.push({ sol: death.sol, cause: death.cause, params: getParams(), timestamp: new Date().toISOString() });
+    rappter.total_runs++;
+    rappter.total_deaths++;
+    rappter.best_sol = Math.max(rappter.best_sol, death.sol);
+
+    // Mutate
+    const mutation = mutateRappter(death);
+
+    // Backtest
+    const bt = backtest(colony.history, rappter.strategy);
+
+    // Show evolution panel
+    showEvolution(death, mutation, bt);
+
+    addEvent(`💀 COLONY LOST at Sol ${death.sol} — Cause: ${death.cause}`, 'bad');
+    addEvent(`🧬 Mutation #${rappter.generation}: ${mutation.changes.join(', ')}`, 'warn');
+    addEvent(`🔬 Backtest: ${bt.survived ? 'SURVIVED to sol ' + bt.sol + '!' : 'Died at sol ' + bt.sol} (was: ${death.sol})`, bt.sol > death.sol ? 'good' : 'bad');
+}
+
+function showEvolution(death, mutation, bt) {
+    const aiThought = document.getElementById('ai-thought');
+    aiThought.style.display = 'block';
+    document.getElementById('ai-text').innerHTML = `
+        <div style="color:#e74c3c;">☠️ Died sol ${death.sol}: ${death.cause}</div>
+        <div style="color:#f39c12; margin:4px 0;">🧬 Gen ${rappter.generation}: ${mutation.changes.map(c => c.split('(')[0]).join(', ')}</div>
+        <div style="color:${bt.sol > death.sol ? '#2ecc71' : '#e74c3c'};">🔬 Backtest: ${bt.survived ? 'SURVIVED' : 'sol ' + bt.sol} ${bt.sol > death.sol ? '(+' + (bt.sol - death.sol) + ' sols!)' : ''}</div>
+        <div style="margin-top:6px;"><button onclick="launchColony()" style="padding:6px 12px;background:#7b68ee;border:none;color:#fff;border-radius:4px;cursor:pointer;">🚀 Relaunch with evolved AI (Gen ${rappter.generation})</button></div>
+    `;
+}
+
+function getParams() {
+    return {
+        crew: +document.getElementById('p-crew').value,
+        solar: +document.getElementById('p-solar').value,
+        water: +document.getElementById('p-water').value,
+        food: +document.getElementById('p-food').value,
+        lat: +document.getElementById('p-lat').value,
+    };
+}
+
+// ═══════════════════════════════════════════════════════
+// RAPPTER.JSON — Portable tradeable AI card
+// The Pokémon card for evolved AIs
+// ═══════════════════════════════════════════════════════
+
+function exportRappter() {
+    const card = {
+        format: 'rappter.json',
+        version: '1.0',
+        type: 'mars-barn-governor',
+        rappter: {
+            id: rappter.id,
+            name: rappter.name,
+            generation: rappter.generation,
+            strategy: rappter.strategy,
+            lineage: rappter.lineage,
+            mutations: rappter.mutations,
+            record: rappter.record,
+            best_sol: rappter.best_sol,
+            total_runs: rappter.total_runs,
+            total_deaths: rappter.total_deaths,
+            created: rappter.created,
+            exported: new Date().toISOString(),
+        },
+        verification: {
+            best_sol: rappter.best_sol,
+            generations: rappter.generation,
+            death_count: rappter.total_deaths,
+            hash: btoa(JSON.stringify(rappter.strategy)).slice(0, 16),
+        },
+        meta: {
+            platform: 'Mars Barn — Parameters for Survival',
+            engine: 'Data Sloshing v1.0 (Patent Pending)',
+            owner: 'Wildhaven AI Homes LLC',
+            sigil: '🖌️🦖',
+        }
+    };
+
+    const blob = new Blob([JSON.stringify(card, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `rappter-${rappter.name.toLowerCase()}-gen${rappter.generation}.json`;
+    a.click();
+
+    addEvent(`📤 Exported: ${rappter.name} Gen ${rappter.generation} (best: sol ${rappter.best_sol})`, 'good');
+}
+
+function importRappter() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            try {
+                const card = JSON.parse(ev.target.result);
+                if (card.format !== 'rappter.json') { alert('Not a valid rappter.json'); return; }
+                const r = card.rappter;
+                rappter = {
+                    id: r.id, name: r.name, generation: r.generation,
+                    lineage: r.lineage || [], mutations: r.mutations || [],
+                    strategy: r.strategy, record: r.record || [],
+                    best_sol: r.best_sol || 0, total_runs: r.total_runs || 0,
+                    total_deaths: r.total_deaths || 0, created: r.created,
+                };
+                updateRappterDisplay();
+                addEvent(`📥 Imported: ${rappter.name} Gen ${rappter.generation} (best: sol ${rappter.best_sol})`, 'good');
+            } catch (err) { alert('Invalid file: ' + err.message); }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
+function renameRappter() {
+    const name = prompt('Name your Rappter:', rappter.name);
+    if (name) { rappter.name = name; updateRappterDisplay(); }
+}
+
+function updateRappterDisplay() {
+    const el = document.getElementById('rappter-card');
+    if (el) {
+        el.innerHTML = `
+            <div style="font-weight:700; color:#7b68ee;">${rappter.name}</div>
+            <div style="font-size:0.75em; color:#888;">Gen ${rappter.generation} | Best: Sol ${rappter.best_sol} | Runs: ${rappter.total_runs}</div>
+            <div style="font-size:0.7em; color:#666; margin-top:4px;">${Object.entries(rappter.strategy).map(([k,v]) => k.split('_')[0] + ':' + (v.toFixed ? v.toFixed(1) : v)).join(' | ')}</div>
+        `;
+    }
+}
+
+// ── Camera Controls — orbit to colony-level zoom ──
+let zoomedIn = false;
+function toggleZoom() {
+    if (!colony) return;
+    const lng = colony.longitude > 180 ? colony.longitude - 360 : colony.longitude;
+    if (!zoomedIn) {
+        globe.pointOfView({ lat: colony.latitude, lng, altitude: 0.3 }, 1500);
+        globe.controls().autoRotate = false;
+        document.getElementById('btn-zoom').textContent = '🔍 Zoom Out';
+        zoomedIn = true;
+    } else {
+        globe.pointOfView({ lat: colony.latitude, lng, altitude: 2 }, 1500);
+        globe.controls().autoRotate = true;
+        document.getElementById('btn-zoom').textContent = '🔍 Colony View';
+        zoomedIn = false;
+    }
+}
+
+function zoomOrbit() {
+    globe.pointOfView({ lat: 20, lng: 0, altitude: 2.5 }, 2000);
+    globe.controls().autoRotate = true;
+    globe.controls().autoRotateSpeed = 0.5;
+    zoomedIn = false;
+    document.getElementById('btn-zoom').textContent = '🔍 Colony View';
+}
+
+// Override the tickSol death handler
+const _origTickSol = tickSol;
+tickSol = async function() {
+    const wasDead = colony && !colony.alive;
+    await _origTickSol();
+    if (colony && !colony.alive && !wasDead) {
+        onColonyDeath();
+    }
+    // Apply strategy each sol
+    if (colony && colony.alive) {
+        const stratEvents = applyStrategy(colony, rappter.strategy);
+        for (const e of stratEvents) addEvent('Sol ' + colony.sol + ': ' + e, 'good');
+    }
+};
+
 // Boot
 initGlobe();
 connectBrain();
+updateRappterDisplay();
 </script>
 </body>
 </html>
