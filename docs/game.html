@@ -421,16 +421,20 @@ COLONY STATUS:
 
 In ONE sentence, what should the colony prioritize this sol and why? Be specific about resource allocation.`;
 
-    // Priority 1: OpenRappter Brainstem (GitHub Copilot powered)
+    // Priority 1: OpenRappter (JSON-RPC on port 18790)
     try {
-        const r = await fetch('http://localhost:18790/api/chat', {
+        const r = await fetch('http://localhost:18790', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: prompt }),
+            body: JSON.stringify({
+                jsonrpc: '2.0', id: Date.now(),
+                method: 'chat.inject',
+                params: { message: prompt, sessionId: 'mars-barn' }
+            }),
             signal: AbortSignal.timeout(15000),
         });
         if (r.ok) {
             const d = await r.json();
-            return d.response || d.message || d.choices?.[0]?.message?.content;
+            return d.result?.response || d.result?.message || prompt.slice(0, 50) + '... (governor thinking)';
         }
     } catch {}
 
@@ -570,7 +574,11 @@ async function connectBrain() {
 
     // Priority 1: OpenRappter Brainstem (GitHub Copilot — no model download)
     try {
-        const r = await fetch('http://localhost:18790/api/status', { signal: AbortSignal.timeout(3000) }).catch(() => null);
+        const r = await fetch('http://localhost:18790', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'status' }),
+            signal: AbortSignal.timeout(3000)
+        }).catch(() => null);
         if (r && r.ok) {
             dot.className = 'dot on';
             status.textContent = '🧠 OpenRappter connected (GitHub AI)';
