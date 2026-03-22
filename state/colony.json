@@ -1,383 +1,2630 @@
 {
-  "name": "Mars Barn",
-  "launch_date": "2026-02-28T00:00:00Z",
-  "sol": 15,
-  "solar_longitude": 44.6,
+  "name": "Olympus Base",
+  "sol": 82,
   "location": {
-    "latitude": -4.5,
-    "longitude": 137.4,
-    "name": "Jezero Crater"
+    "latitude": 18.65,
+    "longitude": 226.2
   },
   "habitat": {
-    "interior_temp_k": 292.8,
-    "stored_energy_kwh": 1259.6,
-    "solar_panel_area_m2": 400.0,
-    "panel_efficiency": 0.22,
-    "panel_dust_factor": 0.998,
-    "insulation_r_value": 12.0,
-    "heater_power_w": 8000.0,
-    "ground_coupling_depth_m": 0.0,
-    "crew_size": 4,
-    "water_reserves_l": 194.0,
-    "food_reserves_kg": 13330.0,
-    "fresh_greens_kg": 0,
-    "harvest_total_kg": 0.0
+    "crew_size": 0,
+    "interior_temp_k": 293.0,
+    "stored_energy_kwh": 5000,
+    "water_reserves_l": 1261.3,
+    "food_reserves_kg": 25.0
   },
   "crew": {
-    "morale": 1.0,
-    "health": 0.8024964575672243,
-    "evas": 0,
-    "discoveries": 0,
-    "specializations": {
-      "engineer": 1,
-      "botanist": 1,
-      "geologist": 1,
-      "medic": 1
-    }
+    "health": 0,
+    "morale": 0.7500000000000002
   },
-  "equipment": {
-    "solar_panels": {
-      "health": 0.9638,
-      "decay_rate": 0.0008,
-      "repair_cost_hrs": 4,
-      "spare_parts": 5
-    },
-    "heater": {
-      "health": 0.9624,
-      "decay_rate": 0.0005,
-      "repair_cost_hrs": 3,
-      "spare_parts": 3
-    },
-    "water_recycler": {
-      "health": 0.991,
-      "decay_rate": 0.0006,
-      "repair_cost_hrs": 5,
-      "spare_parts": 3
-    },
-    "hab_seals": {
-      "health": 0.9955,
-      "decay_rate": 0.0003,
-      "repair_cost_hrs": 6,
-      "spare_parts": 4
-    },
-    "comms": {
-      "health": 0.997,
-      "decay_rate": 0.0002,
-      "repair_cost_hrs": 2,
-      "spare_parts": 2
-    }
-  },
-  "greenhouse": {
-    "planted_area_m2": 20.0,
-    "growth_stage": 0.6,
-    "co2_ppm": 400,
-    "water_daily_l": 5.0
-  },
-  "resupply": {
-    "shuttles": [
-      {
-        "id": "shuttle-alpha",
-        "launched_sol": -100,
-        "eta_sol": 100,
-        "manifest": {
-          "protein_powder_kg": 500,
-          "dehydrated_greens_kg": 100,
-          "vitamin_packs": 1000,
-          "water_l": 200,
-          "spare_panels_m2": 20,
-          "spare_parts": 10,
-          "seeds_kg": 5,
-          "medical_supplies_kg": 15
-        },
-        "status": "in_transit"
-      }
-    ],
-    "next_launch_sol": 300,
-    "launch_cadence_sols": 300,
-    "total_deliveries": 0
-  },
-  "active_events": [],
-  "log": [
+  "latitude": 18.65,
+  "longitude": 226.2,
+  "population": 0,
+  "habitat_temp_k": 293.0,
+  "power_kwh": 94674.4,
+  "power_demand_kwh": 200,
+  "solar_panels_m2": 939.0,
+  "water_liters": 1261.3,
+  "water_recycling_rate": 0.92,
+  "food_kg": 25.0,
+  "food_growth_rate_kg_per_sol": 3.0,
+  "oxygen_hours": 720,
+  "solar_longitude": 41.0,
+  "dust_storm_active": false,
+  "morale": 0.7500000000000002,
+  "alive": true,
+  "history": [
     {
       "sol": 1,
-      "ls": 37.6,
-      "int_c": 16.7,
-      "ext_c": -58.6,
-      "solar_kwh": 215.0,
-      "heat_kwh": 147.3,
-      "stored_kwh": 550.0,
-      "dust": 0.998,
-      "food_kg": 13358.0,
-      "morale": 0.82,
-      "health": 1.0,
-      "events": [
-        "dust_devil",
-        "warning:heater",
-        "adapt:heater_bypass"
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
       ],
-      "storm": false
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 1",
+        "EVENT: solar_panel_damage \u2014 solar_panels_m2*=0.95"
+      ],
+      "population": 6,
+      "power_kwh": 1787.0,
+      "water_liters": 1992.6,
+      "food_kg": 491.0,
+      "temp_k": 293.0
     },
     {
       "sol": 2,
-      "ls": 38.1,
-      "int_c": 17.1,
-      "ext_c": -58.7,
-      "solar_kwh": 214.6,
-      "heat_kwh": 151.2,
-      "stored_kwh": 606.0,
-      "dust": 0.998,
-      "food_kg": 13356.0,
-      "morale": 0.84,
-      "health": 1.0,
-      "events": [
-        "dust_devil"
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
       ],
-      "storm": false
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 2"
+      ],
+      "population": 6,
+      "power_kwh": 3009.7,
+      "water_liters": 1985.2,
+      "food_kg": 482.0,
+      "temp_k": 293.0
     },
     {
       "sol": 3,
-      "ls": 38.6,
-      "int_c": 17.1,
-      "ext_c": -58.8,
-      "solar_kwh": 213.8,
-      "heat_kwh": 151.1,
-      "stored_kwh": 661.0,
-      "dust": 0.996,
-      "food_kg": 13354.0,
-      "morale": 0.86,
-      "health": 1.0,
-      "events": [],
-      "storm": false
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 3"
+      ],
+      "population": 6,
+      "power_kwh": 4233.0,
+      "water_liters": 1977.8,
+      "food_kg": 473.0,
+      "temp_k": 293.0
     },
     {
       "sol": 4,
-      "ls": 39.1,
-      "int_c": 17.1,
-      "ext_c": -58.8,
-      "solar_kwh": 213.0,
-      "heat_kwh": 151.0,
-      "stored_kwh": 716.0,
-      "dust": 0.994,
-      "food_kg": 13352.0,
-      "morale": 0.88,
-      "health": 1.0,
-      "events": [],
-      "storm": false
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 4"
+      ],
+      "population": 6,
+      "power_kwh": 5456.9,
+      "water_liters": 1970.4,
+      "food_kg": 464.0,
+      "temp_k": 293.0
     },
     {
       "sol": 5,
-      "ls": 39.6,
-      "int_c": 17.0,
-      "ext_c": -58.9,
-      "solar_kwh": 213.5,
-      "heat_kwh": 150.9,
-      "stored_kwh": 771.0,
-      "dust": 0.998,
-      "food_kg": 13350.0,
-      "morale": 0.9,
-      "health": 1.0,
-      "events": [
-        "dust_devil"
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
       ],
-      "storm": false
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 5"
+      ],
+      "population": 6,
+      "power_kwh": 6681.4,
+      "water_liters": 1963.0,
+      "food_kg": 455.0,
+      "temp_k": 293.0
     },
     {
       "sol": 6,
-      "ls": 40.1,
-      "int_c": 20.0,
-      "ext_c": -59.0,
-      "solar_kwh": 213.1,
-      "heat_kwh": 154.7,
-      "stored_kwh": 822.0,
-      "dust": 0.998,
-      "food_kg": 13348.0,
-      "morale": 0.92,
-      "health": 1.0,
-      "events": [
-        "dust_devil"
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
       ],
-      "storm": false
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 6"
+      ],
+      "population": 6,
+      "power_kwh": 7906.5,
+      "water_liters": 1955.6,
+      "food_kg": 446.0,
+      "temp_k": 293.0
     },
     {
       "sol": 7,
-      "ls": 40.6,
-      "int_c": 19.8,
-      "ext_c": -59.0,
-      "solar_kwh": 212.8,
-      "heat_kwh": 150.8,
-      "stored_kwh": 876.0,
-      "dust": 0.998,
-      "food_kg": 13346.0,
-      "morale": 0.94,
-      "health": 1.0,
-      "events": [
-        "dust_devil"
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "governance",
+        "events",
+        "validate"
       ],
-      "storm": false
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 7"
+      ],
+      "population": 6,
+      "power_kwh": 9132.2,
+      "water_liters": 1948.2,
+      "food_kg": 437.0,
+      "temp_k": 293.0
     },
     {
       "sol": 8,
-      "ls": 41.1,
-      "int_c": 19.5,
-      "ext_c": -59.1,
-      "solar_kwh": 212.4,
-      "heat_kwh": 150.7,
-      "stored_kwh": 930.0,
-      "dust": 0.998,
-      "food_kg": 13344.0,
-      "morale": 0.96,
-      "health": 0.91,
-      "events": [
-        "dust_devil",
-        "crew:illness"
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
       ],
-      "storm": false
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 8"
+      ],
+      "population": 6,
+      "power_kwh": 10358.4,
+      "water_liters": 1940.8,
+      "food_kg": 428.0,
+      "temp_k": 293.0
     },
     {
       "sol": 9,
-      "ls": 41.6,
-      "int_c": 18.7,
-      "ext_c": -59.2,
-      "solar_kwh": 212.1,
-      "heat_kwh": 150.6,
-      "stored_kwh": 984.0,
-      "dust": 0.998,
-      "food_kg": 13342.0,
-      "morale": 0.98,
-      "health": 0.91,
-      "events": [
-        "dust_devil"
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
       ],
-      "storm": false
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 9"
+      ],
+      "population": 6,
+      "power_kwh": 11585.1,
+      "water_liters": 1933.4,
+      "food_kg": 419.0,
+      "temp_k": 293.0
     },
     {
       "sol": 10,
-      "ls": 42.1,
-      "int_c": 17.6,
-      "ext_c": -59.2,
-      "solar_kwh": 206.5,
-      "heat_kwh": 150.5,
-      "stored_kwh": 1033.0,
-      "dust": 0.998,
-      "food_kg": 13340.0,
-      "morale": 1.0,
-      "health": 0.92,
-      "events": [
-        "dust_devil",
-        "warning:panel"
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "report",
+        "events",
+        "validate"
       ],
-      "storm": false
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 10"
+      ],
+      "population": 6,
+      "power_kwh": 12812.3,
+      "water_liters": 1926.0,
+      "food_kg": 410.0,
+      "temp_k": 293.0
     },
     {
       "sol": 11,
-      "ls": 42.6,
-      "int_c": 19.8,
-      "ext_c": -59.3,
-      "solar_kwh": 206.2,
-      "heat_kwh": 154.3,
-      "stored_kwh": 1077.0,
-      "dust": 0.998,
-      "food_kg": 13338.0,
-      "morale": 1.0,
-      "health": 0.78,
-      "events": [
-        "dust_devil",
-        "crew:illness"
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
       ],
-      "storm": false
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 11"
+      ],
+      "population": 6,
+      "power_kwh": 14040.1,
+      "water_liters": 1918.6,
+      "food_kg": 401.0,
+      "temp_k": 293.0
     },
     {
       "sol": 12,
-      "ls": 43.1,
-      "int_c": 18.6,
-      "ext_c": -59.3,
-      "solar_kwh": 205.8,
-      "heat_kwh": 150.4,
-      "stored_kwh": 1125.0,
-      "dust": 0.998,
-      "food_kg": 13336.0,
-      "morale": 1.0,
-      "health": 0.79,
-      "events": [
-        "dust_devil"
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
       ],
-      "storm": false
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 12"
+      ],
+      "population": 6,
+      "power_kwh": 15268.4,
+      "water_liters": 1911.2,
+      "food_kg": 392.0,
+      "temp_k": 293.0
     },
     {
       "sol": 13,
-      "ls": 43.6,
-      "int_c": 19.9,
-      "ext_c": -59.4,
-      "solar_kwh": 205.5,
-      "heat_kwh": 154.1,
-      "stored_kwh": 1169.0,
-      "dust": 0.998,
-      "food_kg": 13334.0,
-      "morale": 1.0,
-      "health": 0.79,
-      "events": [
-        "dust_devil"
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
       ],
-      "storm": false
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 13"
+      ],
+      "population": 6,
+      "power_kwh": 16497.2,
+      "water_liters": 1903.8,
+      "food_kg": 383.0,
+      "temp_k": 293.0
     },
     {
       "sol": 14,
-      "ls": 44.1,
-      "int_c": 18.4,
-      "ext_c": -59.4,
-      "solar_kwh": 204.8,
-      "heat_kwh": 150.2,
-      "stored_kwh": 1216.0,
-      "dust": 0.996,
-      "food_kg": 13332.0,
-      "morale": 1.0,
-      "health": 0.8,
-      "events": [],
-      "storm": false
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "governance",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 14"
+      ],
+      "population": 6,
+      "power_kwh": 17726.4,
+      "water_liters": 1896.4,
+      "food_kg": 374.0,
+      "temp_k": 293.0
     },
     {
       "sol": 15,
-      "ls": 44.6,
-      "int_c": 19.7,
-      "ext_c": -59.5,
-      "solar_kwh": 204.8,
-      "heat_kwh": 154.0,
-      "stored_kwh": 1260.0,
-      "dust": 0.998,
-      "food_kg": 13330.0,
-      "morale": 1.0,
-      "health": 0.8,
-      "events": [
-        "dust_devil"
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
       ],
-      "storm": false
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 15"
+      ],
+      "population": 6,
+      "power_kwh": 18956.0,
+      "water_liters": 1889.0,
+      "food_kg": 365.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 16,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 16"
+      ],
+      "population": 6,
+      "power_kwh": 20186.0,
+      "water_liters": 1881.6,
+      "food_kg": 356.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 17,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 17"
+      ],
+      "population": 6,
+      "power_kwh": 21416.4,
+      "water_liters": 1874.2,
+      "food_kg": 347.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 18,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 18"
+      ],
+      "population": 6,
+      "power_kwh": 22647.2,
+      "water_liters": 1866.8,
+      "food_kg": 338.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 19,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 19"
+      ],
+      "population": 6,
+      "power_kwh": 23878.3,
+      "water_liters": 1859.4,
+      "food_kg": 329.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 20,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "report",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 20"
+      ],
+      "population": 6,
+      "power_kwh": 25109.8,
+      "water_liters": 1852.0,
+      "food_kg": 320.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 21,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "governance",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 21"
+      ],
+      "population": 6,
+      "power_kwh": 26341.6,
+      "water_liters": 1844.6,
+      "food_kg": 311.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 22,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 22"
+      ],
+      "population": 6,
+      "power_kwh": 27573.7,
+      "water_liters": 1837.2,
+      "food_kg": 302.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 23,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 23"
+      ],
+      "population": 6,
+      "power_kwh": 28806.1,
+      "water_liters": 1829.8,
+      "food_kg": 293.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 24,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 24"
+      ],
+      "population": 6,
+      "power_kwh": 30038.8,
+      "water_liters": 1822.4,
+      "food_kg": 284.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 25,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 25"
+      ],
+      "population": 6,
+      "power_kwh": 31271.8,
+      "water_liters": 1815.0,
+      "food_kg": 275.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 26,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 26",
+        "EVENT: mineral_discovery \u2014 morale+=0.05"
+      ],
+      "population": 6,
+      "power_kwh": 32505.0,
+      "water_liters": 1807.6,
+      "food_kg": 266.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 27,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 27"
+      ],
+      "population": 6,
+      "power_kwh": 33738.5,
+      "water_liters": 1800.2,
+      "food_kg": 257.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 28,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "governance",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 28"
+      ],
+      "population": 6,
+      "power_kwh": 34972.2,
+      "water_liters": 1792.8,
+      "food_kg": 248.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 29,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 29"
+      ],
+      "population": 6,
+      "power_kwh": 36206.0,
+      "water_liters": 1785.4,
+      "food_kg": 239.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 30,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "resolve_predictions",
+        "report",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 30"
+      ],
+      "population": 6,
+      "power_kwh": 37440.0,
+      "water_liters": 1778.0,
+      "food_kg": 230.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 31,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 31"
+      ],
+      "population": 6,
+      "power_kwh": 38674.2,
+      "water_liters": 1770.6,
+      "food_kg": 221.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 32,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 32"
+      ],
+      "population": 6,
+      "power_kwh": 39908.5,
+      "water_liters": 1763.2,
+      "food_kg": 212.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 33,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 33",
+        "EVENT: mineral_discovery \u2014 morale+=0.05"
+      ],
+      "population": 6,
+      "power_kwh": 41142.9,
+      "water_liters": 1755.8,
+      "food_kg": 203.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 34,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 34"
+      ],
+      "population": 6,
+      "power_kwh": 42377.4,
+      "water_liters": 1748.4,
+      "food_kg": 194.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 35,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "governance",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 35",
+        "EVENT: mineral_discovery \u2014 morale+=0.05"
+      ],
+      "population": 6,
+      "power_kwh": 43612.0,
+      "water_liters": 1741.0,
+      "food_kg": 185.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 36,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 36",
+        "EVENT: dust_storm_start \u2014 dust_storm_active=True"
+      ],
+      "population": 6,
+      "power_kwh": 44846.7,
+      "water_liters": 1733.6,
+      "food_kg": 176.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 37,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 37",
+        "EVENT: equipment_repair \u2014 solar_panels_m2*=1.02"
+      ],
+      "population": 6,
+      "power_kwh": 45083.2,
+      "water_liters": 1726.2,
+      "food_kg": 167.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 38,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 38"
+      ],
+      "population": 6,
+      "power_kwh": 45324.7,
+      "water_liters": 1718.8,
+      "food_kg": 158.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 39,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 39"
+      ],
+      "population": 6,
+      "power_kwh": 45566.2,
+      "water_liters": 1711.4,
+      "food_kg": 149.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 40,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "report",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 40"
+      ],
+      "population": 6,
+      "power_kwh": 45807.8,
+      "water_liters": 1704.0,
+      "food_kg": 140.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 41,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 41",
+        "EVENT: mineral_discovery \u2014 morale+=0.05"
+      ],
+      "population": 6,
+      "power_kwh": 46049.4,
+      "water_liters": 1696.6,
+      "food_kg": 131.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 42,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "governance",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 42",
+        "EVENT: dust_storm_end \u2014 dust_storm_active=False"
+      ],
+      "population": 6,
+      "power_kwh": 46291.0,
+      "water_liters": 1689.2,
+      "food_kg": 122.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 43,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 43"
+      ],
+      "population": 6,
+      "power_kwh": 47550.9,
+      "water_liters": 1681.8,
+      "food_kg": 113.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 44,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 44"
+      ],
+      "population": 6,
+      "power_kwh": 48810.8,
+      "water_liters": 1674.4,
+      "food_kg": 104.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 45,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 45"
+      ],
+      "population": 6,
+      "power_kwh": 50070.6,
+      "water_liters": 1667.0,
+      "food_kg": 95.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 46,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 46",
+        "EVENT: equipment_repair \u2014 solar_panels_m2*=1.02"
+      ],
+      "population": 6,
+      "power_kwh": 51330.4,
+      "water_liters": 1659.6,
+      "food_kg": 86.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 47,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 47"
+      ],
+      "population": 6,
+      "power_kwh": 52615.6,
+      "water_liters": 1652.2,
+      "food_kg": 77.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 48,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 48"
+      ],
+      "population": 6,
+      "power_kwh": 53900.7,
+      "water_liters": 1644.8,
+      "food_kg": 68.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 49,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "governance",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 49"
+      ],
+      "population": 6,
+      "power_kwh": 55185.7,
+      "water_liters": 1637.4,
+      "food_kg": 59.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 50,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "report",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 50"
+      ],
+      "population": 6,
+      "power_kwh": 56470.6,
+      "water_liters": 1630.0,
+      "food_kg": 50.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 51,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 51",
+        "EVENT: water_leak \u2014 water_liters*=0.9"
+      ],
+      "population": 6,
+      "power_kwh": 57755.3,
+      "water_liters": 1460.3,
+      "food_kg": 41.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 52,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 52"
+      ],
+      "population": 6,
+      "power_kwh": 59039.9,
+      "water_liters": 1452.9,
+      "food_kg": 32.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 53,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 53"
+      ],
+      "population": 6,
+      "power_kwh": 60324.3,
+      "water_liters": 1445.5,
+      "food_kg": 23.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 54,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 54",
+        "EVENT: solar_panel_damage \u2014 solar_panels_m2*=0.95"
+      ],
+      "population": 6,
+      "power_kwh": 61608.6,
+      "water_liters": 1438.1,
+      "food_kg": 14.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 55,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 6 colonists survived sol 55"
+      ],
+      "population": 6,
+      "power_kwh": 62827.9,
+      "water_liters": 1430.7,
+      "food_kg": 5.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 56,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food_critical",
+        "survival",
+        "governance",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "STARVATION: 2 colonists died. Food: 8kg for 6 people"
+      ],
+      "population": 4,
+      "power_kwh": 64047.1,
+      "water_liters": 1423.3,
+      "food_kg": 0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 57,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food_critical",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "STARVATION: 3 colonists died. Food: 3kg for 4 people"
+      ],
+      "population": 1,
+      "power_kwh": 65266.1,
+      "water_liters": 1416.3,
+      "food_kg": 0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 58,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food_critical",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 58"
+      ],
+      "population": 1,
+      "power_kwh": 66484.9,
+      "water_liters": 1410.1,
+      "food_kg": 1.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 59,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food_critical",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 59"
+      ],
+      "population": 1,
+      "power_kwh": 67703.5,
+      "water_liters": 1403.9,
+      "food_kg": 2.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 60,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "resolve_predictions",
+        "report",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 60"
+      ],
+      "population": 1,
+      "power_kwh": 68921.9,
+      "water_liters": 1397.7,
+      "food_kg": 3.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 61,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 61"
+      ],
+      "population": 1,
+      "power_kwh": 70140.0,
+      "water_liters": 1391.5,
+      "food_kg": 4.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 62,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 62"
+      ],
+      "population": 1,
+      "power_kwh": 71357.9,
+      "water_liters": 1385.3,
+      "food_kg": 5.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 63,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "governance",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 63"
+      ],
+      "population": 1,
+      "power_kwh": 72575.6,
+      "water_liters": 1379.1,
+      "food_kg": 6.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 64,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 64"
+      ],
+      "population": 1,
+      "power_kwh": 73793.0,
+      "water_liters": 1372.9,
+      "food_kg": 7.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 65,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 65"
+      ],
+      "population": 1,
+      "power_kwh": 75010.1,
+      "water_liters": 1366.7,
+      "food_kg": 8.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 66,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 66"
+      ],
+      "population": 1,
+      "power_kwh": 76227.0,
+      "water_liters": 1360.5,
+      "food_kg": 9.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 67,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 67"
+      ],
+      "population": 1,
+      "power_kwh": 77443.6,
+      "water_liters": 1354.3,
+      "food_kg": 10.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 68,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 68"
+      ],
+      "population": 1,
+      "power_kwh": 78659.9,
+      "water_liters": 1348.1,
+      "food_kg": 11.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 69,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 69"
+      ],
+      "population": 1,
+      "power_kwh": 79875.9,
+      "water_liters": 1341.9,
+      "food_kg": 12.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 70,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "governance",
+        "report",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 70"
+      ],
+      "population": 1,
+      "power_kwh": 81091.6,
+      "water_liters": 1335.7,
+      "food_kg": 13.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 71,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 71"
+      ],
+      "population": 1,
+      "power_kwh": 82307.0,
+      "water_liters": 1329.5,
+      "food_kg": 14.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 72,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 72"
+      ],
+      "population": 1,
+      "power_kwh": 83522.2,
+      "water_liters": 1323.3,
+      "food_kg": 15.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 73,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 73"
+      ],
+      "population": 1,
+      "power_kwh": 84737.0,
+      "water_liters": 1317.1,
+      "food_kg": 16.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 74,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 74"
+      ],
+      "population": 1,
+      "power_kwh": 85951.5,
+      "water_liters": 1310.9,
+      "food_kg": 17.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 75,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 75"
+      ],
+      "population": 1,
+      "power_kwh": 87165.7,
+      "water_liters": 1304.7,
+      "food_kg": 18.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 76,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 76"
+      ],
+      "population": 1,
+      "power_kwh": 88379.5,
+      "water_liters": 1298.5,
+      "food_kg": 19.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 77,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "governance",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 77",
+        "EVENT: dust_storm_start \u2014 dust_storm_active=True"
+      ],
+      "population": 1,
+      "power_kwh": 89593.0,
+      "water_liters": 1292.3,
+      "food_kg": 20.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 78,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 78",
+        "EVENT: dust_storm_end \u2014 dust_storm_active=False"
+      ],
+      "population": 1,
+      "power_kwh": 89825.4,
+      "water_liters": 1286.1,
+      "food_kg": 21.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 79,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 79"
+      ],
+      "population": 1,
+      "power_kwh": 91038.2,
+      "water_liters": 1279.9,
+      "food_kg": 22.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 80,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "report",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 80"
+      ],
+      "population": 1,
+      "power_kwh": 92250.6,
+      "water_liters": 1273.7,
+      "food_kg": 23.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 81,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 81"
+      ],
+      "population": 1,
+      "power_kwh": 93462.7,
+      "water_liters": 1267.5,
+      "food_kg": 24.0,
+      "temp_k": 293.0
+    },
+    {
+      "sol": 82,
+      "needs": [
+        "physics",
+        "thermal",
+        "power",
+        "water",
+        "food",
+        "survival",
+        "events",
+        "validate"
+      ],
+      "agents_fired": [
+        "init",
+        "solar",
+        "thermal",
+        "water",
+        "food",
+        "survival",
+        "events"
+      ],
+      "events": [
+        "Colony already initialized",
+        "All 1 colonists survived sol 82",
+        "EVENT: accident \u2014 population-=1"
+      ],
+      "population": 0,
+      "power_kwh": 94674.4,
+      "water_liters": 1261.3,
+      "food_kg": 25.0,
+      "temp_k": 293.0
     }
   ],
-  "stats": {
-    "sols_survived": 15,
-    "total_power_kwh": 3153.9,
-    "total_heating_kwh": 2271.8,
-    "dust_devils": 12,
-    "storms_survived": 0,
-    "meteorites": 0,
-    "min_temp_k": 289.8,
-    "max_temp_k": 293.1,
-    "harvests": 0,
-    "crew_illnesses": 2,
-    "evas_completed": 0,
-    "discoveries": 0,
-    "resupply_deliveries": 0,
-    "resupply_kg_received": 0,
-    "repairs_completed": 0,
-    "parts_used": 0
+  "metrics": {
+    "solar": {
+      "irradiance_wm2": 543.3,
+      "energy_kwh": 1224.5,
+      "dust_storm": false,
+      "solar_longitude": 41.0
+    },
+    "thermal": {
+      "mars_surface_k": 223.1,
+      "habitat_temp_k": 293.0,
+      "heat_loss_k": 1.4,
+      "heating_applied_k": 1.4,
+      "power_used_kwh": 2.8
+    }
   },
-  "_meta": {
-    "version": 2,
-    "created": "2026-03-02T01:00:50Z",
-    "updated": "2026-03-15T13:09:29Z",
-    "engine": "mars-barn-live-v2"
-  },
-  "adaptations": {},
-  "_critical_sols": 0,
-  "_starving_sols": 0
+  "last_updated": "2026-03-22T00:09:45.209927"
 }

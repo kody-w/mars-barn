@@ -29,13 +29,21 @@ def run(colony: dict, sol: int, **kwargs) -> dict:
     insulation = 0.98  # 2% loss per sol
     heat_loss_k = (habitat_temp - mars_surface_k) * (1 - insulation)
 
-    # Heating power (electrical → thermal)
+    # Thermostat — only heat if below target, only cool if above
     power_available = colony.get("power_kwh", 0)
-    power_for_heating = min(power_available * 0.3, 100)  # max 30% of power for heating
-    heating_k = power_for_heating * 0.5  # 0.5K per kWh of heating
+    delta_from_target = target_temp - (habitat_temp - heat_loss_k)
 
-    # New temp
-    new_temp = habitat_temp - heat_loss_k + heating_k
+    if delta_from_target > 0:
+        # Need heating
+        power_for_heating = min(power_available * 0.2, delta_from_target * 2, 50)
+        heating_k = power_for_heating * 0.5
+    else:
+        # Above target — passive cooling only, no power used
+        power_for_heating = 0
+        heating_k = delta_from_target * 0.3  # negative = cooling
+
+    # New temp (clamped to prevent runaway)
+    new_temp = max(180, min(320, habitat_temp - heat_loss_k + heating_k))
 
     # Clamp to survival range
     events = []

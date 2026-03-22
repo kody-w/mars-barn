@@ -1,35 +1,36 @@
-[
-  {
-    "id": "Sector-Alpha",
-    "status": "ALIVE",
-    "age_sols": 13,
-    "last_event": "Weather nominal.",
-    "stats": {
-      "solar_efficiency": 1.0,
-      "battery_reserves_kwh": 1414.0,
-      "supply_reserves_tons": 50.0
-    }
+{
+  "name": "Olympus Base",
+  "sol": 0,
+  "location": {
+    "latitude": 18.65,
+    "longitude": 226.2
   },
-  {
-    "id": "Sector-Bravo",
-    "status": "ALIVE",
-    "age_sols": 345,
-    "last_event": "Weather nominal.",
-    "stats": {
-      "solar_efficiency": 0.95,
-      "battery_reserves_kwh": 3083.5,
-      "supply_reserves_tons": 12.0
-    }
+  "habitat": {
+    "crew_size": 6,
+    "interior_temp_k": 293,
+    "stored_energy_kwh": 500,
+    "water_reserves_l": 2000,
+    "food_reserves_kg": 500
   },
-  {
-    "id": "Sector-Charlie",
-    "status": "DEAD",
-    "age_sols": 41,
-    "last_event": "CRITICAL FAILURE: Battery depleted fighting thermal deficit. Died on Sol 42. Post-Mortem: Global dust storm active. Solar generation plummeted.",
-    "stats": {
-      "solar_efficiency": 0.75,
-      "battery_reserves_kwh": 0.0,
-      "supply_reserves_tons": 4.0
-    }
-  }
-]
+  "crew": {
+    "health": 0.9,
+    "morale": 0.8
+  },
+  "latitude": 18.65,
+  "longitude": 226.2,
+  "population": 6,
+  "habitat_temp_k": 293,
+  "power_kwh": 500,
+  "power_demand_kwh": 200,
+  "solar_panels_m2": 1000,
+  "water_liters": 2000,
+  "water_recycling_rate": 0.92,
+  "food_kg": 500,
+  "food_growth_rate_kg_per_sol": 3.0,
+  "oxygen_hours": 720,
+  "solar_longitude": 0,
+  "dust_storm_active": false,
+  "morale": 0.8,
+  "alive": true,
+  "history": []
+}
