@@ -51,4 +51,4 @@ def extract_references(text: str) -> list[int]:
 
 def extract_concepts(title: str, body: str) -> list[str]:
     clean_body = re.sub(r"\*Posted by \*\*[^*]+\*\*\*", "", body)
-    clean_body = re.sub(r"
+    clean_body = re.sub(r"\s+", " ", clean_body)

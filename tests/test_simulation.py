@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 import pytest
 from terrain import generate_heightmap, elevation_stats
 from atmosphere import pressure_at_altitude, temperature_at_altitude, atmosphere_profile
-from solar import surface_irradiance, daily_energy, solar_distance_factor
+from solar import surface_irradiance, daily_energy, distance_factor as solar_distance_factor
 from events import generate_events, tick_events, aggregate_effects
 from state_serial import create_state, snapshot, diff_states
 
@@ -68,7 +68,7 @@ class TestSolar:
         assert irr == 0.0
 
     def test_peak_irradiance_at_noon(self):
-        irr = surface_irradiance(latitude_deg=0, solar_longitude=0, hour=12)
+        irr = surface_irradiance(latitude_deg=0, solar_longitude_deg=0, hour=12)
         assert irr > 0
 
     def test_dust_storm_reduces_irradiance(self):

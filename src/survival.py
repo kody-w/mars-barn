@@ -19,26 +19,23 @@ from __future__ import annotations
 import math
 from typing import Any
 
-from constants import MARS_SOL_HOURS
-
-
-# --- Resource constants (per crew-member, per sol) ---
-
-O2_KG_PER_PERSON_PER_SOL = 0.84
-H2O_L_PER_PERSON_PER_SOL = 2.5
-FOOD_KCAL_PER_PERSON_PER_SOL = 2500
-POWER_BASE_KWH_PER_SOL = 30.0
+from constants import (
+    MARS_SOL_HOURS,
+    O2_KG_PER_PERSON_PER_SOL,
+    H2O_L_PER_PERSON_PER_SOL,
+    FOOD_KCAL_PER_PERSON_PER_SOL,
+    POWER_BASE_KWH_PER_SOL,
+    ISRU_O2_KG_PER_SOL,
+    ISRU_H2O_L_PER_SOL,
+    GREENHOUSE_KCAL_PER_SOL,
+    POWER_CRITICAL_KWH,
+    HABITAT_SOLAR_PANEL_AREA_M2,
+)
+from water_recycling import water_recovered as _water_recovered
 
 # --- Production rates ---
 
-ISRU_O2_KG_PER_SOL = 2.0
-ISRU_H2O_L_PER_SOL = 4.0
-GREENHOUSE_KCAL_PER_SOL = 6000.0
-SOLAR_HOURS_PER_SOL = MARS_SOL_HOURS / 2.0  # ~12.33h daylight, was hardcoded 12.0
-
-# --- Critical thresholds ---
-
-POWER_CRITICAL_KWH = 50.0
+SOLAR_HOURS_PER_SOL = MARS_SOL_HOURS / 2.0  # ~12.33h daylight
 TEMP_CRITICAL_LOW_K = 263.15
 O2_LETHAL_KG = 0.0
 FOOD_LETHAL_KCAL = 0.0
@@ -79,18 +76,30 @@ def create_resources(crew_size: int = 4, reserve_sols: int = 30) -> dict:
 
 
 def produce(resources: dict, solar_irradiance_w_m2: float,
-            panel_area_m2: float = 100.0,
+            panel_area_m2: float = HABITAT_SOLAR_PANEL_AREA_M2,
             panel_efficiency: float = 0.22) -> dict:
-    """Calculate one sol of resource production. Returns new dict."""
+    """Calculate one sol of resource production. Returns new dict.
+
+    ISRU and greenhouse scale with crew size (more crew = more units deployed).
+    Includes closed-loop water recycling from the water_recycling module.
+    """
     r = dict(resources)
+    crew = r["crew_size"]
     raw_kwh = (solar_irradiance_w_m2 * panel_area_m2 * panel_efficiency
                * SOLAR_HOURS_PER_SOL / 1000.0)
     r["power_kwh"] += raw_kwh * r["solar_efficiency"]
     if r["power_kwh"] > POWER_CRITICAL_KWH:
-        r["o2_kg"] += ISRU_O2_KG_PER_SOL * r["isru_efficiency"]
-        r["h2o_liters"] += ISRU_H2O_L_PER_SOL * r["isru_efficiency"]
+        # ISRU scales with crew: 1 unit per 2 crew (min 1), same as water module
+        isru_units = max(1, round(crew * 0.5))
+        r["o2_kg"] += ISRU_O2_KG_PER_SOL * isru_units * r["isru_efficiency"]
+        r["h2o_liters"] += ISRU_H2O_L_PER_SOL * isru_units * r["isru_efficiency"]
+        # Water recycling: recover greywater, condensate, and crop transpiration
+        sols_maint = r.get("sols_since_maintenance", 0)
+        r["h2o_liters"] += _water_recovered(crew, sols_maint)
     if r["power_kwh"] > POWER_CRITICAL_KWH and r["h2o_liters"] > 10.0:
-        r["food_kcal"] += GREENHOUSE_KCAL_PER_SOL * r["greenhouse_efficiency"]
+        # Greenhouse scales with crew (more mouths = more growing capacity deployed)
+        greenhouse_units = max(1, round(crew * 0.5))
+        r["food_kcal"] += GREENHOUSE_KCAL_PER_SOL * greenhouse_units * r["greenhouse_efficiency"]
     return r
 
 

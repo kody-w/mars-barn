@@ -33,7 +33,7 @@ from constants import (
 )
 from thermal import simulate_sol
 from atmosphere import temperature_at_altitude
-from solar import daily_energy, solar_distance_factor
+from solar import daily_energy, distance_factor as solar_distance_factor
 from events import generate_events
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")

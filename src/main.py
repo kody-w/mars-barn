@@ -104,9 +104,11 @@ def run_simulation(
             state["habitat"]["power_kw"] = round(power_w / 1000, 2)
             sol_power_kwh += power_w * step_hours / 1000
 
-            # Heating decision: heat if below target
+            # Heating decision: proportional control — modulate based on temp deficit
             heater_power = state["habitat"].get("heater_power_w", 8000.0)
-            heater_w = heater_power if state["habitat"]["interior_temp_k"] < TARGET_TEMP_K else 0.0
+            temp_deficit = TARGET_TEMP_K - state["habitat"]["interior_temp_k"]
+            heater_fraction = max(0.0, min(1.0, temp_deficit / 5.0))  # linear ramp over 5K range
+            heater_w = heater_power * heater_fraction
 
             # Thermal step
             result = thermal_step(
