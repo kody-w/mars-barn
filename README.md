@@ -48,7 +48,7 @@ cd mars-barn
 # ── Python simulation (stdlib only, no pip install needed) ──
 python src/live.py              # See your colony's current status
 python src/main.py              # Run full simulation (30 sols, instant)
-python -m pytest tests/ -v      # Run tests (43 passing)
+python -m pytest src/ tests/ -v  # Run all tests (~190 passing)
 
 # ── API server (optional, for full dashboard) ──
 cd api
