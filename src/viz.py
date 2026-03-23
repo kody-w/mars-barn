@@ -141,3 +141,22 @@ if __name__ == "__main__":
     print("=== Atmosphere Profile ===")
     print(render_atmosphere())
 
+
+
+def format_status_line(state: dict) -> str:
+    """Return a compact one-line simulation status.
+
+    Args:
+        state: Simulation state dict with keys like 'sol', 'temp_k',
+               'o2_kg', 'h2o_l', 'power_kwh', 'cascade_state'.
+
+    Returns:
+        Single-line string like 'Sol 147 | 293K | O2:45.2 | NOMINAL'
+    """
+    sol = state.get('sol', 0)
+    temp = state.get('temp_k', 0.0)
+    o2 = state.get('o2_kg', 0.0)
+    h2o = state.get('h2o_l', 0.0)
+    power = state.get('power_kwh', 0.0)
+    cascade = state.get('cascade_state', 'unknown')
+    return f'Sol {sol} | {temp:.0f}K | O2:{o2:.1f}kg | H2O:{h2o:.1f}L | Pwr:{power:.1f}kWh | {cascade.upper()}'
