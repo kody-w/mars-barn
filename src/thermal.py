@@ -15,6 +15,9 @@ from constants import (
     HABITAT_EMISSIVITY,
     HABITAT_INSULATION_R_VALUE,
     HABITAT_HEATER_POWER_W,
+    HABITAT_WINDOW_AREA_M2,
+    HABITAT_WINDOW_TRANSMITTANCE,
+    MARS_SURFACE_TEMP_K,
     THERMAL_MASS_MULTIPLIER,
     AIR_DENSITY_KG_M3,
     HABITAT_CREW_SIZE,
@@ -61,7 +64,7 @@ def habitat_thermal_balance(
     # 5. Ground coupling (regolith at ~210K stabilizes temperature)
     ground_loss = 0.0
     if HABITAT_GROUND_COUPLING:
-        ground_temp_k = 210.0  # Mars subsurface approximation
+        ground_temp_k = MARS_SURFACE_TEMP_K  # Mars subsurface approximation
         ground_area = HABITAT_SURFACE_AREA_M2 * 0.3  # ~30% floor contact
         ground_loss = GROUND_COUPLING_U_VALUE * ground_area * (internal_temp_k - ground_temp_k)
 
@@ -105,8 +108,8 @@ def heat_loss_radiation(
 
 def solar_heat_gain(
     irradiance_w_m2: float,
-    window_area_m2: float = 10.0,
-    transmittance: float = 0.75,
+    window_area_m2: float = HABITAT_WINDOW_AREA_M2,
+    transmittance: float = HABITAT_WINDOW_TRANSMITTANCE,
 ) -> float:
     """Solar heat gain through windows (Watts)."""
     return irradiance_w_m2 * window_area_m2 * transmittance
@@ -155,7 +158,7 @@ def thermal_step(
     # Ground coupling
     q_ground = 0.0
     if HABITAT_GROUND_COUPLING:
-        ground_temp_k = 210.0
+        ground_temp_k = MARS_SURFACE_TEMP_K
         ground_area = HABITAT_SURFACE_AREA_M2 * 0.3
         q_ground = GROUND_COUPLING_U_VALUE * ground_area * (internal_temp_k - ground_temp_k)
 
@@ -283,3 +286,4 @@ if __name__ == "__main__":
     # Demo thermal_step
     result = thermal_step(293.0, 210.0, 0.0, 8000.0)
     print(f"\nThermal step (night, 8kW heater): {result['interior_temp_k']:.1f}K, net={result['net_power_w']:.0f}W")
+
