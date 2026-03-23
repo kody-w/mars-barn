@@ -221,3 +221,52 @@ def check(state: dict) -> dict:
         s["death_sol"] = s.get("sol", 0)
         s["cause_of_death"] = resources.get("cause_of_death", "unknown")
     return s
+
+
+def reserves_remaining(resources: dict) -> dict:
+    """Calculate how many sols each resource will last at current consumption.
+
+    Returns a dict with sol counts per resource and the bottleneck
+    (whichever resource runs out first).  Useful for dashboards and
+    early-warning systems.
+
+    >>> r = create_resources(crew_size=4, reserve_sols=30)
+    >>> rem = reserves_remaining(r)
+    >>> rem["bottleneck_sols"] == 30.0
+    True
+    """
+    crew = resources.get("crew_size", 4)
+    if crew <= 0:
+        return {
+            "o2_sols": float("inf"),
+            "h2o_sols": float("inf"),
+            "food_sols": float("inf"),
+            "power_sols": float("inf"),
+            "bottleneck": "none",
+            "bottleneck_sols": float("inf"),
+        }
+
+    o2_rate = crew * O2_KG_PER_PERSON_PER_SOL
+    h2o_rate = crew * H2O_L_PER_PERSON_PER_SOL
+    food_rate = crew * FOOD_KCAL_PER_PERSON_PER_SOL
+
+    o2_sols = resources.get("o2_kg", 0) / o2_rate if o2_rate > 0 else float("inf")
+    h2o_sols = resources.get("h2o_liters", 0) / h2o_rate if h2o_rate > 0 else float("inf")
+    food_sols = resources.get("food_kcal", 0) / food_rate if food_rate > 0 else float("inf")
+    power_sols = (
+        resources.get("power_kwh", 0) / POWER_BASE_KWH_PER_SOL
+        if POWER_BASE_KWH_PER_SOL > 0
+        else float("inf")
+    )
+
+    reserves = {"o2": o2_sols, "h2o": h2o_sols, "food": food_sols, "power": power_sols}
+    bottleneck_key = min(reserves, key=reserves.get)
+
+    return {
+        "o2_sols": round(o2_sols, 1),
+        "h2o_sols": round(h2o_sols, 1),
+        "food_sols": round(food_sols, 1),
+        "power_sols": round(power_sols, 1),
+        "bottleneck": bottleneck_key,
+        "bottleneck_sols": round(reserves[bottleneck_key], 1),
+    }
