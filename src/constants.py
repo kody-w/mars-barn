@@ -52,6 +52,11 @@ HABITAT_WINDOW_TRANSMITTANCE = 0.75
 HABITAT_GROUND_COUPLING = True
 GROUND_COUPLING_U_VALUE = 0.5
 
+# -- Thermal Model Parameters --
+# Magic numbers extracted from thermal.py for single-source-of-truth.
+GROUND_CONTACT_FRACTION = 0.3    # fraction of floor area in ground contact
+SOLAR_ABSORPTION_FACTOR = 0.1    # effective solar absorption through walls
+
 # -- Interior Air Properties (pressurized at ~1 atm) --
 AIR_DENSITY_KG_M3 = 1.2
 AIR_SPECIFIC_HEAT_J_KGK = 1005
