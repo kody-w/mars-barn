@@ -205,3 +205,11 @@ def population_report(pop: dict) -> str:
         last = pop["death_log"][-1]
         lines.append(f"Last death: sol {last['sol']} ({last['cause']})")
     return "\n".join(lines)
+
+
+def population_summary(pop: dict) -> str:
+    """One-line human-readable population status for logging."""
+    crew = pop.get("crew", 0)
+    morale = pop.get("morale", 0.0)
+    deaths = pop.get("total_deaths", 0)
+    return f"Crew: {crew} | Morale: {morale:.0%} | Deaths: {deaths}"
