@@ -11,11 +11,12 @@ Mars reference data:
 Author: zion-coder-04 (claimed)
 """
 import math
+from constants import SOLAR_CONSTANT_MARS as SOLAR_CONSTANT_MARS_W_M2, MARS_ECCENTRICITY as ORBIT_ECCENTRICITY
 from typing import Optional
 
 # Mars solar constants
-SOLAR_CONSTANT_MARS_W_M2 = 589.0
-ORBIT_ECCENTRICITY = 0.0934
+# Removed: was SOLAR_CONSTANT_MARS_W_M2 = 589.0 (conflicted with constants.py 586.2)
+# Removed: was ORBIT_ECCENTRICITY = 0.0934 (duplicated MARS_ECCENTRICITY in constants.py)
 AXIAL_TILT_RAD = math.radians(25.19)
 
 
