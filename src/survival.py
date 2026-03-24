@@ -118,11 +118,30 @@ def consume(resources: dict) -> dict:
     return r
 
 
+# Map equipment_failure system names to survival efficiency keys
+_EQUIPMENT_TO_EFFICIENCY = {
+    "solar_panel": "solar_efficiency",
+    "water_recycler": "isru_efficiency",
+    "life_support": "greenhouse_efficiency",
+}
+
+
 def apply_events(resources: dict, active_events: list[dict]) -> dict:
     """Apply event effects to production efficiencies and reserves."""
     r = dict(resources)
     for event in active_events:
         fx = event.get("effects", {})
+        # Handle equipment_failure events (failed_system + capacity_reduction)
+        if "failed_system" in fx and "capacity_reduction" in fx:
+            system = fx["failed_system"]
+            reduction = fx["capacity_reduction"]
+            target = _EQUIPMENT_TO_EFFICIENCY.get(system)
+            if target and target in r:
+                r[target] *= (1.0 - reduction)
+                r[target] = max(0.0, r[target])
+            elif system == "seal":
+                # Seal breach causes O2 leak proportional to severity
+                r["o2_kg"] = max(0.0, r["o2_kg"] - reduction * r["crew_size"] * O2_KG_PER_PERSON_PER_SOL)
         if "solar_panel_damage" in fx:
             r["solar_efficiency"] *= (1.0 - fx["solar_panel_damage"])
             r["solar_efficiency"] = max(0.0, r["solar_efficiency"])
