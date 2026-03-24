@@ -38,33 +38,40 @@ def generate_events(
     Returns list of new events. Each event has:
       type, severity (0-1), duration_sols, effects (dict of param modifications),
       description, sol_start
+
+    Uses a LOCAL Random instance to avoid contaminating global random state.
     """
-    if seed is not None:
-        random.seed(seed + sol)
+    rng = random.Random(seed + sol) if seed is not None else random.Random()
 
     new_events = []
     active = active_events or []
 
     for event_type, prob in EVENT_PROBABILITIES.items():
-        if random.random() < prob:
+        if rng.random() < prob:
             # Don't stack same event type
             if any(e["type"] == event_type for e in active):
                 continue
-            event = _create_event(event_type, sol)
+            event = _create_event(event_type, sol, rng)
             if event:
                 new_events.append(event)
 
     return new_events
 
 
-def _create_event(event_type: str, sol: int) -> dict:
-    """Create a specific event with randomized parameters."""
+def _create_event(event_type: str, sol: int, rng: random.Random = None) -> dict:
+    """Create a specific event with randomized parameters.
+
+    Uses provided rng instance for isolation, falls back to module-level random.
+    """
+    if rng is None:
+        rng = random.Random()
+
     if event_type == "dust_storm_local":
-        severity = random.uniform(0.3, 0.7)
+        severity = rng.uniform(0.3, 0.7)
         return {
             "type": "dust_storm_local",
             "severity": round(severity, 2),
-            "duration_sols": random.randint(2, 8),
+            "duration_sols": rng.randint(2, 8),
             "sol_start": sol,
             "effects": {
                 "solar_multiplier": round(1 - severity * 0.6, 2),
@@ -76,58 +83,58 @@ def _create_event(event_type: str, sol: int) -> dict:
         }
 
     if event_type == "dust_storm_global":
-        severity = random.uniform(0.7, 1.0)
+        severity = rng.uniform(0.7, 1.0)
         return {
             "type": "dust_storm_global",
             "severity": round(severity, 2),
-            "duration_sols": random.randint(30, 120),
+            "duration_sols": rng.randint(10, 60),
             "sol_start": sol,
             "effects": {
-                "solar_multiplier": round(1 - severity * 0.8, 2),
+                "solar_multiplier": round(1 - severity * 0.85, 2),
                 "pressure_multiplier": round(1 - severity * 0.25, 2),
                 "temp_offset_k": round(severity * 25, 1),
-                "visibility_km": round(max(0.1, 5 * (1 - severity)), 1),
+                "visibility_km": round(max(0.1, 10 * (1 - severity)), 1),
             },
-            "description": f"Global dust storm (severity {severity:.0%})",
+            "description": f"GLOBAL dust storm (severity {severity:.0%})",
         }
 
     if event_type == "meteorite_small":
         return {
             "type": "meteorite_small",
-            "severity": round(random.uniform(0.1, 0.4), 2),
+            "severity": round(rng.uniform(0.1, 0.4), 2),
             "duration_sols": 0,
             "sol_start": sol,
             "effects": {
-                "terrain_impact_radius_m": random.randint(5, 50),
-                "terrain_impact_depth_m": random.randint(1, 10),
-                "seismic_magnitude": round(random.uniform(1.0, 3.0), 1),
+                "terrain_modification": round(rng.uniform(-5, -1), 1),
+                "seismic_event": True,
             },
             "description": "Small meteorite impact nearby",
         }
 
     if event_type == "meteorite_large":
+        severity = rng.uniform(0.6, 1.0)
         return {
             "type": "meteorite_large",
-            "severity": round(random.uniform(0.7, 1.0), 2),
-            "duration_sols": 0,
+            "severity": round(severity, 2),
+            "duration_sols": rng.randint(1, 3),
             "sol_start": sol,
             "effects": {
-                "terrain_impact_radius_m": random.randint(100, 1000),
-                "terrain_impact_depth_m": random.randint(20, 200),
-                "seismic_magnitude": round(random.uniform(4.0, 6.0), 1),
-                "dust_cloud_duration_sols": random.randint(1, 5),
+                "terrain_modification": round(rng.uniform(-20, -5), 1),
+                "seismic_event": True,
+                "pressure_multiplier": round(1 - severity * 0.05, 3),
+                "debris_risk": round(severity * 0.2, 2),
             },
-            "description": "Large meteorite impact — dust cloud generated",
+            "description": f"Large meteorite impact (severity {severity:.0%})",
         }
 
     if event_type == "equipment_failure":
-        systems = ["solar_panel", "seal", "water_recycler", "comms", "life_support"]
-        system = random.choice(systems)
-        severity = random.uniform(0.2, 0.8)
+        systems = ["solar_panel", "water_recycler", "air_filter", "heater", "seal"]
+        system = rng.choice(systems)
+        severity = rng.uniform(0.2, 0.8)
         return {
             "type": "equipment_failure",
             "severity": round(severity, 2),
-            "duration_sols": random.randint(1, 5),
+            "duration_sols": rng.randint(1, 5),
             "sol_start": sol,
             "effects": {
                 "failed_system": system,
@@ -137,11 +144,11 @@ def _create_event(event_type: str, sol: int) -> dict:
         }
 
     if event_type == "solar_flare":
-        severity = random.uniform(0.3, 0.9)
+        severity = rng.uniform(0.3, 0.9)
         return {
             "type": "solar_flare",
             "severity": round(severity, 2),
-            "duration_sols": random.randint(1, 3),
+            "duration_sols": rng.randint(1, 3),
             "sol_start": sol,
             "effects": {
                 "radiation_multiplier": round(1 + severity * 5, 1),
@@ -154,12 +161,12 @@ def _create_event(event_type: str, sol: int) -> dict:
     if event_type == "dust_devil":
         return {
             "type": "dust_devil",
-            "severity": round(random.uniform(0.05, 0.2), 2),
+            "severity": round(rng.uniform(0.05, 0.2), 2),
             "duration_sols": 0,
             "sol_start": sol,
             "effects": {
-                "solar_panel_cleaning": round(random.uniform(0.02, 0.1), 3),
-                "wind_speed_ms": round(random.uniform(5, 30), 1),
+                "solar_panel_cleaning": round(rng.uniform(0.02, 0.1), 3),
+                "wind_speed_ms": round(rng.uniform(5, 30), 1),
             },
             "description": "Dust devil — minor panel cleaning effect",
         }
