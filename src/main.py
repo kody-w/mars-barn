@@ -94,6 +94,9 @@ def run_simulation(
                 latitude, state["solar_longitude"], hour,
                 dust_storm=dust_storm,
             )
+            # Apply event-driven temperature offset (e.g., dust storm warming)
+            ext_temp += effects.get("temp_offset_k", 0.0)
+
             # Apply event-driven solar multiplier (e.g., dust storms)
             irr *= effects.get("solar_multiplier", 1.0)
 
