@@ -95,7 +95,7 @@ def _create_event(event_type: str, sol: int) -> dict:
         return {
             "type": "meteorite_small",
             "severity": round(random.uniform(0.1, 0.4), 2),
-            "duration_sols": 0,
+            "duration_sols": 1,  # instant but survives tick for aggregate_effects
             "sol_start": sol,
             "effects": {
                 "terrain_impact_radius_m": random.randint(5, 50),
@@ -109,7 +109,7 @@ def _create_event(event_type: str, sol: int) -> dict:
         return {
             "type": "meteorite_large",
             "severity": round(random.uniform(0.7, 1.0), 2),
-            "duration_sols": 0,
+            "duration_sols": 1,  # instant but survives tick for aggregate_effects
             "sol_start": sol,
             "effects": {
                 "terrain_impact_radius_m": random.randint(100, 1000),
@@ -155,7 +155,7 @@ def _create_event(event_type: str, sol: int) -> dict:
         return {
             "type": "dust_devil",
             "severity": round(random.uniform(0.05, 0.2), 2),
-            "duration_sols": 0,
+            "duration_sols": 1,  # instant but survives tick for aggregate_effects
             "sol_start": sol,
             "effects": {
                 "solar_panel_cleaning": round(random.uniform(0.02, 0.1), 3),
@@ -206,4 +206,3 @@ if __name__ == "__main__":
             for e in new:
                 print(f"  Sol {sol:>3d}: {e['description']}")
     print(f"\n  Total active events at sol 100: {len(active)}")
-
