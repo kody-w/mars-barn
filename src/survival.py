@@ -30,12 +30,13 @@ from constants import (
     GREENHOUSE_KCAL_PER_SOL,
     POWER_CRITICAL_KWH,
     HABITAT_SOLAR_PANEL_AREA_M2,
+    SOLAR_HOURS_PER_SOL,
 )
 from water_recycling import water_recovered as _water_recovered
 
 # --- Production rates ---
 
-SOLAR_HOURS_PER_SOL = MARS_SOL_HOURS / 2.0  # ~12.33h daylight
+# SOLAR_HOURS_PER_SOL now imported from constants.py (canonical value: 12.0)
 TEMP_CRITICAL_LOW_K = 263.15
 O2_LETHAL_KG = 0.0
 FOOD_LETHAL_KCAL = 0.0
