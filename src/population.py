@@ -12,12 +12,12 @@ Reviewed: pending community review
 """
 from __future__ import annotations
 
-from constants import MARS_SOL_HOURS
+from constants import MARS_SOL_HOURS, HABITAT_CREW_SIZE
 
 
 # --- Population constants ---
 
-INITIAL_CREW = 6
+INITIAL_CREW = HABITAT_CREW_SIZE  # was hardcoded 6, now uses constants.py
 MAX_CREW_PER_HABITAT = 12
 SUPPLY_WINDOW_SOLS = 780  # ~26 months, Hohmann transfer window
 ARRIVAL_BATCH_SIZE = 4
