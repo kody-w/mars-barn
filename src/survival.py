@@ -209,7 +209,7 @@ def check(state: dict) -> dict:
     solar = s.get("solar_irradiance_w_m2", 300.0)
     resources = produce(
         resources, solar,
-        habitat.get("solar_panel_area_m2", 100.0),
+        habitat.get("solar_panel_area_m2", HABITAT_SOLAR_PANEL_AREA_M2),
         habitat.get("solar_panel_efficiency", 0.22),
     )
     resources = consume(resources)
