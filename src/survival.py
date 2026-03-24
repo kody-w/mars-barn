@@ -88,6 +88,11 @@ def produce(resources: dict, solar_irradiance_w_m2: float,
     raw_kwh = (solar_irradiance_w_m2 * panel_area_m2 * panel_efficiency
                * SOLAR_HOURS_PER_SOL / 1000.0)
     r["power_kwh"] += raw_kwh * r["solar_efficiency"]
+    # Track water recycling maintenance interval
+    maint = r.get("sols_since_maintenance", 0) + 1
+    if maint >= 30:
+        maint = 0  # auto-maintenance every 30 sols
+    r["sols_since_maintenance"] = maint
     if r["power_kwh"] > POWER_CRITICAL_KWH:
         # ISRU scales with crew: 1 unit per 2 crew (min 1), same as water module
         isru_units = max(1, round(crew * 0.5))
