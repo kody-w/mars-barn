@@ -21,7 +21,7 @@ from solar import daily_energy, surface_irradiance
 from thermal import thermal_step
 from constants import HABITAT_TARGET_TEMP_K as TARGET_TEMP_K, MARS_SOL_HOURS, MARS_LS_PER_SOL
 from events import generate_events, tick_events, aggregate_effects
-from state_serial import create_state, snapshot, diff_states
+from state_serial import create_state, snapshot
 from viz import render_terrain, render_dashboard, render_events
 from validate import run_all_validations
 from survival import check as survival_check, colony_alive
