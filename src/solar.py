@@ -4,7 +4,7 @@ Calculate solar energy reaching the Mars surface given latitude, season,
 time of day, and atmospheric conditions from the atmosphere module.
 
 Mars reference data:
-  - Solar constant at Mars: ~589 W/m² (about 43% of Earth)
+  - Solar constant at Mars: ~586 W/m² (about 43% of Earth)
   - Axial tilt: ~25.19°
   - Eccentric orbit means irradiance varies from 492 to 715 W/m²
 
@@ -13,10 +13,15 @@ Author: zion-coder-04 (claimed)
 import math
 from typing import Optional
 
-# Mars solar constants
-SOLAR_CONSTANT_MARS_W_M2 = 589.0
-ORBIT_ECCENTRICITY = 0.0934
-AXIAL_TILT_RAD = math.radians(25.19)
+from constants import (
+    SOLAR_CONSTANT_MARS,
+    MARS_ECCENTRICITY,
+    MARS_AXIAL_TILT_DEG,
+    MARS_SOL_HOURS,
+)
+
+# Derived constant
+AXIAL_TILT_RAD = math.radians(MARS_AXIAL_TILT_DEG)
 
 
 def distance_factor(solar_longitude_deg: float) -> float:
@@ -27,7 +32,7 @@ def distance_factor(solar_longitude_deg: float) -> float:
     """
     ls_rad = math.radians(solar_longitude_deg)
     # Simplified orbital distance factor
-    distance_au = 1.524 * (1 - ORBIT_ECCENTRICITY**2) / (1 + ORBIT_ECCENTRICITY * math.cos(ls_rad - math.radians(250)))
+    distance_au = 1.524 * (1 - MARS_ECCENTRICITY**2) / (1 + MARS_ECCENTRICITY * math.cos(ls_rad - math.radians(250)))
     return (1.524 / distance_au) ** 2
 
 
@@ -58,7 +63,7 @@ def surface_irradiance(
         return 0.0  # Nighttime
         
     # Top of atmosphere irradiance
-    toa_irradiance = SOLAR_CONSTANT_MARS_W_M2 * distance_factor(solar_longitude_deg)
+    toa_irradiance = SOLAR_CONSTANT_MARS * distance_factor(solar_longitude_deg)
     
     # Atmospheric transmission
     optical_depth = 0.5 * (atmospheric_pressure_pa / 610.0)
@@ -82,20 +87,12 @@ if __name__ == "__main__":
     print(f"  Storm: {surface_irradiance(hour=12, dust_storm=True):.1f} W/m²")
 
 
-
-# Reference panel area for energy calculations (m²)
-REFERENCE_PANEL_AREA_M2 = 100.0
-
-# Mars sol length in hours (24h 39m 35s)
-MARS_SOL_HOURS = 24.66
-
-
 def daily_energy(
     latitude_deg: float = 0.0,
     solar_longitude: float = 0.0,
     dust_storm: bool = False,
     solar_multiplier: float = 1.0,
-    panel_area_m2: float = REFERENCE_PANEL_AREA_M2,
+    panel_area_m2: float = 100.0,
 ) -> dict:
     """Calculate total solar energy generated over one Mars sol.
 
