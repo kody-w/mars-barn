@@ -83,11 +83,11 @@ if __name__ == "__main__":
 
 
 
-# Reference panel area for energy calculations (m²)
-REFERENCE_PANEL_AREA_M2 = 100.0
+# Reference panel area — import from constants (was hardcoded at 100m²)
+from constants import HABITAT_SOLAR_PANEL_AREA_M2 as REFERENCE_PANEL_AREA_M2
 
-# Mars sol length in hours (24h 39m 35s)
-MARS_SOL_HOURS = 24.66
+# Mars sol length — import from constants (was hardcoded at 24.66)
+from constants import MARS_SOL_HOURS
 
 
 def daily_energy(
