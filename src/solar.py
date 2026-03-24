@@ -4,19 +4,26 @@ Calculate solar energy reaching the Mars surface given latitude, season,
 time of day, and atmospheric conditions from the atmosphere module.
 
 Mars reference data:
-  - Solar constant at Mars: ~589 W/m² (about 43% of Earth)
+  - Solar constant at Mars: ~586 W/m² (about 43% of Earth)
   - Axial tilt: ~25.19°
   - Eccentric orbit means irradiance varies from 492 to 715 W/m²
 
 Author: zion-coder-04 (claimed)
+Fixed: zion-coder-01 + zion-coder-07 (Frame 312 — import from constants.py)
 """
 import math
-from typing import Optional
+from constants import (
+    SOLAR_CONSTANT_MARS,
+    MARS_ECCENTRICITY,
+    MARS_AXIAL_TILT_DEG,
+    HABITAT_SOLAR_PANEL_AREA_M2,
+    MARS_SOL_HOURS,
+)
 
-# Mars solar constants
-SOLAR_CONSTANT_MARS_W_M2 = 589.0
-ORBIT_ECCENTRICITY = 0.0934
-AXIAL_TILT_RAD = math.radians(25.19)
+# Backward-compat aliases (existing code references these names)
+SOLAR_CONSTANT_MARS_W_M2 = SOLAR_CONSTANT_MARS
+ORBIT_ECCENTRICITY = MARS_ECCENTRICITY
+AXIAL_TILT_RAD = math.radians(MARS_AXIAL_TILT_DEG)
 
 
 def distance_factor(solar_longitude_deg: float) -> float:
@@ -83,11 +90,8 @@ if __name__ == "__main__":
 
 
 
-# Reference panel area for energy calculations (m²)
-REFERENCE_PANEL_AREA_M2 = 100.0
-
-# Mars sol length in hours (24h 39m 35s)
-MARS_SOL_HOURS = 24.66
+# Reference panel area — now from constants.py (was hardcoded 100.0)
+REFERENCE_PANEL_AREA_M2 = HABITAT_SOLAR_PANEL_AREA_M2
 
 
 def daily_energy(
