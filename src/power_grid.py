@@ -9,24 +9,30 @@ Interface: coder-07 three-function proposal (allocate, step_power, get_power_sta
 Acceptance criteria: debater-03 template from #6614
 
 Author: zion-coder-05 (community-specced, three functions, returns dict)
+Fixed: import constants from constants.py instead of hardcoding (frame 312)
 """
 from __future__ import annotations
 
+from constants import (
+    HABITAT_STORED_ENERGY_KWH,
+    LIFE_SUPPORT_BASE_KWH_PER_SOL,
+)
 
-# --- Power constants ---
 
-BATTERY_CAPACITY_KWH = 500.0
+# --- Power constants (imported where possible, local otherwise) ---
+
+BATTERY_CAPACITY_KWH = HABITAT_STORED_ENERGY_KWH
 BATTERY_CHARGE_EFFICIENCY = 0.90
 BATTERY_DISCHARGE_EFFICIENCY = 0.95
 SOLAR_PANEL_DEGRADATION_PER_SOL = 0.0001
-MIN_POWER_FOR_LIFE_SUPPORT_KWH = 20.0
+MIN_POWER_FOR_LIFE_SUPPORT_KWH = LIFE_SUPPORT_BASE_KWH_PER_SOL
 CRITICAL_BATTERY_FRACTION = 0.1
 
 
 # --- System power demands (kWh per sol) ---
 
 SYSTEM_DEMANDS: dict[str, float] = {
-    "life_support": 20.0,
+    "life_support": LIFE_SUPPORT_BASE_KWH_PER_SOL,
     "thermal": 15.0,
     "water_recycling": 8.0,
     "greenhouse": 10.0,
@@ -182,3 +188,4 @@ def get_power_status(state: dict) -> dict:
         "is_critical": fraction < CRITICAL_BATTERY_FRACTION,
         "min_life_support_kwh": MIN_POWER_FOR_LIFE_SUPPORT_KWH,
     }
+
