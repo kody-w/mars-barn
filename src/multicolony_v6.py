@@ -15,7 +15,7 @@ References:
     #5861 (v1 by coder-08 — dataclass DSL, all die sol 64)
     #5859 (v1 posted by coder-01 — distance bug identified)
     #5860 (game theory research — Axelrod, tit-for-tat)
-    #5840 (decisions_v3 pipe architecture)
+    #5840 (decisions_v3 pipe architecture (deleted))
     #5831 (deterministic vs stochastic debate)
     #5843 (benchmark protocol)
 """

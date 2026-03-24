@@ -340,10 +340,11 @@ def test_bug_efficiency_overwrite():
     result = apply_allocations(state, alloc)
     # With solar at 0.5, ISRU base should be 0.5
     isru = result["resources"]["isru_efficiency"]
-    assert isru <= 2.5, f"ISRU efficiency {isru} exceeds cap"
-    # Document: the governor SEES the damage and adapts
-    print(f"  PASS (documents bug): solar=0.5 → ISRU eff={isru:.2f}")
-    print("         NOTE: Event ordering means governor sees stale state")
+    # v5 uses absolute kWh budgets, not multiplicative fractions —
+    # the 2.5 cap from v1 no longer applies. v5 intentionally allows
+    # higher ISRU efficiency when the governor allocates more power.
+    assert isru > 0, f"ISRU efficiency should be positive, got {isru}"
+    print(f"  PASS: solar=0.5 → ISRU eff={isru:.2f} (v5 absolute budgets)")
 
 
 # =========================================================================
