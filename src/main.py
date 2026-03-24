@@ -81,6 +81,8 @@ def run_simulation(
         step_hours = 0.25  # 15-min steps for thermal accuracy
         sol_heating_kwh = 0.0
         sol_power_kwh = 0.0
+        sol_irr_sum = 0.0
+        sol_irr_count = 0
 
         num_steps = int(hours_per_sol / step_hours)
         for step_idx in range(num_steps):
@@ -96,6 +98,11 @@ def run_simulation(
             )
             # Apply event-driven solar multiplier (e.g., dust storms)
             irr *= effects.get("solar_multiplier", 1.0)
+
+            # Track irradiance for survival module
+            if irr > 0:
+                sol_irr_sum += irr
+                sol_irr_count += 1
 
             # Solar power generation
             panel_area = state["habitat"]["solar_panel_area_m2"]
@@ -132,6 +139,9 @@ def run_simulation(
         state["metrics"]["total_power_generated_kwh"] += sol_power_kwh
         state["metrics"]["total_heat_lost_kwh"] += sol_heating_kwh
         state["metrics"]["events_survived"] += len(new_events)
+
+        # Store average solar irradiance for survival module
+        state["solar_irradiance_w_m2"] = sol_irr_sum / max(1, sol_irr_count)
 
         # Survival check — resource consumption, production, cascade detection
         state = survival_check(state)
