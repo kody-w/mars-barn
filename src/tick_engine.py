@@ -85,6 +85,7 @@ def tick_colony(colony, current_ls, dust_storm, event_str):
     supplies = stats.get("supply_reserves_tons", 0.0)
     solar_eff = stats.get("solar_efficiency", 1.0)
     r_val = stats.get("thermal_insulation", 12.0)
+    crew_size = stats.get("crew_size", 4)
 
     supply_drop = random.random() < SUPPLY_DROP_PROBABILITY
     if supply_drop and not dust_storm:
@@ -105,7 +106,7 @@ def tick_colony(colony, current_ls, dust_storm, event_str):
         rtg_power_w=0.0
     )
     heating_kwh = thermal_res["heating_kwh"]
-    total_consumed = heating_kwh + BASE_LIFE_SUPPORT_KWH
+    total_consumed = heating_kwh + BASE_LIFE_SUPPORT_KWH * crew_size
 
     batt += generated_kwh - total_consumed
 
@@ -160,3 +161,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
