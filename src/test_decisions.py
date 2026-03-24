@@ -30,7 +30,7 @@ from survival import (
     POWER_BASE_KWH_PER_SOL,
     POWER_CRITICAL_KWH,
 )
-from decisions import (
+from decisions_v5 import (
     decide,
     apply_allocations,
     extract_traits,

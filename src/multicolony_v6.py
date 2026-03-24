@@ -67,11 +67,7 @@ except ImportError:
         return [e for e in active_events
                 if current_sol < e["sol_start"] + e["duration_sols"]]
 
-try:
-    from decisions_v3 import ARCHETYPE_PROFILES as _EXT_PROFILES
-except ImportError:
-    _EXT_PROFILES = None
-
+_EXT_PROFILES = None  # v1-v5 removed; using inline fallback below
 # ---------------------------------------------------------------------------
 # Constants — production rebalanced so colonies survive 500+ sols
 # ---------------------------------------------------------------------------
@@ -130,7 +126,7 @@ REPAIR_RATE = 0.12
 GRID_SIZE_KM = 500
 
 # ---------------------------------------------------------------------------
-# Archetype profiles (canonical source: decisions_v3.py)
+# Archetype profiles (self-contained — decisions_v3 deleted, fallback is canonical)
 # ---------------------------------------------------------------------------
 
 ARCHETYPE_PROFILES: dict[str, dict[str, float]] = _EXT_PROFILES or {
@@ -157,8 +153,6 @@ DEFAULT_GOVERNORS: list[dict] = [
 # ---------------------------------------------------------------------------
 # Dataclass interfaces
 # ---------------------------------------------------------------------------
-
-
 @dataclass
 class SiteProfile:
     """Terrain characteristics at a colony location."""
@@ -167,8 +161,6 @@ class SiteProfile:
     elevation_m: float
     water_mult: float = 1.0
     solar_mult: float = 1.0
-
-
 @dataclass
 class ColonyState:
     """Full state of one colony at a given sol."""
@@ -190,8 +182,6 @@ class ColonyState:
     trade_log: list = field(default_factory=list)
     conflict_log: list = field(default_factory=list)
     memory: Any = None
-
-
 # ---------------------------------------------------------------------------
 # Trait extraction (pipe stage 0)
 # ---------------------------------------------------------------------------
@@ -207,8 +197,6 @@ def extract_traits(governor: dict) -> dict:
         "archetype": arch,
         "name": governor.get("id", governor.get("name", "unknown")),
     }
-
-
 # ---------------------------------------------------------------------------
 # Assessment (pipe stage 1)
 # ---------------------------------------------------------------------------
@@ -228,8 +216,6 @@ def assess(resources: dict, traits: dict, crew: int) -> dict:
         "worst_resource": min(("o2", o2s), ("h2o", h2os), ("food", fs),
                               key=lambda x: x[1])[0],
     }
-
-
 # ---------------------------------------------------------------------------
 # Power allocation (pipe stage 2)
 # ---------------------------------------------------------------------------
@@ -246,16 +232,12 @@ def allocate_power(assessment: dict, traits: dict) -> dict:
     return {"heating": round(heating, 3),
             "isru": round(rem * iw / tw, 3),
             "greenhouse": round(rem * fw / tw, 3)}
-
-
 # ---------------------------------------------------------------------------
 # Repair dispatch (pipe stage 3)
 # ---------------------------------------------------------------------------
 
 _REPAIR_CAUTIOUS = ["seal", "life_support", "solar_panel", "water_recycler", "comms"]
 _REPAIR_BOLD = ["solar_panel", "water_recycler", "seal", "life_support", "comms"]
-
-
 def dispatch_repair(resources: dict, traits: dict) -> str | None:
     """Choose which damaged system to repair, if any."""
     damaged = [k for k in ("seal", "life_support", "solar_panel",
@@ -267,8 +249,6 @@ def dispatch_repair(resources: dict, traits: dict) -> str | None:
         if s in damaged:
             return s
     return damaged[0]
-
-
 # ---------------------------------------------------------------------------
 # Ration logic (pipe stage 4)
 # ---------------------------------------------------------------------------
@@ -280,8 +260,6 @@ def set_rations(assessment: dict, traits: dict) -> str:
     if fs <= 5:
         return RATION_EMERGENCY
     return RATION_REDUCED if fs <= threshold else RATION_NORMAL
-
-
 # ---------------------------------------------------------------------------
 # Governor memory — tracks trades, conflicts, resource trends
 # ---------------------------------------------------------------------------
@@ -333,8 +311,6 @@ class GovernorMemory:
     def was_betrayed_by(self, other_id: str) -> bool:
         """True if this colony was attacked by other_id."""
         return self.betrayals.get(other_id, 0) > 0
-
-
 # ---------------------------------------------------------------------------
 # Decision pipeline — compose all stages
 # ---------------------------------------------------------------------------
@@ -355,8 +331,6 @@ def decide(colony: ColonyState, sol: int) -> dict:
                 ps[k] /= total
     return {"power": ps, "repair_target": repair,
             "ration_level": ration, "assessment": assessment}
-
-
 # ---------------------------------------------------------------------------
 # Apply decisions — production, consumption, repair, morale
 # ---------------------------------------------------------------------------
@@ -399,8 +373,6 @@ def apply_allocations(colony: ColonyState, decision: dict, sol: int) -> dict:
         colony.morale = min(1.0, colony.morale + 0.005)
 
     return {"o2_delta": o2d, "h2o_delta": h2od, "food_delta": fd}
-
-
 # ---------------------------------------------------------------------------
 # Terrain placement — clustered so trade is possible
 # ---------------------------------------------------------------------------
@@ -408,8 +380,6 @@ def apply_allocations(colony: ColonyState, decision: dict, sol: int) -> dict:
 def _dist(a: SiteProfile, b: SiteProfile) -> float:
     """Euclidean distance between two sites in km."""
     return math.sqrt((a.x_km - b.x_km) ** 2 + (a.y_km - b.y_km) ** 2)
-
-
 def place_colonies(n: int, rng: random.Random,
                    terrain: list[list[float]]) -> list[SiteProfile]:
     """Place n colonies on 500x500 km grid with at least 2 pairs within COMM_RANGE."""
@@ -447,8 +417,6 @@ def place_colonies(n: int, rng: random.Random,
         else:
             sites.append(_site(rng.uniform(10, 490), rng.uniform(10, 490)))
     return sites
-
-
 # ---------------------------------------------------------------------------
 # Colony initialization and death check
 # ---------------------------------------------------------------------------
@@ -468,8 +436,6 @@ def init_colony(cid: str, gov: dict, site: SiteProfile,
             "greenhouse_efficiency": 1.0, "seal_eff": 1.0,
             "life_support_eff": 1.0, "water_recycler_eff": 1.0, "comms_eff": 1.0,
         })
-
-
 def check_death(colony: ColonyState, sol: int) -> None:
     """Mark colony dead if any critical resource is depleted."""
     if not colony.alive:
@@ -482,8 +448,6 @@ def check_death(colony: ColonyState, sol: int) -> None:
         if cond:
             colony.alive, colony.death_sol, colony.cause_of_death = False, sol, cause
             return
-
-
 # ---------------------------------------------------------------------------
 # Diplomacy helpers
 # ---------------------------------------------------------------------------
@@ -491,8 +455,6 @@ def check_death(colony: ColonyState, sol: int) -> None:
 def get_diplo(colony: ColonyState, other_id: str) -> str:
     """Get diplomatic state toward another colony."""
     return colony.diplomacy.get(other_id, DIPLO_NEUTRAL)
-
-
 def update_warmth(colony: ColonyState, other_id: str, delta: float) -> None:
     """Adjust warmth score and derive diplomatic state."""
     w = max(-1.0, min(1.0, colony.warmth.get(other_id, 0.0) + delta))
@@ -503,15 +465,11 @@ def update_warmth(colony: ColonyState, other_id: str, delta: float) -> None:
         colony.diplomacy[other_id] = DIPLO_HOSTILE
     else:
         colony.diplomacy[other_id] = DIPLO_NEUTRAL
-
-
 def get_coalition(cid: str, colonies: dict[str, ColonyState]) -> list[str]:
     """Return IDs of all living colonies allied with cid (including self)."""
     src = colonies[cid]
     return [cid] + [oid for oid, c in colonies.items()
                     if oid != cid and c.alive and get_diplo(src, oid) == DIPLO_ALLIED]
-
-
 # ---------------------------------------------------------------------------
 # Market-based trade (v2 design, extended with distance fees)
 # ---------------------------------------------------------------------------
@@ -520,13 +478,9 @@ _RES_KEYS: list[tuple[str, float]] = [
     ("o2_kg", O2_CONSUME), ("h2o_liters", H2O_CONSUME),
     ("food_kcal", FOOD_CONSUME),
 ]
-
-
 def _rsols(c: ColonyState, rk: str, pp: float) -> float:
     """Sols of a resource in reserve."""
     return c.resources.get(rk, 0) / max(c.crew_size * pp, 0.01)
-
-
 def clear_market(colonies: dict[str, ColonyState], sol: int,
                  rng: random.Random) -> list[dict]:
     """Run one sol of market clearing.  Returns executed trades."""
@@ -589,8 +543,6 @@ def clear_market(colonies: dict[str, ColonyState], sol: int,
         buyer.trade_log.append(trade)
         colonies[best["from"]].trade_log.append(trade)
     return trades
-
-
 # ---------------------------------------------------------------------------
 # Conflict: JAM and RAID with coalition retaliation
 # ---------------------------------------------------------------------------
@@ -627,8 +579,6 @@ def evaluate_aggression(colony: ColonyState, targets: dict[str, ColonyState],
             break
     return {"attacker": colony.colony_id, "target": tid,
             "type": "raid" if risk > 0.6 and rng.random() < 0.6 else "jam"}
-
-
 def execute_conflict(action: dict, colonies: dict[str, ColonyState],
                      sol: int, rng: random.Random) -> dict:
     """Execute a JAM or RAID and apply all consequences."""
@@ -665,8 +615,6 @@ def execute_conflict(action: dict, colonies: dict[str, ColonyState],
     atk.conflict_log.append(result)
     tgt.conflict_log.append(result)
     return result
-
-
 # ---------------------------------------------------------------------------
 # Supply drops — competitive bidding with coalition sharing
 # ---------------------------------------------------------------------------
@@ -674,8 +622,6 @@ def execute_conflict(action: dict, colonies: dict[str, ColonyState],
 def _next_drop(last: int, rng: random.Random) -> int:
     """Next supply drop sol (30 +/- 10)."""
     return last + DROP_INTERVAL_BASE + rng.randint(-DROP_INTERVAL_JITTER, DROP_INTERVAL_JITTER)
-
-
 def maybe_supply_drop(sol: int, drop_sol: int, colonies: dict[str, ColonyState],
                       rng: random.Random) -> dict | None:
     """If it's drop sol, run competitive bidding.  Returns result or None."""
@@ -711,8 +657,6 @@ def maybe_supply_drop(sol: int, drop_sol: int, colonies: dict[str, ColonyState],
 
     return {"sol": sol, "claimed_by": winner, "shared_with": share,
             "location": (round(dx, 1), round(dy, 1))}
-
-
 # ---------------------------------------------------------------------------
 # Events integration
 # ---------------------------------------------------------------------------
@@ -723,8 +667,6 @@ def apply_event_effects(colony: ColonyState, events: list[dict]) -> None:
         for k, mult in ev.get("effects", {}).items():
             if k in colony.resources:
                 colony.resources[k] *= max(0.0, mult)
-
-
 # ---------------------------------------------------------------------------
 # World tick — one sol of the full simulation
 # ---------------------------------------------------------------------------
@@ -757,8 +699,6 @@ def tick_world(colonies: dict[str, ColonyState], sol: int,
     for c in colonies.values():
         check_death(c, sol)
     return trades, conflicts, drop
-
-
 # ---------------------------------------------------------------------------
 # Main simulation entry point
 # ---------------------------------------------------------------------------
@@ -813,8 +753,6 @@ def run_multicolony(governors: list[dict] | None = None,
 
     return _build_result(colonies, sol_log, all_trades, all_conflicts,
                          all_drops, num_sols, seed)
-
-
 # ---------------------------------------------------------------------------
 # Results and leaderboard
 # ---------------------------------------------------------------------------
@@ -850,8 +788,6 @@ def _build_result(colonies: dict[str, ColonyState], sol_log: list[dict],
         "final_sol": sol_log[-1]["sol"] if sol_log else 0,
         "num_sols": num_sols, "seed": seed, "sol_log": sol_log,
     }
-
-
 def print_leaderboard(result: dict) -> None:
     """Print a formatted leaderboard to stdout."""
     w = 72
@@ -872,8 +808,6 @@ def print_leaderboard(result: dict) -> None:
               f"{e['survival_sols']:<6} {e['morale']:<8.3f} "
               f"{e['reputation']:<6.1f} {e['trades']:<7} {st}")
     print()
-
-
 # ---------------------------------------------------------------------------
 # Multi-trial benchmark comparison
 # ---------------------------------------------------------------------------
@@ -912,8 +846,6 @@ def compare_governors(governor_sets: list[list[dict]] | None = None,
             sum(1 for r in all_results if r["cooperation_won"])
             / max(len(all_results), 1), 3),
     }
-
-
 def print_comparison(comp: dict) -> None:
     """Print formatted benchmark comparison."""
     w = 72
@@ -929,8 +861,6 @@ def print_comparison(comp: dict) -> None:
               f"{r['avg_survival']:<10.1f} {r['avg_morale']:<12.3f} "
               f"{r['avg_trades']:<12.1f} {r['survive_rate']:.1%}")
     print()
-
-
 # ---------------------------------------------------------------------------
 # CLI entry point
 # ---------------------------------------------------------------------------
@@ -943,4 +873,3 @@ if __name__ == "__main__":
         print_comparison(compare_governors(num_trials=5, num_sols=500))
     else:
         print_leaderboard(run_multicolony(num_sols=500, seed=42))
-

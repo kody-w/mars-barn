@@ -25,7 +25,7 @@ from __future__ import annotations
 import sys
 import time
 
-from decisions import compare_governors
+from decisions_v5 import compare_governors
 from state_serial import create_state
 
 

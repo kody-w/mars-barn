@@ -20,7 +20,7 @@ import random
 
 import pytest
 
-from multicolony_v3 import (
+from multicolony_v6 import (
     ColonyState,
     SiteProfile,
     GovernorMemory,
