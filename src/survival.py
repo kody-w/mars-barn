@@ -183,12 +183,18 @@ def advance_cascade(resources: dict, internal_temp_k: float) -> dict:
     return r
 
 
-def colony_alive(state: dict) -> bool:
-    """Determine if the colony survives this sol."""
+def colony_alive(state: dict, reproduction_mode: str = "memetic") -> bool:
+    """Determine if the colony survives this sol.
+
+    reproduction_mode:
+      "biological" — minimum 2 crew (genetic reproduction possible)
+      "memetic"    — minimum 1 crew (knowledge/culture can persist)
+    """
     resources = state.get("resources", {})
     if resources.get("cascade_state") == DEAD:
         return False
-    if resources.get("crew_size", 0) <= 0:
+    min_crew = 2 if reproduction_mode == "biological" else 1
+    if resources.get("crew_size", 0) < min_crew:
         return False
     if resources.get("o2_kg", 0) <= O2_LETHAL_KG:
         return False
