@@ -71,6 +71,14 @@ POWER_BASE_KWH_PER_SOL = LIFE_SUPPORT_BASE_KWH_PER_SOL  # alias for compat
 
 # -- Critical Thresholds --
 POWER_CRITICAL_KWH = 50.0
+# -- Mortality Thresholds --
+# Colony death conditions used by survival.py and test_mortality.py.
+# A colony dies when stored energy drops below MORTALITY_POWER_KWH for
+# MORTALITY_GRACE_SOLS consecutive sols with zero solar input.
+MORTALITY_POWER_KWH = 10.0
+MORTALITY_GRACE_SOLS = 3
+MIN_POPULATION_VIABLE = 2           # below this, colony cannot sustain itself
+
 
 # -- Production Rates (base, before efficiency modifiers) --
 ISRU_O2_KG_PER_SOL = 2.0
