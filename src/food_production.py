@@ -24,7 +24,7 @@ from constants import (
 CROP_MATURITY_SOLS = 60
 WATER_PER_KCAL_PRODUCED = 0.002
 MIN_SOLAR_KWH_FOR_GROWTH = 5.0
-LIGHT_SATURATION_KWH = 40.0
+LIGHT_SATURATION_KWH = 15.0  # Fixed: was 40.0, Mars greenhouse gets ~10-15 kWh
 GREENHOUSE_WATER_L_PER_SOL = 8.0
 CROP_FAILURE_TEMP_LOW_K = 275.0
 CROP_FAILURE_TEMP_HIGH_K = 318.0
@@ -114,4 +114,3 @@ def step_food(
         "fed_population": fed_population,
         "deficit_kcal": round(deficit, 2),
     }
-
