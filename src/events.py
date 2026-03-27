@@ -178,11 +178,20 @@ def tick_events(active_events: List[dict], current_sol: int) -> List[dict]:
 
 
 def aggregate_effects(active_events: List[dict]) -> dict:
-    """Combine effects from all active events into one modifier dict."""
+    """Combine effects from all active events into one modifier dict.
+
+    Handles all event types: dust storms (solar_multiplier),
+    equipment failures (capacity_reduction per system),
+    solar flares (radiation, electronics risk, solar boost),
+    and dust devils (panel cleaning).
+    """
     combined = {
         "solar_multiplier": 1.0,
         "pressure_multiplier": 1.0,
         "temp_offset_k": 0.0,
+        "failed_systems": {},
+        "radiation_multiplier": 1.0,
+        "electronics_risk": 0.0,
     }
     for event in active_events:
         effects = event.get("effects", {})
@@ -192,6 +201,24 @@ def aggregate_effects(active_events: List[dict]) -> dict:
             combined["pressure_multiplier"] *= effects["pressure_multiplier"]
         if "temp_offset_k" in effects:
             combined["temp_offset_k"] += effects["temp_offset_k"]
+        if "failed_system" in effects:
+            system = effects["failed_system"]
+            reduction = effects.get("capacity_reduction", 0.0)
+            combined["failed_systems"][system] = max(
+                combined["failed_systems"].get(system, 0.0), reduction
+            )
+        if "radiation_multiplier" in effects:
+            combined["radiation_multiplier"] = max(
+                combined["radiation_multiplier"],
+                effects["radiation_multiplier"],
+            )
+        if "electronics_risk" in effects:
+            combined["electronics_risk"] = max(
+                combined["electronics_risk"],
+                effects["electronics_risk"],
+            )
+        if "solar_boost" in effects:
+            combined["solar_multiplier"] *= effects["solar_boost"]
     return combined
 
 
