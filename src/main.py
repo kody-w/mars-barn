@@ -54,6 +54,29 @@ def run_simulation(
         latitude=latitude, longitude=longitude,
     )
 
+    # Guard against invalid sol count
+    if num_sols <= 0:
+        if verbose:
+            print("  Warning: num_sols <= 0, nothing to simulate.")
+        return {
+            "state": state,
+            "snapshots": [snapshot(state)],
+            "event_log": [],
+            "validation": {"passed": 0, "total": 0, "results": []},
+            "summary": {
+                "sols_survived": 0,
+                "colony_alive": True,
+                "cause_of_death": "nominal",
+                "total_power_kwh": 0,
+                "total_heating_kwh": 0,
+                "events_survived": 0,
+                "final_temp_c": round(state["habitat"]["interior_temp_k"] - 273.15, 1),
+                "stored_energy_kwh": round(state["habitat"]["stored_energy_kwh"], 1),
+                "validation_passed": 0,
+                "validation_total": 0,
+            },
+        }
+
     # Simulation history
     snapshots = [snapshot(state)]
     event_log = []
