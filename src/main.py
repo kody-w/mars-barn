@@ -26,6 +26,8 @@ from viz import render_terrain, render_dashboard, render_events
 from validate import run_all_validations
 from survival import check as survival_check, colony_alive
 from food_production import step_food
+from water_recycling import tick_water
+from power_grid import step_power
 
 
 def run_simulation(
@@ -77,6 +79,10 @@ def run_simulation(
                 "validation_total": 0,
             },
         }
+
+    # Subsystem tracking
+    sols_since_water_maintenance = 0
+    water_reservoir_l = state.get("resources", {}).get("h2o_liters", 200.0)
 
     # Simulation history
     snapshots = [snapshot(state)]
@@ -150,28 +156,57 @@ def run_simulation(
         net_energy = sol_power_kwh - sol_heating_kwh
         state["habitat"]["stored_energy_kwh"] = max(0, state["habitat"]["stored_energy_kwh"] + net_energy)
 
+        # Power grid — allocate solar + battery to subsystems
+        dust_storm = any(e["type"].startswith("dust_storm") for e in state["active_events"])
+        power_result = step_power(
+            solar_energy_kwh=sol_power_kwh,
+            battery_kwh=state["habitat"]["stored_energy_kwh"],
+            panel_degradation_sols=sol,
+            dust_storm=dust_storm,
+        )
+        state["habitat"]["stored_energy_kwh"] = power_result["battery_kwh"]
+        state["power"] = power_result
+        if verbose and power_result["grid_status"] != "nominal" and sol % 10 == 0:
+            print(f"  Sol {sol:>3d}: ⚡ Grid {power_result['grid_status']}, "
+                  f"battery {power_result['battery_kwh']:.0f} kWh")
+
         # Food production — greenhouse output depends on solar, water, and maturity
-        water_available = state.get("resources", {}).get("h2o_liters", 100.0)
         food_result = step_food(
             population=state["habitat"]["crew_size"],
-            water_available=water_available,
+            water_available=water_reservoir_l,
             solar_energy_kwh=sol_power_kwh,
             sol=sol,
         )
         # Feed production back into resource tracking
         if "resources" in state:
             state["resources"]["food_kcal"] += food_result["food_produced_kcal"]
-            state["resources"]["h2o_liters"] -= food_result["water_consumed_l"]
         # Track food metrics
         state["metrics"]["total_food_produced_kcal"] = (
             state["metrics"].get("total_food_produced_kcal", 0.0)
             + food_result["food_produced_kcal"]
         )
+
+        # Water recycling — recovery, ISRU, reservoir tracking
+        crew = state["habitat"]["crew_size"]
+        water_result = tick_water(
+            reservoir_l=water_reservoir_l,
+            crew_size=crew,
+            sols_since_maintenance=sols_since_water_maintenance,
+        )
+        water_reservoir_l = water_result["reservoir_l"] - food_result["water_consumed_l"]
+        water_reservoir_l = max(0.0, water_reservoir_l)
+        if "resources" in state:
+            state["resources"]["h2o_liters"] = water_reservoir_l
+        state["water"] = water_result
+        sols_since_water_maintenance += 1
+        if sols_since_water_maintenance >= 30:
+            sols_since_water_maintenance = 0
+
         if verbose and sol % 10 == 0:
             stage = food_result["growth_stage"]
             fed = food_result["fed_population"]
-            crew = state["habitat"]["crew_size"]
-            print(f"  Sol {sol:>3d}: 🌱 Growth {stage:.0%}, feeding {fed}/{crew}")
+            print(f"  Sol {sol:>3d}: 🌱 Growth {stage:.0%}, feeding {fed}/{crew}, "
+                  f"💧 {water_reservoir_l:.0f}L")
 
         state["sol"] = sol
         state["metrics"]["sols_survived"] = sol
