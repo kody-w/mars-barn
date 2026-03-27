@@ -25,6 +25,7 @@ from state_serial import create_state, snapshot, diff_states
 from viz import render_terrain, render_dashboard, render_events
 from validate import run_all_validations
 from survival import check as survival_check, colony_alive
+from food_production import step_food
 
 
 def run_simulation(
@@ -53,6 +54,9 @@ def run_simulation(
         sol=0, terrain=terrain,
         latitude=latitude, longitude=longitude,
     )
+
+    # Food production tracking
+    food_deficit_kcal = 0.0
 
     # Guard against invalid sol count
     if num_sols <= 0:
@@ -168,6 +172,20 @@ def run_simulation(
         if sol % 5 == 0:
             snapshots.append(snapshot(state))
 
+        # Step food production
+        solar_for_greenhouse = daily_energy(
+            latitude_deg=latitude,
+            solar_longitude=state["solar_longitude"],
+        )
+        food_result = step_food(
+            sol=sol,
+            solar_energy_kwh=solar_for_greenhouse,
+            water_available=8.0,
+            interior_temp_k=state["habitat"]["interior_temp_k"],
+            crew_size=state["habitat"].get("crew_size", 4),
+        )
+        food_deficit_kcal += food_result.get("deficit_kcal", 0.0)
+
         # Log event activity
         if new_events:
             event_log.extend(new_events)
@@ -248,3 +266,4 @@ if __name__ == "__main__":
     print(f"  Events survived:    {s['events_survived']:>6d}")
     print(f"  Validation:         {s['validation_passed']}/{s['validation_total']} ✓")
     print(f"{'='*50}")
+
