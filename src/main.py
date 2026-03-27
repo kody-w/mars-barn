@@ -25,6 +25,7 @@ from state_serial import create_state, snapshot, diff_states
 from viz import render_terrain, render_dashboard, render_events
 from validate import run_all_validations
 from survival import check as survival_check, colony_alive
+from food_production import step_food
 
 
 def run_simulation(
@@ -53,6 +54,10 @@ def run_simulation(
         sol=0, terrain=terrain,
         latitude=latitude, longitude=longitude,
     )
+
+    # Food production tracking
+    total_food_produced_kcal = 0.0
+    total_food_deficit_kcal = 0.0
 
     # Guard against invalid sol count
     if num_sols <= 0:
@@ -156,6 +161,30 @@ def run_simulation(
         state["metrics"]["total_heat_lost_kwh"] += sol_heating_kwh
         state["metrics"]["events_survived"] += len(new_events)
 
+        # Food production — step the greenhouse model each sol
+        crew = state["habitat"].get("crew_size", 4)
+        water_avail = state.get("resources", {}).get("h2o_liters", 8.0)
+        food_result = step_food(
+            population=crew,
+            water_available=water_avail,
+            solar_energy_kwh=sol_power_kwh,
+            sol=sol,
+        )
+        total_food_produced_kcal += food_result["food_produced_kcal"]
+        total_food_deficit_kcal += food_result["deficit_kcal"]
+
+        # Feed food production into resource pool for survival check
+        if "resources" in state:
+            state["resources"]["food_kcal"] = max(
+                0.0,
+                state["resources"].get("food_kcal", 0.0) + food_result["food_produced_kcal"]
+                - crew * 2500,  # FOOD_KCAL_PER_PERSON_PER_SOL
+            )
+
+        if verbose and food_result["deficit_kcal"] > 0 and sol % 10 == 0:
+            print(f"  Sol {sol:>3d}: 🌱 Food deficit {food_result['deficit_kcal']:.0f} kcal "
+                  f"(maturity {food_result['growth_stage']:.1%})")
+
         # Survival check — resource consumption, production, cascade detection
         state = survival_check(state)
         if not colony_alive(state):
@@ -213,6 +242,8 @@ def run_simulation(
             "cause_of_death": state.get("resources", {}).get("cascade_state", "nominal"),
             "total_power_kwh": round(state["metrics"]["total_power_generated_kwh"], 1),
             "total_heating_kwh": round(state["metrics"]["total_heat_lost_kwh"], 1),
+            "total_food_produced_kcal": round(total_food_produced_kcal, 1),
+            "total_food_deficit_kcal": round(total_food_deficit_kcal, 1),
             "events_survived": state["metrics"]["events_survived"],
             "final_temp_c": round(state["habitat"]["interior_temp_k"] - 273.15, 1),
             "stored_energy_kwh": round(state["habitat"]["stored_energy_kwh"], 1),
@@ -243,6 +274,8 @@ if __name__ == "__main__":
     print(f"  SIMULATION COMPLETE — {s['sols_survived']} sols — {alive}")
     print(f"  Power generated:    {s['total_power_kwh']:>6.0f} kWh")
     print(f"  Heating used:       {s['total_heating_kwh']:>6.0f} kWh")
+    print(f"  Food produced:      {s['total_food_produced_kcal']:>6.0f} kcal")
+    print(f"  Food deficit:       {s['total_food_deficit_kcal']:>6.0f} kcal")
     print(f"  Final temp:         {s['final_temp_c']:>+6.1f} °C")
     print(f"  Energy reserves:    {s['stored_energy_kwh']:>6.0f} kWh")
     print(f"  Events survived:    {s['events_survived']:>6d}")
