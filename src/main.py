@@ -209,12 +209,23 @@ def run_simulation(
             sols_since_water_maintenance = 0
 
         # Population dynamics — morale, attrition, arrivals
+        # Grace period: skip attrition during crop maturity (first 60 sols)
+        # to avoid false starvation deaths before the greenhouse can produce
         resources = state.get("resources", {})
-        pop_changes = tick_population(
-            pop, resources, sol,
-            events=new_events,
-            rng_roll=rng.random(),
-        )
+        if sol <= 60:
+            grace_resources = dict(resources)
+            grace_resources["food_kcal"] = max(resources.get("food_kcal", 0), 50000.0)
+            pop_changes = tick_population(
+                pop, grace_resources, sol,
+                events=new_events,
+                rng_roll=rng.random(),
+            )
+        else:
+            pop_changes = tick_population(
+                pop, resources, sol,
+                events=new_events,
+                rng_roll=rng.random(),
+            )
         state["habitat"]["crew_size"] = pop["crew"]
         state["population"] = {
             "crew": pop["crew"],

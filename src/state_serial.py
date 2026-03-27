@@ -53,6 +53,11 @@ def create_state(
             "stored_energy_kwh": HABITAT_STORED_ENERGY_KWH,
             "heater_power_w": HABITAT_HEATER_POWER_W,
         },
+        "resources": {
+            "o2_kg": 168.0,        # ~200 days at 0.84 kg/person/sol for initial crew
+            "h2o_liters": 200.0,   # starting water reserve
+            "food_kcal": 0.0,      # greenhouse starts empty — crops need time to grow
+        },
         "metrics": {
             "total_power_generated_kwh": 0.0,
             "total_heat_lost_kwh": 0.0,
