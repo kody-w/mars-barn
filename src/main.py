@@ -28,6 +28,7 @@ from survival import check as survival_check, colony_alive
 from food_production import step_food
 from water_recycling import tick_water
 from power_grid import step_power
+from mars_climate import dust_storm_stats
 
 
 def run_simulation(
@@ -95,6 +96,10 @@ def run_simulation(
     for sol in range(1, num_sols + 1):
         # Solar longitude advances ~0.5° per sol
         state["solar_longitude"] = (state["solar_longitude"] + MARS_LS_PER_SOL) % 360
+
+        # Seasonal dust probability from real NASA data (mars_climate.py)
+        ls_current = state["solar_longitude"]
+        any_prob, _reg, _glob, mean_sev, _max_sev = dust_storm_stats(ls_current)
 
         # Generate and manage events
         new_events = generate_events(sol, seed=seed, active_events=state["active_events"])
