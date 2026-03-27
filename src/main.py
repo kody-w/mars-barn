@@ -24,6 +24,8 @@ from events import generate_events, tick_events, aggregate_effects
 from state_serial import create_state, snapshot, diff_states
 from viz import render_terrain, render_dashboard, render_events
 from validate import run_all_validations
+from food_production import step_food
+from constants import H2O_L_PER_PERSON_PER_SOL
 from survival import check as survival_check, colony_alive
 
 
@@ -148,6 +150,19 @@ def run_simulation(
         # Update energy storage
         net_energy = sol_power_kwh - sol_heating_kwh
         state["habitat"]["stored_energy_kwh"] = max(0, state["habitat"]["stored_energy_kwh"] + net_energy)
+
+        # Food production step — wire food_production.py into the sol loop
+        crew = state["habitat"]["crew_size"]
+        water_available = crew * H2O_L_PER_PERSON_PER_SOL
+        food_result = step_food(
+            population=crew,
+            water_available=water_available,
+            solar_energy_kwh=sol_power_kwh,
+            sol=sol,
+        )
+        state["food"] = food_result
+        if verbose and food_result["deficit_kcal"] > 0 and sol % 10 == 0:
+            print(f"  Sol {sol:>3d}: 🌱 Food: {food_result['food_produced_kcal']:.0f} kcal, deficit: {food_result['deficit_kcal']:.0f} kcal")
 
         # Update metrics
         state["sol"] = sol
