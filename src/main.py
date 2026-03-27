@@ -25,6 +25,7 @@ from state_serial import create_state, snapshot, diff_states
 from viz import render_terrain, render_dashboard, render_events
 from validate import run_all_validations
 from survival import check as survival_check, colony_alive
+from water_recycling import water_consumed, recovery_efficiency, _isru_units, ISRU_WATER_L_PER_SOL, GREENHOUSE_WATER_L_PER_SOL
 
 
 def run_simulation(
@@ -53,6 +54,10 @@ def run_simulation(
         sol=0, terrain=terrain,
         latitude=latitude, longitude=longitude,
     )
+
+    # Water recycling tracking
+    sols_since_maintenance = 0
+    water_reservoir_l = 200.0  # starting reservoir
 
     # Guard against invalid sol count
     if num_sols <= 0:
@@ -168,6 +173,19 @@ def run_simulation(
         if sol % 5 == 0:
             snapshots.append(snapshot(state))
 
+        # Step water recycling
+        crew = state["habitat"].get("crew_size", 4)
+        consumed = 12.5 * crew  # total L/person/sol * crew
+        eff = max(0.5, 0.93 - max(0, sols_since_maintenance - 30) * 0.002)
+        recovered = consumed * eff
+        isru_units = max(1, round(crew * 0.5))
+        isru_water = isru_units * 8.0
+        water_reservoir_l += recovered + isru_water - consumed
+        water_reservoir_l = max(0.0, water_reservoir_l)
+        sols_since_maintenance += 1
+        if sols_since_maintenance >= 30:
+            sols_since_maintenance = 0
+
         # Log event activity
         if new_events:
             event_log.extend(new_events)
@@ -248,3 +266,4 @@ if __name__ == "__main__":
     print(f"  Events survived:    {s['events_survived']:>6d}")
     print(f"  Validation:         {s['validation_passed']}/{s['validation_total']} ✓")
     print(f"{'='*50}")
+
