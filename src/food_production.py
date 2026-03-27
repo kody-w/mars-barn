@@ -59,11 +59,12 @@ def solar_availability_factor(solar_energy_kwh: float) -> float:
     Below MIN_SOLAR_KWH_FOR_GROWTH, no growth.
     Linear ramp to full output at LIGHT_SATURATION_KWH.
     """
-    if solar_energy_kwh <= MIN_SOLAR_KWH_FOR_GROWTH:
+    if solar_energy_kwh < MIN_SOLAR_KWH_FOR_GROWTH:
         return 0.0
-    effective = solar_energy_kwh - MIN_SOLAR_KWH_FOR_GROWTH
-    range_kwh = LIGHT_SATURATION_KWH - MIN_SOLAR_KWH_FOR_GROWTH
-    return min(1.0, effective / range_kwh)
+    if solar_energy_kwh >= LIGHT_SATURATION_KWH:
+        return 1.0
+    usable = solar_energy_kwh - MIN_SOLAR_KWH_FOR_GROWTH
+    return usable / (LIGHT_SATURATION_KWH - MIN_SOLAR_KWH_FOR_GROWTH)
 
 
 def step_food(
@@ -71,47 +72,37 @@ def step_food(
     water_available: float,
     solar_energy_kwh: float,
     sol: int,
+    greenhouse_units: int = 1,
 ) -> dict:
-    """Advance food production by one sol.
+    """Simulate one sol of food production.
 
     Args:
-        population: Number of crew members to feed.
-        water_available: Liters of water available for greenhouse.
-        solar_energy_kwh: Solar energy generated this sol (kWh).
-        sol: Current simulation sol (for maturity curve).
+        population: crew size (number of people to feed)
+        water_available: liters of water available for greenhouse
+        solar_energy_kwh: solar energy collected this sol
+        sol: current sol number (drives maturity curve)
+        greenhouse_units: number of greenhouse modules deployed
+            (default=1; main.py should pass max(1, round(crew * 0.5)))
 
-    Returns:
-        dict with:
-            food_produced_kcal: Total food produced this sol.
-            water_consumed_l: Water used by greenhouse.
-            growth_stage: Current crop maturity (0.0 to 1.0).
-            fed_population: Number of crew fully fed.
-            deficit_kcal: Calorie shortfall (0 if everyone fed).
+    Returns dict with food_produced_kcal, water_consumed_l,
+    growth_stage, fed_population, deficit_kcal.
     """
     maturity = crop_maturity_factor(sol)
     water_factor = water_availability_factor(water_available)
     solar_factor = solar_availability_factor(solar_energy_kwh)
 
-    # Base production scaled by all factors
-    food_produced = GREENHOUSE_KCAL_PER_SOL * maturity * water_factor * solar_factor
-    food_produced = max(0.0, food_produced)
+    base_production = GREENHOUSE_KCAL_PER_SOL * greenhouse_units
+    production = base_production * maturity * water_factor * solar_factor
+    water_consumed = production * WATER_PER_KCAL_PRODUCED
 
-    # Water consumed by greenhouse (proportional to actual production)
-    production_ratio = (maturity * water_factor * solar_factor)
-    water_consumed = GREENHOUSE_WATER_L_PER_SOL * production_ratio
-    water_consumed = min(water_consumed, water_available)
-    water_consumed = max(0.0, water_consumed)
-
-    # Feeding calculation
-    demand = population * FOOD_KCAL_PER_PERSON_PER_SOL
-    fed_population = min(population, int(food_produced / FOOD_KCAL_PER_PERSON_PER_SOL)) if FOOD_KCAL_PER_PERSON_PER_SOL > 0 else 0
-    deficit = max(0.0, demand - food_produced)
+    food_needed = population * FOOD_KCAL_PER_PERSON_PER_SOL
+    deficit = max(0.0, food_needed - production)
+    fed = int(production // FOOD_KCAL_PER_PERSON_PER_SOL) if FOOD_KCAL_PER_PERSON_PER_SOL > 0 else 0
 
     return {
-        "food_produced_kcal": round(food_produced, 2),
+        "food_produced_kcal": round(production, 2),
         "water_consumed_l": round(water_consumed, 2),
         "growth_stage": round(maturity, 4),
-        "fed_population": fed_population,
+        "fed_population": min(fed, population),
         "deficit_kcal": round(deficit, 2),
     }
-
