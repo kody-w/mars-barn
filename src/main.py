@@ -25,6 +25,7 @@ from state_serial import create_state, snapshot, diff_states
 from viz import render_terrain, render_dashboard, render_events
 from validate import run_all_validations
 from survival import check as survival_check, colony_alive
+from food_production import step_food
 
 
 def run_simulation(
@@ -149,7 +150,29 @@ def run_simulation(
         net_energy = sol_power_kwh - sol_heating_kwh
         state["habitat"]["stored_energy_kwh"] = max(0, state["habitat"]["stored_energy_kwh"] + net_energy)
 
-        # Update metrics
+        # Food production — greenhouse output depends on solar, water, and maturity
+        water_available = state.get("resources", {}).get("h2o_liters", 100.0)
+        food_result = step_food(
+            population=state["habitat"]["crew_size"],
+            water_available=water_available,
+            solar_energy_kwh=sol_power_kwh,
+            sol=sol,
+        )
+        # Feed production back into resource tracking
+        if "resources" in state:
+            state["resources"]["food_kcal"] += food_result["food_produced_kcal"]
+            state["resources"]["h2o_liters"] -= food_result["water_consumed_l"]
+        # Track food metrics
+        state["metrics"]["total_food_produced_kcal"] = (
+            state["metrics"].get("total_food_produced_kcal", 0.0)
+            + food_result["food_produced_kcal"]
+        )
+        if verbose and sol % 10 == 0:
+            stage = food_result["growth_stage"]
+            fed = food_result["fed_population"]
+            crew = state["habitat"]["crew_size"]
+            print(f"  Sol {sol:>3d}: 🌱 Growth {stage:.0%}, feeding {fed}/{crew}")
+
         state["sol"] = sol
         state["metrics"]["sols_survived"] = sol
         state["metrics"]["total_power_generated_kwh"] += sol_power_kwh
