@@ -29,6 +29,7 @@ from survival import check as survival_check, colony_alive
 from food_production import step_food
 from water_recycling import tick_water
 from power_grid import step_power
+from decisions import decide, apply_allocations
 from population import create_population, tick_population, population_report
 
 
@@ -89,6 +90,12 @@ def run_simulation(
     # Population dynamics
     rng = random.Random(seed)
     pop = create_population(crew=state["habitat"]["crew_size"])
+
+    # Default AI governor — balanced researcher profile
+    governor = {
+        "archetype": "researcher",
+        "convictions": ["safety first", "long view"],
+    }
 
     # Simulation history
     snapshots = [snapshot(state)]
@@ -246,6 +253,10 @@ def run_simulation(
             fed = food_result["fed_population"]
             print(f"  Sol {sol:>3d}: 🌱 Growth {stage:.0%}, feeding {fed}/{crew}, "
                   f"💧 {water_reservoir_l:.0f}L")
+
+        # AI governor decisions — power allocation, repairs, rationing
+        allocations = decide(state, governor)
+        state = apply_allocations(state, allocations)
 
         state["sol"] = sol
         state["metrics"]["sols_survived"] = sol
