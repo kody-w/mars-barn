@@ -30,6 +30,7 @@ from food_production import step_food
 from water_recycling import tick_water
 from power_grid import step_power
 from population import create_population, tick_population, population_report
+from habitat import Habitat
 
 
 def run_simulation(
@@ -81,6 +82,9 @@ def run_simulation(
                 "validation_total": 0,
             },
         }
+
+    # Typed habitat interface
+    hab = Habitat(state)
 
     # Subsystem tracking
     sols_since_water_maintenance = 0
@@ -271,9 +275,7 @@ def run_simulation(
 
         # Print progress
         if verbose and sol % 10 == 0:
-            temp_c = state["habitat"]["interior_temp_k"] - 273.15
-            stored = state["habitat"]["stored_energy_kwh"]
-            print(f"  Sol {sol:>3d}: {temp_c:+.1f}°C inside, {stored:.0f} kWh stored, "
+            print(f"  Sol {sol:>3d}: {hab.status_line()}, "
                   f"{len(state['active_events'])} active events")
 
     # Final report
