@@ -76,7 +76,7 @@ def resource_stress(resources: dict, crew: int) -> float:
     if food_buffer > 0:
         stress_factors.append(max(0.0, 1.0 - food_reserve / food_buffer))
 
-    return max(stress_factors) if stress_factors else 0.0
+    return min(1.0, max(stress_factors)) if stress_factors else 0.0
 
 
 def update_morale(pop: dict, stress: float, events: list | None = None) -> float:
