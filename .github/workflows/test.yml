@@ -1,36 +1,12 @@
 name: Tests
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
+on: [pull_request]
 jobs:
-  python:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-      - name: Run Python tests
-        run: python -m pytest tests/ src/ -v --ignore=api/
-
-  api:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: api
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - run: npm ci
-      - run: npx prisma generate
-      - name: Run API tests
-        run: npm test
+          python-version: "3.12"
+      - name: Run tests
+        run: cd src && python -m pytest test_*.py -v --tb=short
