@@ -11,6 +11,7 @@ Usage:
 """
 import sys
 import os
+import random
 
 # Add src/ to path for imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -28,6 +29,7 @@ from survival import check as survival_check, colony_alive
 from food_production import step_food
 from water_recycling import tick_water
 from power_grid import step_power
+from population import create_population, tick_population, population_report
 
 
 def run_simulation(
@@ -83,6 +85,10 @@ def run_simulation(
     # Subsystem tracking
     sols_since_water_maintenance = 0
     water_reservoir_l = state.get("resources", {}).get("h2o_liters", 200.0)
+
+    # Population dynamics
+    rng = random.Random(seed)
+    pop = create_population(crew=state["habitat"]["crew_size"])
 
     # Simulation history
     snapshots = [snapshot(state)]
@@ -202,6 +208,39 @@ def run_simulation(
         if sols_since_water_maintenance >= 30:
             sols_since_water_maintenance = 0
 
+        # Population dynamics — morale, attrition, arrivals
+        # Grace period: skip attrition during crop maturity (first 60 sols)
+        # to avoid false starvation deaths before the greenhouse can produce
+        resources = state.get("resources", {})
+        if sol <= 60:
+            grace_resources = dict(resources)
+            grace_resources["food_kcal"] = max(resources.get("food_kcal", 0), 50000.0)
+            pop_changes = tick_population(
+                pop, grace_resources, sol,
+                events=new_events,
+                rng_roll=rng.random(),
+            )
+        else:
+            pop_changes = tick_population(
+                pop, resources, sol,
+                events=new_events,
+                rng_roll=rng.random(),
+            )
+        state["habitat"]["crew_size"] = pop["crew"]
+        state["population"] = {
+            "crew": pop["crew"],
+            "morale": round(pop["morale"], 3),
+            "total_deaths": pop["total_deaths"],
+            "total_arrivals": pop["total_arrivals"],
+        }
+
+        if verbose and pop_changes["deaths"] > 0:
+            print(f"  Sol {sol:>3d}: ☠️  Crew lost — {pop_changes['cause']}"
+                  f" (morale {pop['morale']:.0%}, crew {pop['crew']})")
+        if verbose and pop_changes["arrivals"] > 0:
+            print(f"  Sol {sol:>3d}: 🚀 {pop_changes['arrivals']} new crew arrived"
+                  f" (crew {pop['crew']})")
+
         if verbose and sol % 10 == 0:
             stage = food_result["growth_stage"]
             fed = food_result["fed_population"]
@@ -274,6 +313,9 @@ def run_simulation(
             "events_survived": state["metrics"]["events_survived"],
             "final_temp_c": round(state["habitat"]["interior_temp_k"] - 273.15, 1),
             "stored_energy_kwh": round(state["habitat"]["stored_energy_kwh"], 1),
+            "final_crew": pop["crew"],
+            "total_deaths": pop["total_deaths"],
+            "final_morale": round(pop["morale"], 3),
             "validation_passed": validation["passed"],
             "validation_total": validation["total"],
         },
@@ -304,5 +346,8 @@ if __name__ == "__main__":
     print(f"  Final temp:         {s['final_temp_c']:>+6.1f} °C")
     print(f"  Energy reserves:    {s['stored_energy_kwh']:>6.0f} kWh")
     print(f"  Events survived:    {s['events_survived']:>6d}")
+    print(f"  Final crew:         {s['final_crew']:>6d}")
+    print(f"  Total deaths:       {s['total_deaths']:>6d}")
+    print(f"  Final morale:       {s['final_morale']:>5.0%}")
     print(f"  Validation:         {s['validation_passed']}/{s['validation_total']} ✓")
     print(f"{'='*50}")
