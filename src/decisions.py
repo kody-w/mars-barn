@@ -58,6 +58,12 @@ ARCHETYPE_RISK: dict[str, float] = {
     "contrarian": 0.80,
     "archivist": 0.20,
     "wildcard": 0.90,
+    "governance": 0.30,
+    "builder": 0.60,
+    "engineer": 0.55,
+    "sentinel": 0.20,
+    "recruited": 0.50,
+    "unknown": 0.50,
 }
 
 CONVICTION_KEYWORDS: dict[str, float] = {
@@ -139,10 +145,9 @@ def extract_traits(agent_profile: dict) -> dict:
 # Resource helpers
 # =========================================================================
 
-def _days_remaining(resources: dict, key: str, rate: float) -> float:
+def _days_remaining(resources: dict, key: str, rate: float, crew: int = 4) -> float:
     """Calculate how many sols of a resource remain at current consumption."""
     current = resources.get(key, 0.0)
-    crew = resources.get("crew_size", 4)
     daily = crew * rate if rate > 0 else 1.0
     return current / max(daily, 0.01)
 
@@ -346,14 +351,14 @@ def apply_allocations(state: dict, allocations: dict) -> dict:
             )
         elif repair_target == "water_recycler":
             resources["isru_efficiency"] = min(
-                1.0, resources.get("isru_efficiency", 1.0) + repair_amount,
+                2.5, resources.get("isru_efficiency", 1.0) + repair_amount,
             )
         elif repair_target in ("life_support", "seal"):
             resources["isru_efficiency"] = min(
-                1.0, resources.get("isru_efficiency", 1.0) + repair_amount * 0.5,
+                2.5, resources.get("isru_efficiency", 1.0) + repair_amount * 0.5,
             )
             resources["greenhouse_efficiency"] = min(
-                1.0,
+                2.5,
                 resources.get("greenhouse_efficiency", 1.0) + repair_amount * 0.5,
             )
 
