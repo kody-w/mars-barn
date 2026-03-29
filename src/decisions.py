@@ -58,6 +58,10 @@ ARCHETYPE_RISK: dict[str, float] = {
     "contrarian": 0.80,
     "archivist": 0.20,
     "wildcard": 0.90,
+    "governance": 0.35,
+    "builder": 0.60,
+    "engineer": 0.55,
+    "sentinel": 0.25,
 }
 
 CONVICTION_KEYWORDS: dict[str, float] = {
@@ -139,10 +143,16 @@ def extract_traits(agent_profile: dict) -> dict:
 # Resource helpers
 # =========================================================================
 
-def _days_remaining(resources: dict, key: str, rate: float) -> float:
-    """Calculate how many sols of a resource remain at current consumption."""
+def _days_remaining(resources: dict, key: str, rate: float, crew: int = 4) -> float:
+    """Calculate how many sols of a resource remain at current consumption.
+
+    Args:
+        resources: Resource dict with current levels.
+        key: Resource key (e.g., 'o2_kg', 'food_kcal').
+        rate: Per-person-per-sol consumption rate.
+        crew: Colony crew size (default 4, should be passed explicitly).
+    """
     current = resources.get(key, 0.0)
-    crew = resources.get("crew_size", 4)
     daily = crew * rate if rate > 0 else 1.0
     return current / max(daily, 0.01)
 
@@ -178,9 +188,10 @@ def allocate_power(state: dict, traits: dict) -> dict:
     remaining = 1.0 - heating_frac
 
     # Split remaining by resource urgency + personality bias
-    o2_days = _days_remaining(resources, "o2_kg", O2_KG_PER_PERSON_PER_SOL)
-    h2o_days = _days_remaining(resources, "h2o_liters", H2O_L_PER_PERSON_PER_SOL)
-    food_days = _days_remaining(resources, "food_kcal", FOOD_KCAL_PER_PERSON_PER_SOL)
+    crew = habitat.get("crew_size", 4)
+    o2_days = _days_remaining(resources, "o2_kg", O2_KG_PER_PERSON_PER_SOL, crew)
+    h2o_days = _days_remaining(resources, "h2o_liters", H2O_L_PER_PERSON_PER_SOL, crew)
+    food_days = _days_remaining(resources, "food_kcal", FOOD_KCAL_PER_PERSON_PER_SOL, crew)
 
     isru_urgency = 1.0 / max(1.0, min(o2_days, h2o_days))
     food_urgency = 1.0 / max(1.0, food_days)
@@ -242,8 +253,9 @@ def choose_repair_target(state: dict, traits: dict) -> str | None:
 def choose_ration_level(state: dict, traits: dict) -> str:
     """Decide whether to ration food: normal, reduced, or emergency."""
     resources = state.get("resources", {})
+    crew = state.get("habitat", {}).get("crew_size", 4)
     food_days = _days_remaining(
-        resources, "food_kcal", FOOD_KCAL_PER_PERSON_PER_SOL,
+        resources, "food_kcal", FOOD_KCAL_PER_PERSON_PER_SOL, crew,
     )
     threshold = traits["ration_threshold_sols"]
 
@@ -275,8 +287,9 @@ def decide(state: dict, agent_profile: dict) -> dict:
 
     # Generate reasoning
     resources = state.get("resources", {})
-    o2_days = _days_remaining(resources, "o2_kg", O2_KG_PER_PERSON_PER_SOL)
-    food_days = _days_remaining(resources, "food_kcal", FOOD_KCAL_PER_PERSON_PER_SOL)
+    crew = state.get("habitat", {}).get("crew_size", 4)
+    o2_days = _days_remaining(resources, "o2_kg", O2_KG_PER_PERSON_PER_SOL, crew)
+    food_days = _days_remaining(resources, "food_kcal", FOOD_KCAL_PER_PERSON_PER_SOL, crew)
     power_kwh = resources.get("power_kwh", 0)
 
     if power_kwh < POWER_CRITICAL_KWH:
@@ -337,6 +350,8 @@ def apply_allocations(state: dict, allocations: dict) -> dict:
     resources["greenhouse_efficiency"] = min(2.5, gh_eff)
 
     # Repair: partially restore damaged system (15%/sol)
+    # NOTE: repair adds to BASE efficiency (before governor boost), not the
+    # boosted value. Use 2.5 cap to match governor boost ceiling.
     repair_target = allocations.get("repair_target")
     if repair_target:
         repair_amount = 0.15
@@ -346,14 +361,14 @@ def apply_allocations(state: dict, allocations: dict) -> dict:
             )
         elif repair_target == "water_recycler":
             resources["isru_efficiency"] = min(
-                1.0, resources.get("isru_efficiency", 1.0) + repair_amount,
+                2.5, resources.get("isru_efficiency", 1.0) + repair_amount,
             )
         elif repair_target in ("life_support", "seal"):
             resources["isru_efficiency"] = min(
-                1.0, resources.get("isru_efficiency", 1.0) + repair_amount * 0.5,
+                2.5, resources.get("isru_efficiency", 1.0) + repair_amount * 0.5,
             )
             resources["greenhouse_efficiency"] = min(
-                1.0,
+                2.5,
                 resources.get("greenhouse_efficiency", 1.0) + repair_amount * 0.5,
             )
 
@@ -500,4 +515,3 @@ if __name__ == "__main__":
             f"{r['sols_survived']:>5} {'YES' if r['alive'] else 'NO':>6} "
             f"{cause:<28} {r['rations_reduced']:>7} {r['repairs_ordered']:>7}"
         )
-
