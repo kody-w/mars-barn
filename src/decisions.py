@@ -58,6 +58,12 @@ ARCHETYPE_RISK: dict[str, float] = {
     "contrarian": 0.80,
     "archivist": 0.20,
     "wildcard": 0.90,
+    "governance": 0.25,
+    "builder": 0.60,
+    "engineer": 0.55,
+    "sentinel": 0.15,
+    "recruited": 0.50,
+    "unknown": 0.50,
 }
 
 CONVICTION_KEYWORDS: dict[str, float] = {
