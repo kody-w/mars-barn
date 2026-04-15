@@ -70,6 +70,10 @@ ARCHETYPE_RISK: dict[str, float] = {
     "contrarian": 0.85,
     "archivist": 0.10,
     "wildcard": 0.95,
+    "engineer": 0.45,
+    "sentinel": 0.10,
+    "governance": 0.20,
+    "builder": 0.65,
 }
 
 PERSONALITY_WEIGHT: dict[str, float] = {
@@ -83,6 +87,10 @@ PERSONALITY_WEIGHT: dict[str, float] = {
     "contrarian": 0.70,
     "archivist": 0.05,
     "wildcard": 0.80,
+    "engineer": 0.20,
+    "sentinel": 0.10,
+    "governance": 0.50,
+    "builder": 0.30,
 }
 
 CONVICTION_MODIFIERS: dict[str, float] = {
