@@ -35,30 +35,57 @@ interface SimResults {
 }
 
 // ---------- data fetching ----------
+interface ColonyState {
+  name?: string;
+  sol: number;
+  habitat: { interior_temp_k: number; stored_energy_kwh: number };
+  food_kg?: number;
+  population?: number;
+  alive?: boolean;
+  history?: Array<{ events?: string[] }>;
+  active_events?: Array<{ type: string; description: string }>;
+}
+
+function stateToColony(state: ColonyState): Colony {
+  const lastHistoryEvents = state.history?.[state.history.length - 1]?.events;
+  const lastEvent =
+    state.active_events?.length
+      ? state.active_events[state.active_events.length - 1].description
+      : lastHistoryEvents?.length
+        ? lastHistoryEvents[lastHistoryEvents.length - 1]
+        : 'Nominal operations';
+
+  const dustEvents = state.active_events?.filter((e) => e.type.startsWith('dust_')).length ?? 0;
+  const alive = state.alive !== false && state.habitat.interior_temp_k > 200 && (state.population ?? 1) > 0;
+
+  return {
+    id: state.name ?? 'Olympus Base',
+    status: alive ? 'ALIVE' : 'DEAD',
+    age_sols: state.sol,
+    last_event: lastEvent,
+    stats: {
+      solar_efficiency: Math.max(0.1, 1.0 - dustEvents * 0.4),
+      battery_reserves_kwh: state.habitat.stored_energy_kwh,
+      supply_reserves_tons: state.food_kg != null ? state.food_kg / 1000 : Math.max(0, 15.0 - state.sol * 0.05),
+    },
+  };
+}
+
 async function fetchColonies(): Promise<Colony[]> {
-  try {
-    const res = await fetch(`${RAW}/data/state.json`);
-    if (res.ok) {
-      const state = await res.json();
-      return [{
-        id: 'Alpha Base',
-        status: state.habitat.interior_temp_k > 200 ? 'ALIVE' : 'DEAD',
-        age_sols: state.sol,
-        last_event: state.active_events?.length
-          ? state.active_events[state.active_events.length - 1].description
-          : 'Nominal operations',
-        stats: {
-          solar_efficiency: Math.max(0.1, 1.0 - (state.active_events?.filter((e: { type: string }) => e.type.startsWith('dust_')).length ?? 0) * 0.4),
-          battery_reserves_kwh: state.habitat.stored_energy_kwh,
-          supply_reserves_tons: Math.max(0, 15.0 - state.sol * 0.05),
-        },
-      }];
-    }
-  } catch { /* fall through */ }
+  for (const path of ['/state/colony.json', '/data/state.json']) {
+    try {
+      const res = await fetch(`${RAW}${path}`);
+      if (res.ok) return [stateToColony(await res.json())];
+    } catch { /* try next */ }
+  }
 
   try {
     const res = await fetch(`${RAW}/data/colonies.json`);
-    if (res.ok) return res.json();
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data)) return data;
+      return [stateToColony(data)];
+    }
   } catch { /* fall through */ }
 
   return [];
