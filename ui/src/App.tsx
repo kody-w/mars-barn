@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import {
   Activity, Battery, Box, AlertTriangle, ShieldCheck, Skull,
   Zap, Thermometer, Shield, Rocket, MessageCircle, Github,
@@ -6,6 +6,8 @@ import {
   FlaskConical,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const MarsScene = lazy(() => import('./MarsScene'));
 
 const RAW = 'https://raw.githubusercontent.com/kody-w/mars-barn/main';
 const REPO = 'https://github.com/kody-w/mars-barn';
@@ -229,6 +231,21 @@ export default function App() {
         >
           <ChevronDown size={24} className="animate-bounce" />
         </motion.div>
+      </section>
+
+      {/* ========== LIVE 3D OLYMPUS ========== */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-8">
+        <Suspense fallback={
+          <div className="w-full h-[560px] rounded-2xl border border-stone-800 bg-stone-950/60 flex items-center justify-center text-zinc-500 text-sm">
+            <div className="inline-block h-6 w-6 border-2 border-stone-700 border-t-orange-500 rounded-full animate-spin mr-3" />
+            Loading Mars terrain…
+          </div>
+        }>
+          <MarsScene />
+        </Suspense>
+        <p className="text-center text-xs text-zinc-500 mt-3 font-mono">
+          live state · sun position from areocentric longitude L<sub>s</sub> · dust storm reacts to <code>dust_storm_active</code>
+        </p>
       </section>
 
       {/* ========== COLONY STATUS ========== */}
