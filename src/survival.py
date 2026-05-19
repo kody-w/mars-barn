@@ -205,6 +205,15 @@ def check(state: dict) -> dict:
     if "resources" not in s:
         s["resources"] = create_resources(crew_size)
     resources = s["resources"]
+    # Defensive: states built by create_state() (state_serial.py) only seed
+    # the consumable fields (o2_kg / h2o_liters / food_kcal). produce(),
+    # consume(), and advance_cascade() index several other keys directly
+    # (power_kwh, crew_size, *_efficiency, cascade_state, ...), so fill any
+    # missing keys from a fresh resource template instead of KeyError-ing.
+    defaults = create_resources(crew_size)
+    for key, default in defaults.items():
+        if key not in resources:
+            resources[key] = default
     resources = apply_events(resources, s.get("active_events", []))
     solar = s.get("solar_irradiance_w_m2", 300.0)
     resources = produce(
