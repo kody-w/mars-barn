@@ -211,6 +211,8 @@ def simulate_sol(
     dust_storm: bool = False,
     rtg_power_w: float = 0.0,
     latitude_deg: float = -4.5,
+    start_temp_k: float = HABITAT_TARGET_TEMP_K,
+    heater_power_w: float = HABITAT_HEATER_POWER_W,
 ) -> dict:
     """Simulate thermal regulation for a full Mars sol.
 
@@ -229,7 +231,7 @@ def simulate_sol(
     step_hours = 0.25
     num_steps = int(sol_hours / step_hours)
 
-    interior_temp = HABITAT_TARGET_TEMP_K
+    interior_temp = start_temp_k
     total_heating_wh = 0.0
     min_temp = interior_temp
     max_temp = interior_temp
@@ -247,7 +249,7 @@ def simulate_sol(
         # Proportional heater control
         temp_deficit = HABITAT_TARGET_TEMP_K - interior_temp
         heater_fraction = max(0.0, min(1.0, temp_deficit / 5.0))
-        heater_w = HABITAT_HEATER_POWER_W * heater_fraction + rtg_power_w
+        heater_w = heater_power_w * heater_fraction + rtg_power_w
 
         result = thermal_step(
             interior_temp, ext_temp, irr, heater_w,
@@ -264,6 +266,7 @@ def simulate_sol(
         "heating_kwh": round(total_heating_wh / 1000.0, 2),
         "min_temp_k": round(min_temp, 2),
         "max_temp_k": round(max_temp, 2),
+        "end_temp_k": round(interior_temp, 2),
     }
 
 

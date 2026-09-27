@@ -18,6 +18,7 @@ from constants import (
     HABITAT_STORED_ENERGY_KWH,
     HABITAT_HEATER_POWER_W,
 )
+from survival import create_resources
 
 
 def create_state(
@@ -31,6 +32,18 @@ def create_state(
     habitat: dict = None,
 ) -> dict:
     """Create a new simulation state dict."""
+    habitat_state = habitat or {
+        "crew_size": HABITAT_CREW_SIZE,
+        "interior_temp_k": HABITAT_TARGET_TEMP_K,
+        "interior_pressure_pa": HABITAT_INTERIOR_PRESSURE_PA,
+        "power_kw": 0.0,
+        "solar_panel_area_m2": HABITAT_SOLAR_PANEL_AREA_M2,
+        "solar_panel_efficiency": HABITAT_SOLAR_PANEL_EFFICIENCY,
+        "insulation_r_value": HABITAT_INSULATION_R_VALUE,
+        "stored_energy_kwh": HABITAT_STORED_ENERGY_KWH,
+        "heater_power_w": HABITAT_HEATER_POWER_W,
+    }
+    resources = create_resources(habitat_state["crew_size"])
     return {
         "version": 1,
         "sol": sol,
@@ -42,22 +55,8 @@ def create_state(
         "solar_longitude": solar_longitude,
         "terrain": terrain or [],
         "active_events": active_events or [],
-        "habitat": habitat or {
-            "crew_size": HABITAT_CREW_SIZE,
-            "interior_temp_k": HABITAT_TARGET_TEMP_K,
-            "interior_pressure_pa": HABITAT_INTERIOR_PRESSURE_PA,
-            "power_kw": 0.0,
-            "solar_panel_area_m2": HABITAT_SOLAR_PANEL_AREA_M2,
-            "solar_panel_efficiency": HABITAT_SOLAR_PANEL_EFFICIENCY,
-            "insulation_r_value": HABITAT_INSULATION_R_VALUE,
-            "stored_energy_kwh": HABITAT_STORED_ENERGY_KWH,
-            "heater_power_w": HABITAT_HEATER_POWER_W,
-        },
-        "resources": {
-            "o2_kg": 168.0,        # ~200 days at 0.84 kg/person/sol for initial crew
-            "h2o_liters": 200.0,   # starting water reserve
-            "food_kcal": 0.0,      # greenhouse starts empty — crops need time to grow
-        },
+        "habitat": habitat_state,
+        "resources": resources,
         "metrics": {
             "total_power_generated_kwh": 0.0,
             "total_heat_lost_kwh": 0.0,
@@ -139,4 +138,3 @@ if __name__ == "__main__":
     print(f"\nChanges after 10 sols:")
     for path, (old, new) in diff.items():
         print(f"  {path}: {old} → {new}")
-

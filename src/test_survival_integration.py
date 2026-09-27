@@ -11,6 +11,8 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from main import run_simulation
+from state_serial import create_state
+from live import DEFAULT_LAUNCH, migrate_colony
 from survival import (
     create_resources, colony_alive, check as survival_check,
     NOMINAL, DEAD, POWER_CRITICAL,
@@ -52,6 +54,37 @@ def test_resources_initialized():
     assert "h2o_liters" in resources
     assert "food_kcal" in resources
     assert resources["crew_size"] > 0
+
+
+def test_create_state_uses_complete_resource_schema():
+    """New simulation states include every field survival.py requires."""
+    state = create_state(sol=0, latitude=-4.5, longitude=137.4)
+    resources = state["resources"]
+    for required in (
+        "crew_size",
+        "power_kwh",
+        "solar_efficiency",
+        "isru_efficiency",
+        "greenhouse_efficiency",
+        "cascade_state",
+        "cascade_sol_counter",
+    ):
+        assert required in resources
+
+
+def test_legacy_live_state_migrates_required_fields():
+    """Old colony.json files with history still load as live v2 state."""
+    legacy = {
+        "name": "Legacy Base",
+        "sol": 12,
+        "habitat": {"crew_size": 4},
+        "history": [{"sol": 1, "events": ["quiet"]}],
+    }
+    migrated = migrate_colony(legacy)
+    assert migrated["launch_date"] == DEFAULT_LAUNCH
+    assert migrated["log"] == legacy["history"]
+    assert migrated["habitat"]["crew_size"] == 4
+    assert "stats" in migrated
 
 
 def test_colony_alive_function():
