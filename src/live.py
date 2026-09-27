@@ -151,10 +151,29 @@ def default_colony() -> dict:
     }
 
 
+def _deep_merge_defaults(default: dict, existing: dict) -> dict:
+    merged = dict(default)
+    for key, value in existing.items():
+        if isinstance(value, dict) and isinstance(merged.get(key), dict):
+            merged[key] = _deep_merge_defaults(merged[key], value)
+        else:
+            merged[key] = value
+    return merged
+
+
+def migrate_colony(colony: dict) -> dict:
+    """Upgrade legacy state/colony.json documents to the live v2 schema."""
+    migrated = _deep_merge_defaults(default_colony(), colony)
+    if "log" not in colony:
+        migrated["log"] = list(colony.get("history", []))
+    migrated["_meta"]["version"] = max(2, int(migrated.get("_meta", {}).get("version", 0) or 0))
+    return migrated
+
+
 def load_colony() -> dict:
     if STATE_FILE.exists():
         with open(STATE_FILE) as f:
-            return json.load(f)
+            return migrate_colony(json.load(f))
     return default_colony()
 
 

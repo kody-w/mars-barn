@@ -73,6 +73,17 @@ class TestSimulateSol:
         dusty = simulate_sol(solar_longitude=210.0, r_value=12.0, dust_storm=True)
         assert dusty["heating_kwh"] >= clear["heating_kwh"]
 
+    def test_accepts_live_state_temperature(self):
+        """Live colony ticks resume from the current habitat temperature."""
+        result = simulate_sol(
+            start_temp_k=285.0,
+            solar_longitude=180.0,
+            r_value=12.0,
+            heater_power_w=6000.0,
+        )
+        assert "end_temp_k" in result
+        assert result["min_temp_k"] <= result["end_temp_k"] <= result["max_temp_k"]
+
     def test_perihelion_vs_aphelion(self):
         """Perihelion (Ls=251) should need less heating than aphelion (Ls=71)."""
         perihelion = simulate_sol(solar_longitude=251.0, r_value=12.0)
