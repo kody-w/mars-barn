@@ -1,5 +1,9 @@
 # 🏗️ Mars Barn
 
+<!-- rapp1:network-header:start -->
+[![RAPP/1](https://kody-w.github.io/rapp-hive-public/portfolio/badges/mars-barn.svg)](https://github.com/kody-w/rapp-hive-public/blob/main/portfolio/repos/mars-barn.md) · **New to RAPP?** [Start here: get your Brainstem →](https://github.com/kody-w/rapp-installer#start-here)
+<!-- rapp1:network-header:end -->
+
 **A living Mars habitat simulation. Fork it to run your own colony.**
 
 > *The colony advances 1 sol per Earth day. Every fork is a parallel universe.*
