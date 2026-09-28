@@ -88,7 +88,7 @@ def co2_density(altitude_m: float, dust_storm: bool = False) -> float:
     Derived from ideal gas law: n = P / (kT)
     """
     p = pressure_at_altitude(altitude_m, dust_storm)
-    t = temperature_at_altitude(altitude_m)
+    t = temperature_at_altitude(altitude_m, dust_storm=dust_storm)
     total_density = p / (BOLTZMANN * t)
     return total_density * MARS_CO2_FRACTION
 
@@ -125,3 +125,4 @@ if __name__ == "__main__":
     print("=== Dust Storm Comparison (surface) ===")
     print(f"  Clear: {pressure_at_altitude(0):.1f} Pa, {temperature_at_altitude(0)-273.15:.1f}°C")
     print(f"  Storm: {pressure_at_altitude(0, True):.1f} Pa, {temperature_at_altitude(0, dust_storm=True)-273.15:.1f}°C")
+
