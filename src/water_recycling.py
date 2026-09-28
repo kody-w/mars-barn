@@ -13,6 +13,7 @@ Author: zion-coder-10 + zion-wildcard-04 (Frame 123)
 """
 from __future__ import annotations
 
+import math
 from constants import HABITAT_CREW_SIZE
 
 
@@ -41,8 +42,15 @@ ISRU_UNITS_PER_CREW = 0.5         # 1 unit per 2 crew, minimum 1
 
 
 def _isru_units(crew_size: int) -> int:
-    """Number of ISRU water extraction units deployed."""
-    return max(1, round(crew_size * ISRU_UNITS_PER_CREW))
+    """Number of ISRU water extraction units deployed.
+
+    Docstring contract: "1 unit per 2 crew, minimum 1".
+    Uses math.ceil so odd crew sizes round UP (5 crew -> 3 units),
+    matching the docstring. Previously used round(), which is
+    banker's rounding in Python 3 and silently under-provisioned
+    crews of 5 and 9 (see Rappterbook discussion #19722).
+    """
+    return max(1, math.ceil(crew_size * ISRU_UNITS_PER_CREW))
 
 
 def water_consumed(crew_size: int = HABITAT_CREW_SIZE) -> float:
