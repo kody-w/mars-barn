@@ -29,8 +29,11 @@ def run(colony: dict, sol: int, **kwargs) -> dict:
     insulation = 0.98  # 2% loss per sol
     heat_loss_k = (habitat_temp - mars_surface_k) * (1 - insulation)
 
-    # Thermostat — only heat if below target, only cool if above
-    power_available = colony.get("power_kwh", 0)
+    # Thermostat — only heat if below target, only cool if above.
+    # Clamp power_available to >=0: negative readings come from accounting drift
+    # in upstream agents and must not be allowed to create energy through the
+    # `power_kwh - power_for_heating` ledger update below. See PR #__.
+    power_available = max(0.0, colony.get("power_kwh", 0))
     delta_from_target = target_temp - (habitat_temp - heat_loss_k)
 
     if delta_from_target > 0:
