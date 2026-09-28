@@ -204,6 +204,14 @@ def check(state: dict) -> dict:
     crew_size = habitat.get("crew_size", 4)
     if "resources" not in s:
         s["resources"] = create_resources(crew_size)
+    else:
+        # Backfill missing required keys so partial resource dicts (e.g. from
+        # state_serial.create_state, which only seeds o2/h2o/food) don't crash
+        # produce()/consume() with KeyError: 'crew_size'.
+        defaults = create_resources(crew_size)
+        merged = dict(defaults)
+        merged.update(s["resources"])
+        s["resources"] = merged
     resources = s["resources"]
     resources = apply_events(resources, s.get("active_events", []))
     solar = s.get("solar_irradiance_w_m2", 300.0)
