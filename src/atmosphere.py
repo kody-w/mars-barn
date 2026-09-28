@@ -85,10 +85,15 @@ def temperature_at_altitude(
 def co2_density(altitude_m: float, dust_storm: bool = False) -> float:
     """CO2 number density in molecules/m³ at given altitude.
 
-    Derived from ideal gas law: n = P / (kT)
+    Derived from ideal gas law: n = P / (kT).  Dust storms are
+    propagated to BOTH pressure and temperature — pressure_at_altitude
+    drops ~15%, and temperature_at_altitude applies thermal blanketing
+    (+20K at night, -10K at day).  Previously only the pressure leg
+    saw the storm flag, which overestimated nighttime storm CO2
+    density by ~9%% relative.
     """
     p = pressure_at_altitude(altitude_m, dust_storm)
-    t = temperature_at_altitude(altitude_m)
+    t = temperature_at_altitude(altitude_m, dust_storm=dust_storm)
     total_density = p / (BOLTZMANN * t)
     return total_density * MARS_CO2_FRACTION
 
